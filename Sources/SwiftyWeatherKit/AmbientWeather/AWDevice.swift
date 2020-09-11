@@ -23,7 +23,7 @@ open class AWDevice: SWKDevice/*, Codable*/ {
     }
     
     /// Return the timestamp from lastData, as a NSDate in UTC
-    public var timestamp: NSDate {
+    public var timestamp: Date {
         return Date(timeIntervalSince1970: TimeInterval(lastData!.dateUTC / 1000))
     }
    
