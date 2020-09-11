@@ -21,6 +21,11 @@ open class AWDevice: SWKDevice/*, Codable*/ {
         case lastData = "lastData"
         case info = "info"
     }
+    
+    /// Return the timestamp from lastData, as a NSDate in UTC
+    public var timestamp: NSDate {
+        return Date(timeIntervalSince1970: TimeInterval(lastData!.dateUTC / 1000))
+    }
    
     /// Return any humidity sensors
     public var humiditySensors: [AWSensor] {
