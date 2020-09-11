@@ -23,8 +23,11 @@ open class AWDevice: SWKDevice/*, Codable*/ {
     }
     
     /// Return the timestamp from lastData, as a NSDate in UTC
-    public var timestamp: Date {
-        return Date(timeIntervalSince1970: TimeInterval(lastData!.dateUTC / 1000))
+    public var timestamp: Date? {
+        guard let d = lastData?.dateUTC else {
+            return nil
+        }
+        return Date(timeIntervalSince1970: TimeInterval(d / 1000))
     }
    
     /// Return any humidity sensors
