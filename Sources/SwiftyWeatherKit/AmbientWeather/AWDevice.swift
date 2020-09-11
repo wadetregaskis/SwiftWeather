@@ -14,7 +14,7 @@ import Foundation
 open class AWDevice: SWKDevice/*, Codable*/ {
     private let info: AWStationInfo?
     private let macAddress: String?
-    let lastData: AWStationData?
+    public let lastData: AWStationData?
     
     enum CodingKeys: String, CodingKey {
         case macAddress = "macAddress"
