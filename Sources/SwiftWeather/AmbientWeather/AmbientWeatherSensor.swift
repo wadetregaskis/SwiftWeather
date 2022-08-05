@@ -48,7 +48,7 @@ open class AmbientWeatherSensor: WeatherSensor {
             return String("\(_value)")
         }
     }
-    
+
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
