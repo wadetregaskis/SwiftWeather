@@ -8,38 +8,30 @@
 import Foundation
 
 open class AmbientWeatherSensor: WeatherSensor {
-    
+    internal static let formatter = {
+        let formatter = MeasurementFormatter()
+        formatter.unitOptions = .naturalScale
+        formatter.unitStyle = .short
+        formatter.numberFormatter.maximumFractionDigits = 1
+        return formatter
+    }()
+
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
     open var formattedValue: String {
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = .providedUnit
-        formatter.numberFormatter.maximumFractionDigits = 1
-        
-        switch type {
-        case .Pressure:
-            return String("\(formatter.string(from: _value as! Measurement<UnitPressure>))")
-        case .Temperature:
-            return String("\(formatter.string(from: _value as! Measurement<UnitTemperature>))")
-        case .AirQuality:
-            return String("\(_value)")
-        case .WindSpeed:
-            return String("\(formatter.string(from: _value as! Measurement<UnitSpeed>))")
-        case .RainRate:
-            return String("\(_value)")
-        case .Rain:
-            return String("\(formatter.string(from: _value as! Measurement<UnitLength>))")
-        case .Humidity:
-            return String("\(_value)")
-        case .WindDirection:
-            return String("\(formatter.string(from: _value as! Measurement<UnitAngle>))")
-        case .Battery:
-            return String("\(_value as! Int == 1 ? "Good" : "Low")")
-        case .RainDate:
-            return (_value as! Date).formatted(date: .abbreviated, time: .shortened)
-        case .Radiation, .General: // Unit-less
-            return String("\(_value)")
+        if self.type == .Battery, let value = self.measurement as? Int {
+            switch value {
+            case 0:
+                return "Low"
+            case 1:
+                return "Good"
+            default:
+                return "Unknown (\(value))"
+            }
+        } else {
+            return (AmbientWeatherSensor.formatter.string(for: self.measurement)
+                    ?? String(describing: measurement))
         }
     }
 
