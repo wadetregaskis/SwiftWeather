@@ -254,7 +254,7 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
     
     /// Returns an array containing all sensors that are reporting
     public var availableSensors: [WeatherSensor] {
-        let sensors =  BatterySensors + MiscSensors + PressureSensors + RainSensors +
+        let sensors = BatterySensors + MiscSensors + PressureSensors + RainSensors +
         RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors +
         HumiditySensors
         
