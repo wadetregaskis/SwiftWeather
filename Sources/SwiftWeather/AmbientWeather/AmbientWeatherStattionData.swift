@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class AWStationData: SWKDeviceData, Codable {
+open class AmbientWeatherStationData: WeatherDeviceData, Codable {
     internal let windDirection:Int?
     internal let windSpeedMPH:Float?
     internal let windGustMPH:Float?
@@ -128,7 +128,7 @@ open class AWStationData: SWKDeviceData, Codable {
     internal let dewPoint8:Float?
     internal let dewPoint9:Float?
     internal let dewPoint10:Float?
-
+    
     enum CodingKeys: String, CodingKey {
         case windDirection = "winddir"
         case windSpeedMPH = "windspeedmph"
@@ -251,52 +251,52 @@ open class AWStationData: SWKDeviceData, Codable {
         case dewPoint9 = "dewPoint9"
         case dewPoint10 = "dewPoint10"
     }
-
+    
     /// Returns an array containing all sensors that are reporting
-    public var availableSensors: [SWKSensor] {
+    public var availableSensors: [WeatherSensor] {
         let sensors =  BatterySensors + MiscSensors + PressureSensors + RainSensors +
-            RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors +
+        RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors +
         HumiditySensors
         
         return sensors.compactMap{ $0 }
     }
     
     /// Returns an array containing of reporting sensor types
-    public var availabeSensorTypes: [SWKSensorType] {
-        var types = [SWKSensorType]()
-              
+    public var availabeSensorTypes: [WeatherSensorType] {
+        var types = [WeatherSensorType]()
+        
         if TemperatureSensors.count > 0 {
-            types.append(SWKSensorType.Temperature)
+            types.append(WeatherSensorType.Temperature)
         }
-
+        
         if AirQualitySensors.count > 0 {
-            types.append(SWKSensorType.AirQuality)
+            types.append(WeatherSensorType.AirQuality)
         }
-
+        
         if WindSensors.count > 0 {
-            types.append(SWKSensorType.WindSpeed)
+            types.append(WeatherSensorType.WindSpeed)
         }
-
+        
         if HumiditySensors.count > 0 {
-            types.append(SWKSensorType.Humidity)
+            types.append(WeatherSensorType.Humidity)
         }
-
+        
         if PressureSensors.count > 0 {
-            types.append(SWKSensorType.Pressure)
+            types.append(WeatherSensorType.Pressure)
         }
-
+        
         if BatterySensors.count > 0 {
-            types.append(SWKSensorType.Battery)
+            types.append(WeatherSensorType.Battery)
         }
-
+        
         if RelaySensors.count > 0 {
-            types.append(SWKSensorType.General)
+            types.append(WeatherSensorType.General)
         }
-
+        
         if RainSensors.count > 0 {
-            types.append(SWKSensorType.Rain)
+            types.append(WeatherSensorType.Rain)
         }
-
+        
         return types
     }
     

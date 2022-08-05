@@ -1,5 +1,5 @@
 //
-//  AWDevice.swift
+//  AmbientWeatherDevice.swift
 //  
 //
 //  Created by Mike Manzo on 5/17/20.
@@ -11,10 +11,10 @@ import Foundation
 ///
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
-open class AWDevice: SWKDevice/*, Codable*/ {
-    private let info: AWStationInfo?
+open class AmbientWeatherDevice: WeatherDevice/*, Codable*/ {
+    private let info: AmbientWeatherStationInfo?
     private let macAddress: String?
-    public let lastData: AWStationData?
+    public let lastData: AmbientWeatherStationData?
     
     enum CodingKeys: String, CodingKey {
         case macAddress = "macAddress"
@@ -29,59 +29,59 @@ open class AWDevice: SWKDevice/*, Codable*/ {
         }
         return Date(timeIntervalSince1970: TimeInterval(d / 1000))
     }
-   
+    
     /// Return any humidity sensors
-    public var humiditySensors: [AWSensor] {
+    public var humiditySensors: [AmbientWeatherSensor] {
         return lastData!.HumiditySensors
     }
-
+    
     /// Return any battery sensors
-    public var batterySensors: [AWSensor] {
+    public var batterySensors: [AmbientWeatherSensor] {
         return lastData!.BatterySensors
     }
- 
+    
     /// Return any miscellaneous sensors
-    public var miscellaneousSensors: [AWSensor] {
+    public var miscellaneousSensors: [AmbientWeatherSensor] {
         return lastData!.MiscSensors
     }
-
+    
     /// Return any pressure sensors
-    public var pressureSensors: [AWSensor] {
+    public var pressureSensors: [AmbientWeatherSensor] {
         return lastData!.PressureSensors
     }
-
+    
     /// Return any rain sensors
-    public var rainSensors: [AWSensor] {
+    public var rainSensors: [AmbientWeatherSensor] {
         return lastData!.RainSensors
     }
-
+    
     /// Return any relay sensors
-    public var relaySensors: [AWSensor] {
+    public var relaySensors: [AmbientWeatherSensor] {
         return lastData!.RelaySensors
     }
-
+    
     /// Return any temperature sensors
-    public var temperatureSensors: [AWSensor] {
+    public var temperatureSensors: [AmbientWeatherSensor] {
         return lastData!.TemperatureSensors
     }
     
     /// Return any wind sensors
-    public var windSensors: [AWSensor] {
+    public var windSensors: [AmbientWeatherSensor] {
         return lastData!.WindSensors
     }
-
+    
     /// Return any air quality sensors
-    public var airQualitySensors: [AWSensor] {
+    public var airQualitySensors: [AmbientWeatherSensor] {
         return lastData!.AirQualitySensors
     }
-
+    
     /// Return the MAC Address of the device as reported by AmbientWeather.net
     public var deviceID: String? {
         return macAddress
     }
     
     /// Return the station info.  Note, this returns all info the *user* has entered for the device
-    public var information: AWStationInfo? {
+    public var information: AmbientWeatherStationInfo? {
         return info
     }
     
@@ -90,13 +90,13 @@ open class AWDevice: SWKDevice/*, Codable*/ {
         return info?.geo.position
     }
     
-   /// Returns an array containing all sensors that are reporting
-    public var sensors: [AWSensor] {
-        return lastData!.availableSensors as! [AWSensor]
+    /// Returns an array containing all sensors that are reporting
+    public var sensors: [AmbientWeatherSensor] {
+        return lastData!.availableSensors as! [AmbientWeatherSensor]
     }
     
     /// Returns an array containing of reporting sensor types
-    public var availabeSensorTypes: [SWKSensorType] {
+    public var availabeSensorTypes: [WeatherSensorType] {
         return lastData!.availabeSensorTypes
     }
     
@@ -121,15 +121,15 @@ open class AWDevice: SWKDevice/*, Codable*/ {
         
         do {
             macAddress = try container.decodeIfPresent(String.self, forKey: .macAddress) ?? "XXX"
-            lastData = try container.decode(AWStationData.self, forKey: .lastData)
-            info = try container.decode(AWStationInfo.self, forKey: .info)
+            lastData = try container.decode(AmbientWeatherStationData.self, forKey: .lastData)
+            info = try container.decode(AmbientWeatherStationInfo.self, forKey: .info)
         } catch let error as DecodingError {
             throw error
         }
         
-//        try super.init(from: decoder)
+        //        try super.init(from: decoder)
     }
-
+    
     /// We have to roll our own Codable class due to custom properties
     ///
     /// - Parameter encoder: encoder to act on
@@ -137,7 +137,7 @@ open class AWDevice: SWKDevice/*, Codable*/ {
     ///
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         do {
             try container.encode(macAddress, forKey: .macAddress)
             try container.encode(lastData, forKey: .lastData)
@@ -146,6 +146,6 @@ open class AWDevice: SWKDevice/*, Codable*/ {
             throw error
         }
         
-//        try super.encode(to: encoder)
+        //        try super.encode(to: encoder)
     }
 }

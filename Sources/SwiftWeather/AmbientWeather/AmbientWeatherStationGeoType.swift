@@ -1,5 +1,5 @@
 //
-//  AWStationGeoType.swift
+//  AmbientWeatherStationGeoType.swift
 //  
 //
 //  Created by Mike Manzo on 5/10/20.
@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public class AWStationGeoType: Codable {
+public class AmbientWeatherStationGeoType: Codable {
     private let coordinates: [Double]
     let type: String
     
@@ -16,7 +16,7 @@ public class AWStationGeoType: Codable {
         case type = "type"
         case coordinates = "coordinates"
     }
-
+    
     /// If the data is present, return a CLLocation object from the reporting lat/lon
     var latLon: CLLocation? {
         if coordinates[0] != -1000.0 && coordinates[1] != -1000 {
@@ -47,7 +47,7 @@ public class AWStationGeoType: Codable {
         """
         return debugInfo
     }
-
+    
     ///
     /// Empty init
     ///
@@ -78,7 +78,7 @@ public class AWStationGeoType: Codable {
     ///
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         do {
             try container.encode(type, forKey: .type)
             try container.encode(coordinates, forKey: .coordinates)

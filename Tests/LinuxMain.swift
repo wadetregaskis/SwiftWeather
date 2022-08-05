@@ -1,7 +1,7 @@
 import XCTest
 
-import SwiftyWeatherKitTests
+import SwiftWeatherTests
 
 var tests = [XCTestCaseEntry]()
-tests += SwiftyWeatherKitTests.allTests()
+tests += SwiftWeatherTests.allTests()
 XCTMain(tests)

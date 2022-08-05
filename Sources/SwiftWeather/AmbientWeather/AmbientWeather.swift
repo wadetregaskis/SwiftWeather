@@ -65,13 +65,13 @@ extension AmbientWeatherError: LocalizedError {
 
 public final class AmbientWeather: WeatherPlatform, Codable {
     private(set) var apiEndPoint    = "https://api.ambientweather.net/"
-    private var knownDevices        = [[String: AWDevice]]()
+    private var knownDevices        = [[String: AmbientWeatherDevice]]()
     private(set) var apiVersion     = "v1"
     private var _applicationKey     = ""
     private var _apiKey             = ""
     
     /// Returns an array containing the devices AmbientWeather is reporting
-    public var reportingDevices: [[String: SWKDevice]] {
+    public var reportingDevices: [[String: WeatherDevice]] {
         get {
             return knownDevices
         }
@@ -126,8 +126,8 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                             throw AmbientWeatherError.unknown
                         }
                     } else {
-                        for device in try JSONDecoder().decode([AWDevice].self, from: data) {
-//                            self?.knownDevices[device.deviceID!] = device
+                        for device in try JSONDecoder().decode([AmbientWeatherDevice].self, from: data) {
+                            //                            self?.knownDevices[device.deviceID!] = device
                             self?.knownDevices.append([device.deviceID!: device])
                         }
                     }
@@ -149,7 +149,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter uniqueID: MAC address of the weather station
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     ///
-    public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (SWKDeviceData?) -> Void) {
+    public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void) {
         do {
             AF.request(try dataEndPoint(macAddress: uniqueID!)).response { response in
                 guard let data = response.data else { return }
@@ -168,7 +168,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                             throw AmbientWeatherError.unknown
                         }
                     } else {
-                        completionHandler((try JSONDecoder().decode([AWStationData].self, from: data)).first)
+                        completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)).first)
                     }
                 } catch let error { // JSON Decoder 'do'
                     print(error)
@@ -180,7 +180,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             completionHandler(nil)
         }
     }
- 
+
     ///
     /// WeatherService protocol function
     /// Get the last measurement's worth of data from the station with the identified ID
@@ -188,7 +188,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     /// - Parameter count: number of entries that we want to get.  Min is 1: Max is 288
     ///
-    public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([SWKDeviceData]?) -> Void) {
+    public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void) {
         do {
             AF.request(try dataEndPoint(macAddress: uniqueID!, limit: count)).response { response in
                 guard let data = response.data else { return }
@@ -207,7 +207,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                             throw AmbientWeatherError.unknown
                         }
                     } else {
-                        completionHandler((try JSONDecoder().decode([AWStationData].self, from: data)))
+                        completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)))
                     }
                 } catch let error { // JSON Decoder 'do'
                     print(error)
@@ -226,8 +226,8 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter uniqueID: MAC address of the weather station
     ///
     public func description(uniqueID: String) {
-//        print(knownDevices[uniqueID]?.prettyString ?? AmbientWeatherError.unknown.errorDescription!)  // Original
-//        let newArray = knownDevices.filter { $0.keys.contains(uniqueID) }.flatMap { $0 }.first
+        //        print(knownDevices[uniqueID]?.prettyString ?? AmbientWeatherError.unknown.errorDescription!)  // Original
+        //        let newArray = knownDevices.filter { $0.keys.contains(uniqueID) }.flatMap { $0 }.first
         guard let element = knownDevices.filter({ $0.keys.contains(uniqueID) }).flatMap({ $0 }).first else {
             print(AmbientWeatherError.unknown.errorDescription!)
             return
@@ -237,7 +237,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     
     ///
     /// Build Device End Point URL so we can determine the number of devices supported by the account
-    /// - Throws: SwiftyWeatherKitError
+    /// - Throws: SwiftWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func deviceEndPoint() throws -> String {
@@ -253,7 +253,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameters:
     ///   - macAddress: MAC address of the weather station
     ///   - limit: the number of measurements you wish to recive.  The bounds on limit are 1 and 288
-    /// - Throws: SwiftyWeatherKitError
+    /// - Throws: SwiftWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> String {

@@ -1,5 +1,5 @@
 //
-//  AWStationInfo.swift
+//  AmbientWeatherStationInfo.swift
 //  
 //
 //  Created by Mike Manzo on 5/10/20.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-public class AWStationInfo: Codable {
-    private let stationGeoLocation: AWStationGeolocation
+public class AmbientWeatherStationInfo: Codable {
+    private let stationGeoLocation: AmbientWeatherStationGeolocation
     private let stationLocation: String?
     private let stationName: String?
     
@@ -17,7 +17,7 @@ public class AWStationInfo: Codable {
         case stationLocation = "location"
         case stationName = "name"
     }
-
+    
     /// Return the user-defined name of the device (station)
     public var name: String? {
         get { return stationName }
@@ -28,8 +28,8 @@ public class AWStationInfo: Codable {
         get { return stationLocation }
     }
     
-    /// Return a AWStationGeolocation object
-    public var geo: AWStationGeolocation {
+    /// Return a AmbientWeatherStationGeolocation object
+    public var geo: AmbientWeatherStationGeolocation {
         get { return stationGeoLocation }
     }
     
@@ -52,7 +52,7 @@ public class AWStationInfo: Codable {
     init () {
         stationLocation = nil
         stationName = nil
-        stationGeoLocation = AWStationGeolocation()
+        stationGeoLocation = AmbientWeatherStationGeolocation()
     }
     
     ///
@@ -66,7 +66,7 @@ public class AWStationInfo: Codable {
         do {
             stationLocation = try container.decodeIfPresent(String.self, forKey: .stationLocation)
             stationName = try container.decodeIfPresent(String.self, forKey: .stationName)
-            stationGeoLocation = try container.decodeIfPresent(AWStationGeolocation.self, forKey: .stationGeoLocation) ?? AWStationGeolocation()
+            stationGeoLocation = try container.decodeIfPresent(AmbientWeatherStationGeolocation.self, forKey: .stationGeoLocation) ?? AmbientWeatherStationGeolocation()
         } catch let error as DecodingError {
             throw error
         }
@@ -79,7 +79,7 @@ public class AWStationInfo: Codable {
     ///
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         do {
             try container.encode(stationLocation, forKey: .stationLocation)
             try container.encode(stationName, forKey: .stationName)

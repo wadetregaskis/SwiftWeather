@@ -1,5 +1,5 @@
 //
-//  AWSensor.swift
+//  AmbientWeatherSensor.swift
 //  
 //
 //  Created by Mike Manzo on 5/30/20.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-open class AWSensor: SWKSensor {
-
+open class AmbientWeatherSensor: WeatherSensor {
+    
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
@@ -16,7 +16,7 @@ open class AWSensor: SWKSensor {
         let formatter = MeasurementFormatter()
         formatter.unitOptions = .providedUnit
         formatter.numberFormatter.maximumFractionDigits = 1
-
+        
         switch type {
         case .Pressure:
             return String("\(formatter.string(from: _value as! Measurement<UnitPressure>))")
@@ -48,7 +48,7 @@ open class AWSensor: SWKSensor {
             return String("\(_value)")
         }
     }
-
+    
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
@@ -56,7 +56,7 @@ open class AWSensor: SWKSensor {
         let formatter = MeasurementFormatter()
         formatter.unitOptions = .providedUnit
         formatter.numberFormatter.maximumFractionDigits = 1
-
+        
         switch type {
         case .Pressure:
             return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitPressure>))")
@@ -94,7 +94,7 @@ open class AWSensor: SWKSensor {
     /// - Parameters:
     ///     - _value: We are taking advantage of the fact that some of the AW sensors can have units that are convertible.  Those that are fixed - are fixed.
     ///
-    required public init (type: SWKSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
+    required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
         super.init(type: type, name: name, sensorID: sensorID, measurement: measurement, unit: unit, desc: desc)
         
         switch type {

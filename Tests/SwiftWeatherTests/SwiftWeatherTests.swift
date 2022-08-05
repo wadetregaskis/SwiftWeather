@@ -1,14 +1,14 @@
 import XCTest
-@testable import SwiftyWeatherKit
+@testable import SwiftWeather
 
-final class SwiftyWeatherKitTests: XCTestCase {
+final class SwiftWeatherTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-//        XCTAssertEqual(SwiftyWeatherKit().description, "Swifty Weather Kit")
+        //        XCTAssertEqual(SwiftWeather().description, "Swift Weather")
     }
-
+    
     static var allTests = [
         ("testExample", testExample),
     ]

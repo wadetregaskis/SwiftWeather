@@ -1,5 +1,5 @@
 //
-//  AWStationCoordinates.swift
+//  AmbientWeatherStationCoordinates.swift
 //  
 //
 //  Created by Mike Manzo on 5/10/20.
@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public class AWStationCoordinates: Codable {
+public class AmbientWeatherStationCoordinates: Codable {
     let latitude: Double?
     let longitude: Double?
     
@@ -16,7 +16,7 @@ public class AWStationCoordinates: Codable {
         case longitude = "lon"
         case latitude = "lat"
     }
-
+    
     /// If the data is present, return a CLLocation object from the reporting lat/lon
     open var latLon: CLLocation? {
         if latitude != nil && longitude != nil {
@@ -49,7 +49,7 @@ public class AWStationCoordinates: Codable {
     ///
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         do {
             try container.encode(latitude, forKey: .latitude)
             try container.encode(longitude, forKey: .longitude)
@@ -57,5 +57,5 @@ public class AWStationCoordinates: Codable {
             throw error
         }
     }
-
+    
 }

@@ -1,5 +1,5 @@
 //
-//  SWKSensor.swift
+//  WeatherSensor.swift
 //  
 //
 //  Created by Mike Manzo on 5/10/20.
@@ -8,7 +8,7 @@
 import Foundation
 
 /// Supported Service Types
-public enum SWKSensorType {
+public enum WeatherSensorType {
     case WindDirection
     case Temperature
     case AirQuality
@@ -24,7 +24,7 @@ public enum SWKSensorType {
 }
 
 /// 
-/// Base sensor descriptor for SwiftyWeatherKit
+/// Base sensor descriptor for SwiftWeather
 /// Generic descriptors:
 /// - _description: What the sensor does
 /// - _sensorID: Uniqe Identifier of of the sensor
@@ -32,24 +32,24 @@ public enum SWKSensorType {
 /// - _name: What do you want to call the sensor
 /// - _value: Current measurement for the sensor
 ///
-open class SWKSensor {
-    internal var _type: SWKSensorType
+open class WeatherSensor {
+    internal var _type: WeatherSensorType
     internal var _description: String
     internal var _sensorID: String
     internal var _unit: String
     internal var _name: String
     internal var _value: Any
-
+    
     /// Return the value of the measurement for this sensor as reported by the API
     open var measurement: Any {
         return _value
     }
     
     /// Return the value of the measurement for this sensor as reported by the API
-    open var type: SWKSensorType {
+    open var type: WeatherSensorType {
         return _type
     }
-
+    
     /// Return the user-defined name for this sensor
     open var name: String {
         return _name
@@ -59,17 +59,17 @@ open class SWKSensor {
     open var sensorID: String {
         return _sensorID
     }
-   
+    
     /// Return the ap-defined default unit for this sensor
     open var unit: String {
         return _unit
     }
-
+    
     /// Return the user-defined description for this sensor
     open var description: String {
         return _description
     }
-
+    
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
@@ -91,7 +91,7 @@ open class SWKSensor {
     ///   - unit: api-defined default unit
     ///   - desc: user-defined free-text description of what the sensor does and/or measures
     ///
-    required public init (type: SWKSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
+    required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
         _value = measurement
         _sensorID = sensorID
         _description = desc

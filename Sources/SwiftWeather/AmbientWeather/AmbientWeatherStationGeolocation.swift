@@ -1,5 +1,5 @@
 //
-//  AWStationGeolocation.swift
+//  AmbientWeatherStationGeolocation.swift
 //  
 //
 //  Created by Mike Manzo on 5/10/20.
@@ -8,11 +8,11 @@
 import Foundation
 import CoreLocation
 
-public class AWStationGeolocation: Codable {
+public class AmbientWeatherStationGeolocation: Codable {
     let location: String?
     let address: String?
     let elevation: Double?
-    let geoType: AWStationGeoType
+    let geoType: AmbientWeatherStationGeoType
     
     enum CodingKeys: String, CodingKey {
         case elevation = "elevation"
@@ -20,7 +20,7 @@ public class AWStationGeolocation: Codable {
         case address = "address"
         case geoType = "geo"
     }
-
+    
     /// If the data is present, return a CLLocation object from the reporting lat/lon
     open var position: CLLocation? {
         guard let coordinate = geoType.coordinate else {return nil}
@@ -30,7 +30,7 @@ public class AWStationGeolocation: Codable {
                           verticalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           timestamp: Date())
     }
-
+    
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
@@ -46,7 +46,7 @@ public class AWStationGeolocation: Codable {
             return debugInfo
         }
     }
-
+    
     ///
     /// Empry Init
     ///
@@ -54,9 +54,9 @@ public class AWStationGeolocation: Codable {
         location    = nil
         address     = nil
         elevation   = nil
-        geoType = AWStationGeoType()
+        geoType = AmbientWeatherStationGeoType()
     }
-
+    
     ///
     /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoer
     /// - Parameter decoder: JSON_Derived decoder
@@ -69,7 +69,7 @@ public class AWStationGeolocation: Codable {
             location = try container.decodeIfPresent(String.self, forKey: .location)
             address = try container.decodeIfPresent(String.self, forKey: .address)
             elevation = try container.decodeIfPresent(Double.self, forKey: .elevation)
-            geoType = try container.decodeIfPresent(AWStationGeoType.self, forKey: .geoType) ?? AWStationGeoType()
+            geoType = try container.decodeIfPresent(AmbientWeatherStationGeoType.self, forKey: .geoType) ?? AmbientWeatherStationGeoType()
         }
         catch let error as DecodingError {
             throw error
@@ -83,7 +83,7 @@ public class AWStationGeolocation: Codable {
     ///
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         do {
             try container.encode(location, forKey: .location)
             try container.encode(address, forKey: .address)
