@@ -39,34 +39,7 @@ open class AmbientWeatherSensor: WeatherSensor {
     /// Provides a simple way to "see" what ths device is reporting
     ///
     open override var prettyString: String {
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = .providedUnit
-        formatter.numberFormatter.maximumFractionDigits = 1
-        
-        switch type {
-        case .Pressure:
-            return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitPressure>))")
-        case .Temperature:
-            return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitTemperature>))")
-        case .AirQuality:
-            return String("\(_name): \(_value)")
-        case .WindSpeed:
-            return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitSpeed>))")
-        case .RainRate:
-            return String("\(_name): \(_value)")
-        case .Rain:
-            return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitLength>))")
-        case .Humidity:
-            return String("\(_name): \(_value)")
-        case .WindDirection:
-            return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitAngle>))")
-        case .Battery:
-            return String("\(_name): \(_value as! Int == 1 ? "Good" : "Low")")
-        case .RainDate:
-            return String("\(_name): \((_value as! Date).formatted(date: .abbreviated, time: .shortened))")
-        case .Radiation, .General: // Unit-less
-            return String("\(_name): \(_value)")
-        }
+        "\(_name): \(formattedValue)"
     }
     
     ///
