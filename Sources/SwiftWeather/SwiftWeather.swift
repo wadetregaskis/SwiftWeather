@@ -29,14 +29,6 @@ public protocol WeatherDevice: Codable {
     var deviceID: String? { get }
 }
 
-/// Testing something
-/*
- public protocol WeatherReportingDevice {
- var prettyString: String { get }
- var deviceID: String? { get }
- }
- */
-
 /// Service Status
 public enum WeatherServiceStatus: Int {
     case NotReporting
@@ -92,26 +84,6 @@ extension WeatherServiceType: Codable {
         }
     }
 }
-
-/*
- /// Abstract base class for weather devices
- open class WeatherDevice: Codable, WeatherReportingDevice {
- public var deviceID: String? {
- return nil
- }
- 
- public var prettyString: String {
- return ""
- }
- 
- required public init(from decoder: Decoder) throws {
- // Empty
- }
- 
- public func encode(to encoder: Encoder) throws {
- // empty
- }
- }*/
 
 /// Weather Factory
 public class SwiftWeather {
