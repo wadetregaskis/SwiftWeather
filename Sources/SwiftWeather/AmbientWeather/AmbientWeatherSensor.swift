@@ -37,13 +37,7 @@ open class AmbientWeatherSensor: WeatherSensor {
         case .Battery:
             return String("\(_value as! Int == 1 ? "Good" : "Low")")
         case .RainDate:
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = .init(identifier: "en_US_POSIX")
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            let rainDate = dateFormatter.date(from: _value as! String)
-            let rainDateFormatter = DateFormatter()
-            rainDateFormatter.dateFormat = "MMM dd,yyyy hh:mm a"
-            return String("\(rainDateFormatter.string(from: rainDate!))")
+            return (_value as! Date).formatted(date: .abbreviated, time: .shortened)
         case .Radiation, .General: // Unit-less
             return String("\(_value)")
         }
@@ -77,13 +71,7 @@ open class AmbientWeatherSensor: WeatherSensor {
         case .Battery:
             return String("\(_name): \(_value as! Int == 1 ? "Good" : "Low")")
         case .RainDate:
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = .init(identifier: "en_US_POSIX")
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            let rainDate = dateFormatter.date(from: _value as! String)
-            let rainDateFormatter = DateFormatter()
-            rainDateFormatter.dateFormat = "MMM dd,yyyy hh:mm a"
-            return String("\(_name): \(rainDateFormatter.string(from: rainDate!))")
+            return String("\(_name): \((_value as! Date).formatted(date: .abbreviated, time: .shortened))")
         case .Radiation, .General: // Unit-less
             return String("\(_name): \(_value)")
         }

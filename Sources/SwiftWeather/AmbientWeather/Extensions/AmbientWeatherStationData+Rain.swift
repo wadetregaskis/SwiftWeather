@@ -78,12 +78,28 @@ extension AmbientWeatherStationData {
             return nil
         }
     }
-    
+
+    internal static let rainDateFormatter = {
+        var formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
     var RainDateLast: AmbientWeatherSensor? {
-        if rainLastDate != nil {
-            return AmbientWeatherSensor(type: .RainDate, name: "Last Time it Rained", sensorID: "lastRain", measurement: rainLastDate!, unit: "None", desc: "Last time hourly rain > 0 inches")
-        } else {
+        guard let rainLastDate else {
             return nil
         }
+
+        guard let date = AmbientWeatherStationData.rainDateFormatter.date(from: rainLastDate) else {
+            // TODO: logging or some other way of reporting the error.
+            return nil
+        }
+
+        return AmbientWeatherSensor(type: .RainDate,
+                                    name: "Last Time it Rained",
+                                    sensorID: "lastRain",
+                                    measurement: date,
+                                    unit: "None",
+                                    desc: "Last time hourly rain > 0 inches")
     }
 }
