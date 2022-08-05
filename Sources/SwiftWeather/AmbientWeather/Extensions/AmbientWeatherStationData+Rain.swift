@@ -33,7 +33,7 @@ extension AmbientWeatherStationData {
     
     var Rain24Hrs: AmbientWeatherSensor? {
         if rain24HourIn != nil {
-            return AmbientWeatherSensor(type: .RainDate, name: "24 Hour Rain", sensorID: "24hourrainin", measurement: rain24HourIn!, unit: "in", desc: "Rain over last 24 Hours")
+            return AmbientWeatherSensor(type: .Rain, name: "24 Hour Rain", sensorID: "24hourrainin", measurement: rain24HourIn!, unit: "in", desc: "Rain over last 24 Hours")
         } else {
             return nil
         }
