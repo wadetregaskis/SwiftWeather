@@ -69,7 +69,7 @@ open class WeatherSensor {
     open var description: String {
         return _description
     }
-    
+
     ///
     /// Provides a simple way to "see" what ths device is reporting
     ///
