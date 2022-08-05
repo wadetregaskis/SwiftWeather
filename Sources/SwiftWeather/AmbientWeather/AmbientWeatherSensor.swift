@@ -31,7 +31,9 @@ open class AmbientWeatherSensor: WeatherSensor {
             }
         } else {
             return (AmbientWeatherSensor.formatter.string(for: self.measurement)
-                    ?? String(describing: measurement))
+                    ?? (_unit == "None"
+                        ? String(describing: measurement)
+                        : "\(measurement) \(_unit)"))
         }
     }
 
