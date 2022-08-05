@@ -99,14 +99,4 @@ open class WeatherSensor {
         _unit = unit
         _type = type
     }
-    
-    ///
-    /// Progmatic way to just upate the value of the sensie.  Not sure if this will ever be used
-    /// - Parameter measurement: the value for the measurement (e.g., Int, Double, String, Float, etc.)
-    ///
-    open func update(measurement: Any?) {
-        if measurement != nil {
-            _value = measurement!
-        }
-    }
 }
