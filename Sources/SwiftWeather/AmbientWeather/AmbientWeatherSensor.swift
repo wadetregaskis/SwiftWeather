@@ -35,7 +35,7 @@ open class AmbientWeatherSensor: WeatherSensor {
         case .WindDirection:
             return String("\(formatter.string(from: _value as! Measurement<UnitAngle>))")
         case .Battery:
-            return String("\(_value as! Int == 0 ? "Good" : "Bad")")
+            return String("\(_value as! Int == 1 ? "Good" : "Low")")
         case .RainDate:
             let dateFormatter = DateFormatter()
             dateFormatter.locale = .init(identifier: "en_US_POSIX")
@@ -75,7 +75,7 @@ open class AmbientWeatherSensor: WeatherSensor {
         case .WindDirection:
             return String("\(_name): \(formatter.string(from: _value as! Measurement<UnitAngle>))")
         case .Battery:
-            return String("\(_name): \(_value as! Int == 0 ? "Good" : "Bad")")
+            return String("\(_name): \(_value as! Int == 1 ? "Good" : "Low")")
         case .RainDate:
             let dateFormatter = DateFormatter()
             dateFormatter.locale = .init(identifier: "en_US_POSIX")
