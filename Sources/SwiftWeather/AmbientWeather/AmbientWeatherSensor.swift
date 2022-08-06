@@ -8,42 +8,6 @@
 import Foundation
 
 open class AmbientWeatherSensor: WeatherSensor {
-    internal static let formatter = {
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = .naturalScale
-        formatter.unitStyle = .short
-        formatter.numberFormatter.maximumFractionDigits = 1
-        return formatter
-    }()
-
-    ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    open var formattedValue: String {
-        if self.type == .Battery, let value = self.measurement as? Int {
-            switch value {
-            case 0:
-                return "Low"
-            case 1:
-                return "Good"
-            default:
-                return "Unknown (\(value))"
-            }
-        } else {
-            return (AmbientWeatherSensor.formatter.string(for: self.measurement)
-                    ?? (_unit == "None"
-                        ? String(describing: measurement)
-                        : "\(measurement) \(_unit)"))
-        }
-    }
-
-    ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    open override var prettyString: String {
-        "\(_name): \(formattedValue)"
-    }
-    
     ///
     /// A compact way to progamatically represent an AmbientWeather Sensor as defined in the API docs
     /// - Parameters:

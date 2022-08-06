@@ -307,7 +307,7 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
         var debugInfo = String()
         
         for sensor in availableSensors {
-            debugInfo = "\(debugInfo)\n\(sensor.prettyString)"
+            debugInfo = "\(debugInfo)\n\(sensor.formatted())"
         }
         return debugInfo
     }
