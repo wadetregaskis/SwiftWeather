@@ -29,10 +29,10 @@ public protocol WeatherDevice: Codable {
 }
 
 /// Service Status
-public enum WeatherServiceStatus: Int {
+public enum WeatherServiceStatus {
     case NotReporting
     case Reporting
-    case Error
+    case Error(Error)
 }
 
 /// Supported Service Types

@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import SwiftyJSON
-import Alamofire
+
 
 /// Error messages specific to the Ambient Weather API
 enum AmbientWeatherError: Error {
@@ -18,6 +17,25 @@ enum AmbientWeatherError: Error {
     case corruptJSON
     case invalidURL
     case unknown
+
+    internal static func from(apiResponse: Data?, else otherError: Error? = nil) -> Error {
+        guard let apiResponse,
+              let json = try? JSONDecoder().decode([String:String].self, from: apiResponse),
+              let errorString = json["error"] else {
+            return otherError ?? unknown
+        }
+
+        switch errorString {
+        case "applicationKey-invalid":
+            return invalidApplicationKey
+        case "apiKey-invalid":
+            return invalidAPIKey
+        case "above-user-rate-limit":
+            return userRateExceeded
+        default:
+            return unknown
+        }
+    }
 }
 
 /// Localized error messages
@@ -105,42 +123,42 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter completionHandler: returns one of three states to the caller: NotReporting; Reporting; Error
     ///
     public func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void) {
+        let endpoint: URL
+
         do {
-            AF.request(try deviceEndPoint()).response { [weak self] response in
-                guard let data = response.data else { return }
-                do {
-                    let json = try JSON(data: data)
-                    if let error = json["error"].string {
-                        switch error {
-                        case "applicationKey-invalid":
-                            completionHandler(.Error)
-                            throw AmbientWeatherError.invalidApplicationKey
-                        case "apiKey-invalid":
-                            completionHandler(.Error)
-                            throw AmbientWeatherError.invalidAPIKey
-                        case "above-user-rate-limit":
-                            completionHandler(.Error)
-                            throw AmbientWeatherError.userRateExceeded
-                        default:
-                            completionHandler(.Error)
-                            throw AmbientWeatherError.unknown
-                        }
-                    } else {
-                        for device in try JSONDecoder().decode([AmbientWeatherDevice].self, from: data) {
-                            //                            self?.knownDevices[device.deviceID!] = device
-                            self?.knownDevices.append([device.deviceID!: device])
-                        }
-                    }
-                } catch let error { // JSON / Decoder 'do'
-                    completionHandler(.Error)
-                    print(error)
-                }
-                (self?.knownDevices.count)! > 0 ? completionHandler(.Reporting) : completionHandler(.NotReporting)
-            }
-        } catch let error { // AlamoFire 'do'
-            completionHandler(.Error)
-            print(error)
+            endpoint = try deviceEndPoint()
+        } catch let error {
+            completionHandler(.Error(error))
+            return
         }
+
+        URLSession.shared.dataTask(with: endpoint) { [weak self] data, response, downloadError in
+            guard let self else { return }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                guard 200 == httpResponse.statusCode else {
+                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data?.asString(encoding: .utf8) ?? data.debugDescription)")
+                    completionHandler(.Error(AmbientWeatherError.from(apiResponse: data)))
+                    return
+                }
+            }
+
+            guard let data else {
+                completionHandler(.Error(downloadError ?? AmbientWeatherError.unknown))
+                return
+            }
+
+            do {
+                for device in try JSONDecoder().decode([AmbientWeatherDevice].self, from: data) {
+                    self.knownDevices.append([device.deviceID!: device])
+                }
+            } catch {
+                completionHandler(.Error(AmbientWeatherError.from(apiResponse: data, else: error)))
+                return
+            }
+
+            completionHandler(self.knownDevices.count > 0 ? .Reporting : .NotReporting)
+        }.resume()
     }
     
     ///
@@ -163,35 +181,38 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter count: number of entries that we want to get.  Min is 1: Max is 288
     ///
     public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void) {
+        let endpoint: URL
+
         do {
-            AF.request(try dataEndPoint(macAddress: uniqueID!, limit: count)).response { response in
-                guard let data = response.data else { return }
-                do {
-                    let json = try JSON(data: data)
-                    if let error = json["error"].string {
-                        switch error {
-                        case "applicationKey-invalid":
-                            throw AmbientWeatherError.invalidApplicationKey
-                        case "apiKey-invalid":
-                            throw AmbientWeatherError.invalidAPIKey
-                        case "above-user-rate-limit":
-                            throw AmbientWeatherError.userRateExceeded
-                        default:
-                            print("Unknown Error: \(error)")
-                            throw AmbientWeatherError.unknown
-                        }
-                    } else {
-                        completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)))
-                    }
-                } catch let error { // JSON Decoder 'do'
-                    print(error)
-                    completionHandler(nil)
-                }
-            }
-        } catch let error { // AlamoFire 'do'
+            endpoint = try dataEndPoint(macAddress: uniqueID!, limit: count)
+        } catch let error {
             print(error)
             completionHandler(nil)
+            return
         }
+
+        URLSession.shared.dataTask(with: endpoint) { data, response, downloadError in
+            if let httpResponse = response as? HTTPURLResponse {
+                guard 200 == httpResponse.statusCode else {
+                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data?.asString(encoding: .utf8) ?? data.debugDescription)")
+                    completionHandler(nil)
+                    return
+                }
+            }
+
+            guard let data else {
+                print("Failed to fetch data from \(endpoint): \(downloadError?.localizedDescription ?? "no error details given")\nResponse:\n\(response?.debugDescription ?? "<missing>")")
+                completionHandler(nil)
+                return
+            }
+
+            do {
+                completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)))
+            } catch {
+                print("Failed to decode response as weather station data: \(error)\nResponse body:\n\(String(data: data, encoding: .utf8) ?? data.debugDescription)")
+                completionHandler(nil)
+            }
+        }.resume()
     }
 
     
@@ -214,12 +235,20 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Throws: AmbientWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
-    private func deviceEndPoint() throws -> String {
-        if _applicationKey == "" && _apiKey == "" {
-            throw AmbientWeatherError.invalidURL
-        } else {
-            return apiEndPoint + apiVersion + "/devices?applicationKey=\(_applicationKey)&apiKey=\(_apiKey)"
+    private func deviceEndPoint() throws -> URL {
+        guard !_applicationKey.isEmpty else {
+            throw AmbientWeatherError.invalidApplicationKey
         }
+
+        guard !_apiKey.isEmpty else {
+            throw AmbientWeatherError.invalidAPIKey
+        }
+
+        guard let url = URL(string: apiEndPoint + apiVersion + "/devices?applicationKey=\(_applicationKey)&apiKey=\(_apiKey)") else {
+            throw AmbientWeatherError.invalidURL
+        }
+
+        return url
     }
     
     ///
@@ -230,14 +259,23 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Throws: AmbientWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
-    private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> String {
-        if _applicationKey == "" && _apiKey == "" {
-            throw AmbientWeatherError.invalidURL
-        } else {
-            if limit < 1 || limit > 288 {
-                throw AmbientWeatherError.measurementLimitOutOfRange
-            }
-            return apiEndPoint + apiVersion + "/devices/\(macAddress)?apiKey=\(_apiKey)&applicationKey=\(_applicationKey)&limit=\(limit)"
+    private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> URL {
+        guard !_applicationKey.isEmpty else {
+            throw AmbientWeatherError.invalidApplicationKey
         }
+
+        guard !_apiKey.isEmpty else {
+            throw AmbientWeatherError.invalidAPIKey
+        }
+
+        guard limit >= 1 && limit <= 288 else {
+            throw AmbientWeatherError.measurementLimitOutOfRange
+        }
+
+        guard let url = URL(string: apiEndPoint + apiVersion + "/devices/\(macAddress)?apiKey=\(_apiKey)&applicationKey=\(_applicationKey)&limit=\(limit)") else {
+            throw AmbientWeatherError.invalidURL
+        }
+
+        return url
     }
 }
