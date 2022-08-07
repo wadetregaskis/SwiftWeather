@@ -81,8 +81,8 @@ open class AmbientWeatherDevice: WeatherDevice {
     }
     
     /// Return the station location (if available).
-    public var position:  CLLocation? {
-        return info?.geo.position
+    public var position: CLLocation? {
+        return info?.geolocation?.position
     }
     
     /// Returns an array containing all sensors that are reporting
