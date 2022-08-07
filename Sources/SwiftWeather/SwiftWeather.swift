@@ -1,5 +1,5 @@
 //
-//  SwiftWeatherKit.swift
+//  SwiftWeather.swift
 //
 //
 //  Created by Mike Manzo on 5/10/20.
