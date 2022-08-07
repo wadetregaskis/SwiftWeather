@@ -16,67 +16,51 @@ extension AmbientWeatherStationData {
     }
     
     var RainRatePerHour: AmbientWeatherSensor? {
-        if rainHourIn != nil {
-            return AmbientWeatherSensor(type: .RainRate, name: "Hourly Rain", sensorID: "hourlyrainin", measurement: rainHourIn!, unit: "in/hr", desc: "Hourly Rain Rate")
-        } else {
-            return nil
-        }
+        guard let rainHourIn else { return nil }
+
+        return AmbientWeatherSensor(type: .RainRate, name: "Hourly Rain", sensorID: "hourlyrainin", measurement: rainHourIn, unit: "in/hr", desc: "Hourly Rain Rate")
     }
     
     var RainDaily: AmbientWeatherSensor? {
-        if rainDailyIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Rain Today", sensorID: "dailyrainin", measurement: rainDailyIn!, unit: "in", desc: "Daily Rain")
-        } else {
-            return nil
-        }
+        guard let rainDailyIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Rain Today", sensorID: "dailyrainin", measurement: rainDailyIn, unit: "in", desc: "Daily Rain")
     }
     
     var Rain24Hrs: AmbientWeatherSensor? {
-        if rain24HourIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "24 Hour Rain", sensorID: "24hourrainin", measurement: rain24HourIn!, unit: "in", desc: "Rain over last 24 Hours")
-        } else {
-            return nil
-        }
+        guard let rain24HourIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "24 Hour Rain", sensorID: "24hourrainin", measurement: rain24HourIn, unit: "in", desc: "Rain over last 24 Hours")
     }
     
     var RainWeekly: AmbientWeatherSensor? {
-        if rainWeeklyIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Weekly Rain", sensorID: "weeklyrainin", measurement: rainWeeklyIn!, unit: "in", desc: "Rain this week")
-        } else {
-            return nil
-        }
+        guard let rainWeeklyIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Weekly Rain", sensorID: "weeklyrainin", measurement: rainWeeklyIn, unit: "in", desc: "Rain this week")
     }
     
     var RainMonthly: AmbientWeatherSensor? {
-        if rainMonthlyIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Monthly Rain", sensorID: "monthlyrainin", measurement: rainMonthlyIn!, unit: "in", desc: "Rain this month")
-        } else {
-            return nil
-        }
+        guard let rainMonthlyIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Monthly Rain", sensorID: "monthlyrainin", measurement: rainMonthlyIn, unit: "in", desc: "Rain this month")
     }
     
     var RainYearly: AmbientWeatherSensor? {
-        if rainYearlyIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Yearly Rain", sensorID: "yearlyrainin", measurement: rainYearlyIn!, unit: "in", desc: "Rain this year")
-        } else {
-            return nil
-        }
+        guard let rainYearlyIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Yearly Rain", sensorID: "yearlyrainin", measurement: rainYearlyIn, unit: "in", desc: "Rain this year")
     }
     
     var RainEvent: AmbientWeatherSensor? {
-        if rainEventIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Event Rain", sensorID: "eventrainin", measurement: rainEventIn!, unit: "in", desc: "Event Rain")
-        } else {
-            return nil
-        }
+        guard let rainEventIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Event Rain", sensorID: "eventrainin", measurement: rainEventIn, unit: "in", desc: "Event Rain")
     }
     
     var RainTotal: AmbientWeatherSensor? {
-        if rainTotalIn != nil {
-            return AmbientWeatherSensor(type: .Rain, name: "Total Rain", sensorID: "totalrainin", measurement: rainTotalIn!, unit: "in", desc: "Total rain since last factory reset")
-        } else {
-            return nil
-        }
+        guard let rainTotalIn else { return nil }
+
+        return AmbientWeatherSensor(type: .Rain, name: "Total Rain", sensorID: "totalrainin", measurement: rainTotalIn, unit: "in", desc: "Total rain since last factory reset")
     }
 
     internal static let rainDateFormatter = {

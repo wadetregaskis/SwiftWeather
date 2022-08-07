@@ -14,18 +14,14 @@ extension AmbientWeatherStationData {
     }
     
     var PressureRelative: AmbientWeatherSensor? {
-        if barometerRelativeInHg != nil {
-            return AmbientWeatherSensor(type: .Pressure, name: "Relative Pressure", sensorID: "baromrelin", measurement: barometerRelativeInHg!, unit: "inHg", desc: "Relative Pressure")
-        } else {
-            return nil
-        }
+        guard let barometerRelativeInHg else { return nil }
+
+        return AmbientWeatherSensor(type: .Pressure, name: "Relative Pressure", sensorID: "baromrelin", measurement: barometerRelativeInHg, unit: "inHg", desc: "Relative Pressure")
     }
     
     var PressureAbsolute: AmbientWeatherSensor? {
-        if barometerAbsoluteInHg != nil {
-            return AmbientWeatherSensor(type: .Pressure, name: "Absolute Pressure", sensorID: "baromabsin", measurement: barometerAbsoluteInHg!, unit: "inHg", desc: "Absolute Pressure")
-        } else {
-            return nil
-        }
+        guard let barometerAbsoluteInHg else { return nil }
+
+        return AmbientWeatherSensor(type: .Pressure, name: "Absolute Pressure", sensorID: "baromabsin", measurement: barometerAbsoluteInHg, unit: "inHg", desc: "Absolute Pressure")
     }
 }

@@ -28,11 +28,9 @@ public class AmbientWeatherStationGeoType: Codable {
     
     /// If the data is present, return a CLLocationCoordinate2D object from the reporting lat/lon
     var coordinate: CLLocationCoordinate2D? {
-        if latLon != nil {
-            return latLon?.coordinate
-        } else {
-            return nil
-        }
+        guard let latLon else { return nil }
+
+        return latLon.coordinate
     }
     
     ///
