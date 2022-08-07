@@ -12,7 +12,6 @@ public protocol WeatherPlatform {
     func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void)
     func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void)
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
-    func description(uniqueID: String)
     
     var  reportingDevices: [[String: WeatherDevice]] { get }
 }

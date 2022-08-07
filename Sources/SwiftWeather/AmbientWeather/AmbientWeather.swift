@@ -214,21 +214,6 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             }
         }.resume()
     }
-
-    
-    ///
-    /// Provides a simple way to "see" what ths device is reporting
-    /// - Parameter uniqueID: MAC address of the weather station
-    ///
-    public func description(uniqueID: String) {
-        //        print(knownDevices[uniqueID]?.prettyString ?? AmbientWeatherError.unknown.errorDescription!)  // Original
-        //        let newArray = knownDevices.filter { $0.keys.contains(uniqueID) }.flatMap { $0 }.first
-        guard let element = knownDevices.filter({ $0.keys.contains(uniqueID) }).flatMap({ $0 }).first else {
-            print(AmbientWeatherError.unknown.errorDescription!)
-            return
-        }
-        print (element.value.prettyString)
-    }
     
     ///
     /// Build Device End Point URL so we can determine the number of devices supported by the account
