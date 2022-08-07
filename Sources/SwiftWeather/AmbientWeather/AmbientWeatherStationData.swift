@@ -258,7 +258,7 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
         RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors +
         HumiditySensors
         
-        return sensors.compactMap{ $0 }
+        return sensors.compactMap { $0 }
     }
     
     /// Returns an array containing of reporting sensor types
