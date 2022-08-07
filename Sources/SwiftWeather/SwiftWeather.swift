@@ -1,7 +1,5 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import Foundation
-
 public protocol WeatherPlatform {
     func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void)
     func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void)
