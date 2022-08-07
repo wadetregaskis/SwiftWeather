@@ -211,7 +211,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     
     ///
     /// Build Device End Point URL so we can determine the number of devices supported by the account
-    /// - Throws: SwiftWeatherError
+    /// - Throws: AmbientWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func deviceEndPoint() throws -> String {
@@ -227,7 +227,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameters:
     ///   - macAddress: MAC address of the weather station
     ///   - limit: the number of measurements you wish to recive.  The bounds on limit are 1 and 288
-    /// - Throws: SwiftWeatherError
+    /// - Throws: AmbientWeatherError
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> String {
