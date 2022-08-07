@@ -218,7 +218,11 @@ extension WeatherSensor { // Formatting
 
     private static let defaultFormatter = FormatStyle()
 
-    public func formatted<S>(_ style: S = defaultFormatter) -> S.FormatOutput where S : Foundation.FormatStyle, S.FormatInput == WeatherSensor {
+    public func formatted<S>(_ style: S) -> S.FormatOutput where S : Foundation.FormatStyle, S.FormatInput == WeatherSensor {
         style.format(self)
+    }
+
+    public func formatted() -> String {
+        WeatherSensor.defaultFormatter.format(self)
     }
 }
