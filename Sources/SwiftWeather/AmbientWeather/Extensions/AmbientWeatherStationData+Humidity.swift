@@ -91,62 +91,62 @@ extension AmbientWeatherStationData {
     }
     
     var HumiditySoilSensor1: AmbientWeatherSensor? {
-        guard let soilHumOut1F else { return nil }
+        guard let soilHumOut1 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 1", sensorID: "soilhum1", measurement: soilHumOut1F, unit: "%", desc: "Soil Humidity Sensor #1, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 1", sensorID: "soilhum1", measurement: soilHumOut1, unit: "%", desc: "Soil Humidity Sensor #1, 0-l00%")
     }
     
     var HumiditySoilSensor2: AmbientWeatherSensor? {
-        guard let soilHumOut2F else { return nil }
+        guard let soilHumOut2 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 2", sensorID: "soilhum2", measurement: soilHumOut2F, unit: "%", desc: "Soil Humidity Sensor #2, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 2", sensorID: "soilhum2", measurement: soilHumOut2, unit: "%", desc: "Soil Humidity Sensor #2, 0-l00%")
     }
     
     var HumiditySoilSensor3: AmbientWeatherSensor? {
-        guard let soilHumOut3F else { return nil }
+        guard let soilHumOut3 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 3", sensorID: "soilhum3", measurement: soilHumOut3F, unit: "%", desc: "Soil Humidity Sensor #3, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 3", sensorID: "soilhum3", measurement: soilHumOut3, unit: "%", desc: "Soil Humidity Sensor #3, 0-l00%")
     }
     
     var HumiditySoilSensor4: AmbientWeatherSensor? {
-        guard let soilHumOut4F else { return nil }
+        guard let soilHumOut4 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 4", sensorID: "soilhum4", measurement: soilHumOut4F, unit: "%", desc: "Soil Humidity Sensor #4, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 4", sensorID: "soilhum4", measurement: soilHumOut4, unit: "%", desc: "Soil Humidity Sensor #4, 0-l00%")
     }
     
     var HumiditySoilSensor5: AmbientWeatherSensor? {
-        guard let soilHumOut5F else { return nil }
+        guard let soilHumOut5 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 5", sensorID: "soilhum5", measurement: soilHumOut5F, unit: "%", desc: "Soil Humidity Sensor #5, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 5", sensorID: "soilhum5", measurement: soilHumOut5, unit: "%", desc: "Soil Humidity Sensor #5, 0-l00%")
     }
     
     var HumiditySoilSensor6: AmbientWeatherSensor? {
-        guard let soilHumOut6F else { return nil }
+        guard let soilHumOut6 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 6", sensorID: "soilhum6", measurement: soilHumOut6F, unit: "%", desc: "Soil Humidity Sensor #6, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 6", sensorID: "soilhum6", measurement: soilHumOut6, unit: "%", desc: "Soil Humidity Sensor #6, 0-l00%")
     }
     
     var HumiditySoilSensor7: AmbientWeatherSensor? {
-        guard let soilHumOut7F else { return nil }
+        guard let soilHumOut7 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 7", sensorID: "soilhum7", measurement: soilHumOut7F, unit: "%", desc: "Soil Humidity Sensor #7, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 7", sensorID: "soilhum7", measurement: soilHumOut7, unit: "%", desc: "Soil Humidity Sensor #7, 0-l00%")
     }
     
     var HumiditySoilSensor8: AmbientWeatherSensor? {
-        guard let soilHumOut8F else { return nil }
+        guard let soilHumOut8 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 8", sensorID: "soilhum8", measurement: soilHumOut8F, unit: "%", desc: "Soil Humidity Sensor #8, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 8", sensorID: "soilhum8", measurement: soilHumOut8, unit: "%", desc: "Soil Humidity Sensor #8, 0-l00%")
     }
     
     var HumiditySoilSensor9: AmbientWeatherSensor? {
-        guard let soilHumOut9F else { return nil }
+        guard let soilHumOut9 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 9", sensorID: "soilhum9", measurement: soilHumOut9F, unit: "%", desc: "Soil Humidity Sensor #9, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 9", sensorID: "soilhum9", measurement: soilHumOut9, unit: "%", desc: "Soil Humidity Sensor #9, 0-l00%")
     }
     
     var HumiditySoilSensor10: AmbientWeatherSensor? {
-        guard let soilHumOut10F else { return nil }
+        guard let soilHumOut10 else { return nil }
 
-        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 10", sensorID: "soilhum10", measurement: soilHumOut10F, unit: "%", desc: "Soil Humidity Sensor #10, 0-l00%")
+        return AmbientWeatherSensor(type: .Humidity, name: "Soil Humidity: 10", sensorID: "soilhum10", measurement: soilHumOut10, unit: "%", desc: "Soil Humidity Sensor #10, 0-l00%")
     }
 }

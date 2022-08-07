@@ -51,16 +51,16 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
     internal let soilTempOut8F:Float?
     internal let soilTempOut9F:Float?
     internal let soilTempOut10F:Float?
-    internal let soilHumOut1F:Int?
-    internal let soilHumOut2F:Int?
-    internal let soilHumOut3F:Int?
-    internal let soilHumOut4F:Int?
-    internal let soilHumOut5F:Int?
-    internal let soilHumOut6F:Int?
-    internal let soilHumOut7F:Int?
-    internal let soilHumOut8F:Int?
-    internal let soilHumOut9F:Int?
-    internal let soilHumOut10F:Int?
+    internal let soilHumOut1:Int?
+    internal let soilHumOut2:Int?
+    internal let soilHumOut3:Int?
+    internal let soilHumOut4:Int?
+    internal let soilHumOut5:Int?
+    internal let soilHumOut6:Int?
+    internal let soilHumOut7:Int?
+    internal let soilHumOut8:Int?
+    internal let soilHumOut9:Int?
+    internal let soilHumOut10:Int?
     internal let batteryOut:Int?
     internal let batteryOut1:Int?
     internal let batteryOut2:Int?
@@ -173,16 +173,16 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
         case soilTempOut8F = "soiltemp8f"
         case soilTempOut9F = "soiltemp9f"
         case soilTempOut10F = "soiltemp10f"
-        case soilHumOut1F = "soilhum1"
-        case soilHumOut2F = "soilhum2"
-        case soilHumOut3F = "soilhum3"
-        case soilHumOut4F = "soilhum4"
-        case soilHumOut5F = "soilhum5"
-        case soilHumOut6F = "soilhum6"
-        case soilHumOut7F = "soilhum7"
-        case soilHumOut8F = "soilhum8"
-        case soilHumOut9F = "soilhum9"
-        case soilHumOut10F = "soilhum10"
+        case soilHumOut1 = "soilhum1"
+        case soilHumOut2 = "soilhum2"
+        case soilHumOut3 = "soilhum3"
+        case soilHumOut4 = "soilhum4"
+        case soilHumOut5 = "soilhum5"
+        case soilHumOut6 = "soilhum6"
+        case soilHumOut7 = "soilhum7"
+        case soilHumOut8 = "soilhum8"
+        case soilHumOut9 = "soilhum9"
+        case soilHumOut10 = "soilhum10"
         case batteryOut = "battout"
         case batteryOut1 = "batt1"
         case batteryOut2 = "batt2"
