@@ -97,7 +97,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
         _applicationKey = apiKeys[1]
         _apiKey = apiKeys[0]
     }
-    
+
     ///
     /// WeatherService protocol function
     /// All this function does (for now) is grab the devices that are associated with the account
