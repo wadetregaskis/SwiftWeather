@@ -86,7 +86,6 @@ extension WeatherServiceType: Codable {
 
 /// Weather Factory
 public class SwiftWeather {
-    public static let description = "Swift Weather"
     public static var WeatherFactory = SwiftWeather()
     
     open class func shared() -> SwiftWeather {
