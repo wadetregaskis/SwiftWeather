@@ -2,7 +2,6 @@
 
 import Foundation
 
-/// Platform protocol for weather platforms to be added
 public protocol WeatherPlatform {
     func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void)
     func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void)
@@ -15,19 +14,16 @@ public protocol WeatherDeviceData: Codable, CustomStringConvertible {
     var availableSensors: [WeatherSensor] { get }
 }
 
-/// Testing something
 public protocol WeatherDevice: Codable, CustomStringConvertible {
     var deviceID: String? { get }
 }
 
-/// Service Status
 public enum WeatherServiceStatus {
     case NotReporting
     case Reporting
     case Error(Error)
 }
 
-/// Supported Service Types
 public enum WeatherServiceType: String, Codable {
     case AmbientWeather
 }
