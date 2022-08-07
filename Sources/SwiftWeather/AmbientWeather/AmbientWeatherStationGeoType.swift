@@ -34,19 +34,6 @@ public class AmbientWeatherStationGeoType: Codable {
     }
     
     ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    public var prettyString: String {
-        let debugInfo = """
-        Coordiates:
-        \t\tType: \(type)
-        \t\tLatitude: \(coordinates[0])
-        \t\tLongitude: \(coordinates[1])
-        """
-        return debugInfo
-    }
-    
-    ///
     /// Empty init
     ///
     init() {
@@ -83,5 +70,16 @@ public class AmbientWeatherStationGeoType: Codable {
         } catch let error as EncodingError {
             throw error
         }
+    }
+}
+
+extension AmbientWeatherStationGeoType: CustomStringConvertible {
+    public var description: String {
+        """
+        Coordiates:
+        \t\tType: \(type)
+        \t\tLatitude: \(coordinates[0])
+        \t\tLongitude: \(coordinates[1])
+        """
     }
 }

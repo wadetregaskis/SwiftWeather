@@ -11,7 +11,7 @@ import Foundation
 ///
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
-open class AmbientWeatherDevice: WeatherDevice/*, Codable*/ {
+open class AmbientWeatherDevice: WeatherDevice {
     private let info: AmbientWeatherStationInfo?
     private let macAddress: String?
     public let lastData: AmbientWeatherStationData?
@@ -101,17 +101,6 @@ open class AmbientWeatherDevice: WeatherDevice/*, Codable*/ {
     }
     
     ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    public var prettyString: String {
-        let debugInfo = """
-        MAC Address: \(macAddress!)
-        \(info?.prettyString ?? "INFO: Error")
-        """
-        return debugInfo
-    }
-    
-    ///
     /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoder
     /// - Parameter decoder: JSON_Derived decoder
     /// - Throws: a decoding error if something has gone wrong
@@ -147,5 +136,14 @@ open class AmbientWeatherDevice: WeatherDevice/*, Codable*/ {
         }
         
         //        try super.encode(to: encoder)
+    }
+}
+
+extension AmbientWeatherDevice: CustomStringConvertible {
+    public var description: String {
+        """
+        MAC Address: \(macAddress!)
+        \(info?.description ?? "INFO: Error")
+        """
     }
 }

@@ -34,19 +34,6 @@ public class AmbientWeatherStationInfo: Codable {
     }
     
     ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    public var prettyString: String {
-        let debugInfo = """
-        Info:
-        Name: \(name ?? "Unknown Name")
-        Location: \(location ?? "Unknown Location")
-        \(geo.prettyString)
-        """
-        return debugInfo
-    }
-    
-    ///
     /// Empty init
     ///
     init () {
@@ -87,5 +74,16 @@ public class AmbientWeatherStationInfo: Codable {
         } catch let error as EncodingError {
             throw error
         }
+    }
+}
+
+extension AmbientWeatherStationInfo: CustomStringConvertible {
+    public var description: String {
+        """
+        Info:
+        Name: \(name ?? "Unknown Name")
+        Location: \(location ?? "Unknown Location")
+        \(geo)
+        """
     }
 }

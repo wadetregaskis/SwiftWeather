@@ -51,11 +51,11 @@ service.setupService(completionHandler: { stationStatus in
         for (_, device) in service.reportingDevices {
             switch device {
             case is AmbientWeatherDevice:
-                print(device.prettyString)
+                print(device)
 
                 service.getLastMeasurement(uniqueID: device.deviceID, completionHandler: { stationData in
                     guard let data = stationData else { return }
-                    print(data.prettyString)
+                    print(data)
                 })
             default:
                 print("Unknown device type detected")
@@ -74,7 +74,7 @@ For this use case we focus on *getLastMeasurement*:
 ```swift
 service.getLastMeasurement(uniqueID: device.deviceID, completionHandler: { stationData in
     guard let data = stationData else { return }
-    print(data.prettyString)
+    print(data)
 })
 ```
 
@@ -136,7 +136,7 @@ service.setupService(completionHandler: { stationStatus in
         for (_, device) in service.reportingDevices {
             switch device {
             case is AmbientWeatherDevice:
-                print(device.prettyString)
+                print(device)
                 service.getHistoricalMeasurements(uniqueID: device.deviceID, count: 288, completionHandler: { stationData in
                     guard let historcalData = stationData else { return }
                      print("Successfully returned:\(historcalData.count) Measurements from AmbientWeather")
@@ -187,7 +187,6 @@ Each weather service consists of a Device:
 
 ```swift
 public protocol WeatherDevice {
-    var prettyString: String { get }
     var deviceID: String? { get }
 }
 ```
@@ -196,7 +195,6 @@ public protocol WeatherDevice {
 
 ```swift
 public protocol WeatherDeviceData {
-    var prettyString: String { get }
     var availableSensors: [WeatherSensor] { get }
 }
 ```

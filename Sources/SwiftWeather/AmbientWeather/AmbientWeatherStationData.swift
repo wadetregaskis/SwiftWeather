@@ -295,16 +295,10 @@ open class AmbientWeatherStationData: WeatherDeviceData, Codable {
         
         return types
     }
-    
-    ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    public var prettyString: String {
-        var debugInfo = String()
-        
-        for sensor in availableSensors {
-            debugInfo = "\(debugInfo)\n\(sensor.formatted())"
-        }
-        return debugInfo
+}
+
+extension AmbientWeatherStationData: CustomStringConvertible {
+    public var description: String {
+        availableSensors.map { $0.formatted() }.joined(separator: "\n")
     }
 }

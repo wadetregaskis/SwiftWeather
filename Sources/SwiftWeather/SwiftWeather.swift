@@ -16,14 +16,12 @@ public protocol WeatherPlatform {
     var  reportingDevices: [[String: WeatherDevice]] { get }
 }
 
-public protocol WeatherDeviceData {
-    var prettyString: String { get }
+public protocol WeatherDeviceData: Codable, CustomStringConvertible {
     var availableSensors: [WeatherSensor] { get }
 }
 
 /// Testing something
-public protocol WeatherDevice: Codable {
-    var prettyString: String { get }
+public protocol WeatherDevice: Codable, CustomStringConvertible {
     var deviceID: String? { get }
 }
 

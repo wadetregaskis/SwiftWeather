@@ -32,22 +32,6 @@ public class AmbientWeatherStationGeolocation: Codable {
     }
     
     ///
-    /// Provides a simple way to "see" what ths device is reporting
-    ///
-    public var prettyString: String {
-        get {
-            let debugInfo = """
-            GeoLocation:
-            \t\tLocation: \(location ?? "Unknown")
-            \t\tAddress: \(address ?? "Unknown")
-            \t\tElevation: \(elevation ?? -1.0)
-            \t\t\(geoType.prettyString)
-            """
-            return debugInfo
-        }
-    }
-    
-    ///
     /// Empry Init
     ///
     init() {
@@ -92,5 +76,17 @@ public class AmbientWeatherStationGeolocation: Codable {
         } catch let error as EncodingError {
             throw error
         }
+    }
+}
+
+extension AmbientWeatherStationGeolocation: CustomStringConvertible {
+    public var description: String {
+        """
+        GeoLocation:
+        \t\tLocation: \(location ?? "Unknown")
+        \t\tAddress: \(address ?? "Unknown")
+        \t\tElevation: \(elevation ?? -1.0)
+        \t\t\(geoType)
+        """
     }
 }
