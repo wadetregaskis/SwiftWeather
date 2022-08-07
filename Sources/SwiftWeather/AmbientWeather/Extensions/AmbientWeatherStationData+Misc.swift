@@ -16,7 +16,12 @@ extension AmbientWeatherStationData {
     var DateUTC: AmbientWeatherSensor? {
         guard let dateUTC else { return nil }
 
-        return AmbientWeatherSensor(type: .General, name: "Date", sensorID: "dateutc", measurement: dateUTC, unit: "ms", desc: "Date, from 01-01-1970, rounded down to nearest minute")
+        return AmbientWeatherSensor(type: .General,
+                                    name: "Date",
+                                    sensorID: "dateutc",
+                                    measurement: Date(timeIntervalSince1970: Double(dateUTC) / 1000),
+                                    unit: "None",
+                                    desc: "Date & time at which the set of measurements were reported")
     }
     
     var Timezone: AmbientWeatherSensor? {
