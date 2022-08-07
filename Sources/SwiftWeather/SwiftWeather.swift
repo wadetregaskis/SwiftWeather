@@ -5,7 +5,6 @@
 //  Created by Mike Manzo on 5/10/20.
 //
 
-import Alamofire
 import Foundation
 
 /// Platform protocol for weather platforms to be added
