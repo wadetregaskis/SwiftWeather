@@ -150,34 +150,8 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     ///
     public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void) {
-        do {
-            AF.request(try dataEndPoint(macAddress: uniqueID!)).response { response in
-                guard let data = response.data else { return }
-                do {
-                    let json = try JSON(data: data)
-                    if let error = json["error"].string {
-                        switch error {
-                        case "applicationKey-invalid":
-                            throw AmbientWeatherError.invalidApplicationKey
-                        case "apiKey-invalid":
-                            throw AmbientWeatherError.invalidAPIKey
-                        case "above-user-rate-limit":
-                            throw AmbientWeatherError.userRateExceeded
-                        default:
-                            print("Unknown Error: \(error)")
-                            throw AmbientWeatherError.unknown
-                        }
-                    } else {
-                        completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)).first)
-                    }
-                } catch let error { // JSON Decoder 'do'
-                    print(error)
-                    completionHandler(nil)
-                }
-            }
-        } catch let error { // AlamoFire 'do'
-            print(error)
-            completionHandler(nil)
+        getHistoricalMeasurements(uniqueID: uniqueID, count: 1) { result in
+            completionHandler(result?.first)
         }
     }
 
