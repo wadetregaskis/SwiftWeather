@@ -5,10 +5,16 @@ import Foundation
 
 /// Error messages specific to the Ambient Weather API
 enum AmbientWeatherError: Error {
-    case measurementLimitOutOfRange
+    case missingApplicationKey
     case invalidApplicationKey
-    case userRateExceeded
+
+    case missingAPIKey
     case invalidAPIKey
+
+    case tooManyAPIKeys
+
+    case measurementLimitOutOfRange
+    case userRateExceeded
     case corruptJSON
     case invalidURL
     case unknown
@@ -54,7 +60,7 @@ extension AmbientWeatherError: LocalizedError {
             )
         case .invalidApplicationKey:
             return NSLocalizedString(
-                "AmbientWether: Invalid Application Key.",
+                "AmbientWether: Invalid Application (Developer) Key.",
                 comment: "Invalid Application Key"
             )
         case .corruptJSON:
@@ -69,20 +75,40 @@ extension AmbientWeatherError: LocalizedError {
             )
         case .invalidAPIKey:
             return NSLocalizedString(
-                "AmbientWeather: Invalid API Key.",
+                "AmbientWeather: Invalid API (User) Key.",
                 comment: "Invalid API Key"
+            )
+        case .missingApplicationKey:
+            return NSLocalizedString(
+                "AmbientWeather: Missing Application (Developer) Key.",
+                comment: "Missing Application Key"
+            )
+        case .missingAPIKey:
+            return NSLocalizedString(
+                "AmbientWeather: Missing API (User) Key.",
+                comment: "Missing API Key"
+            )
+        case .tooManyAPIKeys:
+            return NSLocalizedString(
+                "AmbientWeather: Too many keys provided.  AmbientWeather requires two keys: Application (Developer) and API (User)..",
+                comment: "Too many API Keys"
             )
         }
     }
 }
 
 public final class AmbientWeather: WeatherPlatform, Codable {
-    private(set) var apiEndPoint    = "https://api.ambientweather.net/"
-    private var knownDevices        = [[String: AmbientWeatherDevice]]()
-    private(set) var apiVersion     = "v1"
-    private var _applicationKey     = ""
-    private var _apiKey             = ""
-    
+    private let apiEndPoint = "https://api.ambientweather.net/"
+    private var knownDevices = [[String: AmbientWeatherDevice]]()
+    private let apiVersion = "v1"
+    private let applicationKey: String
+    private let apiKey: String
+
+    enum CodingKeys: CodingKey {
+        case applicationKey
+        case apiKey
+    }
+
     /// Returns an array containing the devices AmbientWeather is reporting
     public var reportingDevices: [[String: WeatherDevice]] {
         get {
@@ -96,19 +122,35 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             return knownDevices.count
         }
     }
-    
+
+    /// - Parameter apiKeys: API keys to be used.  You need two keys:
+    ///  - apiKeys[0] == Application Key (Developer Key)
+    ///  - apiKeys[1] == API Key (Customer/User Key)
     ///
-    /// Initialize the service with the keys needed
-    /// This is a per-service customization.  Some services will need more than one key
-    ///
-    /// - Parameter apiKeys: api Keys to be used
-    /// For AmbientWeather.Net, you need two keys
-    ///  - apiKeys[0] == API Key (Customer/User Key)
-    ///  - apiKeys[1] == Applicaion Key (Developer Key)
-    ///
-    public init(apiKeys: [String]) {
-        _applicationKey = apiKeys[1]
-        _apiKey = apiKeys[0]
+    internal init(apiKeys: [String]) throws {
+        guard let applicationKey = apiKeys.first else {
+            throw AmbientWeatherError.missingApplicationKey
+        }
+
+        guard !applicationKey.isEmpty else {
+            throw AmbientWeatherError.missingApplicationKey
+        }
+
+        guard 2 <= apiKeys.count else {
+            throw AmbientWeatherError.missingAPIKey
+        }
+
+        guard 2 == apiKeys.count else {
+            throw AmbientWeatherError.tooManyAPIKeys
+        }
+
+        apiKey = apiKeys[1]
+
+        guard !apiKey.isEmpty else {
+            throw AmbientWeatherError.invalidAPIKey
+        }
+
+        self.applicationKey = applicationKey
     }
 
     ///
@@ -216,15 +258,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func deviceEndPoint() throws -> URL {
-        guard !_applicationKey.isEmpty else {
-            throw AmbientWeatherError.invalidApplicationKey
-        }
-
-        guard !_apiKey.isEmpty else {
-            throw AmbientWeatherError.invalidAPIKey
-        }
-
-        guard let url = URL(string: apiEndPoint + apiVersion + "/devices?applicationKey=\(_applicationKey)&apiKey=\(_apiKey)") else {
+        guard let url = URL(string: apiEndPoint + apiVersion + "/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
             throw AmbientWeatherError.invalidURL
         }
 
@@ -240,19 +274,11 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Returns: Fully-formedDevince endpoint URL
     ///
     private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> URL {
-        guard !_applicationKey.isEmpty else {
-            throw AmbientWeatherError.invalidApplicationKey
-        }
-
-        guard !_apiKey.isEmpty else {
-            throw AmbientWeatherError.invalidAPIKey
-        }
-
         guard limit >= 1 && limit <= 288 else {
             throw AmbientWeatherError.measurementLimitOutOfRange
         }
 
-        guard let url = URL(string: apiEndPoint + apiVersion + "/devices/\(macAddress)?apiKey=\(_apiKey)&applicationKey=\(_applicationKey)&limit=\(limit)") else {
+        guard let url = URL(string: apiEndPoint + apiVersion + "/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)") else {
             throw AmbientWeatherError.invalidURL
         }
 
