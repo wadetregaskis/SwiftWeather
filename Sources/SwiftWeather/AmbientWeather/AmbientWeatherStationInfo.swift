@@ -29,15 +29,6 @@ public class AmbientWeatherStationInfo: Codable {
     }
     
     ///
-    /// Empty init
-    ///
-    init () {
-        stationLocation = nil
-        stationName = nil
-        stationGeoLocation = AmbientWeatherStationGeolocation()
-    }
-    
-    ///
     /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoer
     /// - Parameter decoder: JSON_Derived decoder
     /// - Throws: a decoding error if something has gone wrong
