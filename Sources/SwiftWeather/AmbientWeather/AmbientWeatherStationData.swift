@@ -8,126 +8,126 @@
 import Foundation
 
 open class AmbientWeatherStationData: WeatherDeviceData, Codable {
-    internal let windDirection:Int?
-    internal let windSpeedMPH:Float?
-    internal let windGustMPH:Float?
-    internal let windGustDailyMax:Float?
-    internal let windGustDir:Int?
-    internal let windSpeedAvg2Min:Float?
-    internal let winDir2Min:Int?
-    internal let windSpeedAvg10Min:Float?
-    internal let windDir10Min:Int?
-    internal let humidityOut:Int?
-    internal let humidityIn:Int?
-    internal let humidityOut1:Int?
-    internal let humidityOut2:Int?
-    internal let humidityOut3:Int?
-    internal let humidityOut4:Int?
-    internal let humidityOut5:Int?
-    internal let humidityOut6:Int?
-    internal let humidityOut7:Int?
-    internal let humidityOut8:Int?
-    internal let humidityOut9:Int?
-    internal let humidityOut10:Int?
-    internal let tempInF:Float?
-    internal let tempOutF:Float?
-    internal let tempOut1F:Float?
-    internal let tempOut2F:Float?
-    internal let tempOut3F:Float?
-    internal let tempOut4F:Float?
-    internal let tempOut5F:Float?
-    internal let tempOut6F:Float?
-    internal let tempOut7F:Float?
-    internal let tempOut8F:Float?
-    internal let tempOut9F:Float?
-    internal let tempOut10F:Float?
-    internal let soilTempOut1F:Float?
-    internal let soilTempOut2F:Float?
-    internal let soilTempOut3F:Float?
-    internal let soilTempOut4F:Float?
-    internal let soilTempOut5F:Float?
-    internal let soilTempOut6F:Float?
-    internal let soilTempOut7F:Float?
-    internal let soilTempOut8F:Float?
-    internal let soilTempOut9F:Float?
-    internal let soilTempOut10F:Float?
-    internal let soilHumOut1:Int?
-    internal let soilHumOut2:Int?
-    internal let soilHumOut3:Int?
-    internal let soilHumOut4:Int?
-    internal let soilHumOut5:Int?
-    internal let soilHumOut6:Int?
-    internal let soilHumOut7:Int?
-    internal let soilHumOut8:Int?
-    internal let soilHumOut9:Int?
-    internal let soilHumOut10:Int?
-    internal let batteryOut:Int?
-    internal let batteryOut1:Int?
-    internal let batteryOut2:Int?
-    internal let batteryOut3:Int?
-    internal let batteryOut4:Int?
-    internal let batteryOut5:Int?
-    internal let batteryOut6:Int?
-    internal let batteryOut7:Int?
-    internal let batteryOut8:Int?
-    internal let batteryOut9:Int?
-    internal let batteryOut10:Int?
-    internal let batteryAQS:Int?
-    internal let rainHourIn:Float?
-    internal let rainDailyIn:Float?
-    internal let rain24HourIn:Float?
-    internal let rainWeeklyIn:Float?
-    internal let rainMonthlyIn:Float?
-    internal let rainYearlyIn:Float?
-    internal let rainEventIn:Float?
-    internal let rainTotalIn:Float?
-    internal let barometerRelativeInHg:Float?
-    internal let barometerAbsoluteInHg:Float?
-    internal let uvIndex:Int?
-    internal let solarRadiation:Float?
-    internal let carbonDioxide:Float?
-    internal let relay1:Int?
-    internal let relay2:Int?
-    internal let relay3:Int?
-    internal let relay4:Int?
-    internal let relay5:Int?
-    internal let relay6:Int?
-    internal let relay7:Int?
-    internal let relay8:Int?
-    internal let relay9:Int?
-    internal let relay10:Int?
-    internal let airQualityOut:Float?
-    internal let airQualityOut24:Float?
-    internal let airQualityIn:Float?
-    internal let airQualityIn24:Float?
-    internal let timeZone: String?
-    internal let dateUTC: Int?
-    internal let rainLastDate: String?
-    internal let dewPointOut: Float?
-    internal let dewPointIn: Float?
-    internal let tempFeelsLikeOutF:Float?
-    internal let tempFeelsLikeInF:Float?
-    internal let dateStation: String?
-    internal let tempFeelsLikeOut1:Float?
-    internal let tempFeelsLikeOut2:Float?
-    internal let tempFeelsLikeOut3:Float?
-    internal let tempFeelsLikeOut4:Float?
-    internal let tempFeelsLikeOut5:Float?
-    internal let tempFeelsLikeOut6:Float?
-    internal let tempFeelsLikeOut7:Float?
-    internal let tempFeelsLikeOut8:Float?
-    internal let tempFeelsLikeOut9:Float?
-    internal let tempFeelsLikeOut10:Float?
-    internal let dewPoint1:Float?
-    internal let dewPoint2:Float?
-    internal let dewPoint3:Float?
-    internal let dewPoint4:Float?
-    internal let dewPoint5:Float?
-    internal let dewPoint6:Float?
-    internal let dewPoint7:Float?
-    internal let dewPoint8:Float?
-    internal let dewPoint9:Float?
-    internal let dewPoint10:Float?
+    internal let windDirection: Int?
+    internal let windSpeedMPH: Float?
+    internal let windGustMPH: Float?
+    internal let windGustDailyMax: Float?
+    internal let windGustDir: Int?
+    internal let windSpeedAvg2Min: Float?
+    internal let winDir2Min: Int?
+    internal let windSpeedAvg10Min: Float?
+    internal let windDir10Min: Int?
+    internal let humidityOut: Int?
+    internal let humidityIn: Int?
+    internal let humidityOut1: Int?
+    internal let humidityOut2: Int?
+    internal let humidityOut3: Int?
+    internal let humidityOut4: Int?
+    internal let humidityOut5: Int?
+    internal let humidityOut6: Int?
+    internal let humidityOut7: Int?
+    internal let humidityOut8: Int?
+    internal let humidityOut9: Int?
+    internal let humidityOut10: Int?
+    internal let tempInF: Float?
+    internal let tempOutF: Float?
+    internal let tempOut1F: Float?
+    internal let tempOut2F: Float?
+    internal let tempOut3F: Float?
+    internal let tempOut4F: Float?
+    internal let tempOut5F: Float?
+    internal let tempOut6F: Float?
+    internal let tempOut7F: Float?
+    internal let tempOut8F: Float?
+    internal let tempOut9F: Float?
+    internal let tempOut10F: Float?
+    internal let soilTempOut1F: Float?
+    internal let soilTempOut2F: Float?
+    internal let soilTempOut3F: Float?
+    internal let soilTempOut4F: Float?
+    internal let soilTempOut5F: Float?
+    internal let soilTempOut6F: Float?
+    internal let soilTempOut7F: Float?
+    internal let soilTempOut8F: Float?
+    internal let soilTempOut9F: Float?
+    internal let soilTempOut10F: Float?
+    internal let soilHumOut1: Int?
+    internal let soilHumOut2: Int?
+    internal let soilHumOut3: Int?
+    internal let soilHumOut4: Int?
+    internal let soilHumOut5: Int?
+    internal let soilHumOut6: Int?
+    internal let soilHumOut7: Int?
+    internal let soilHumOut8: Int?
+    internal let soilHumOut9: Int?
+    internal let soilHumOut10: Int?
+    internal let batteryOut: Int?
+    internal let batteryOut1: Int?
+    internal let batteryOut2: Int?
+    internal let batteryOut3: Int?
+    internal let batteryOut4: Int?
+    internal let batteryOut5: Int?
+    internal let batteryOut6: Int?
+    internal let batteryOut7: Int?
+    internal let batteryOut8: Int?
+    internal let batteryOut9: Int?
+    internal let batteryOut10: Int?
+    internal let batteryAQS: Int?
+    internal let rainHourIn: Float?
+    internal let rainDailyIn: Float?
+    internal let rain24HourIn: Float?
+    internal let rainWeeklyIn: Float?
+    internal let rainMonthlyIn: Float?
+    internal let rainYearlyIn: Float?
+    internal let rainEventIn: Float?
+    internal let rainTotalIn: Float?
+    internal let barometerRelativeInHg: Float?
+    internal let barometerAbsoluteInHg: Float?
+    internal let uvIndex: Int?
+    internal let solarRadiation: Float?
+    internal let carbonDioxide: Float?
+    internal let relay1: Int?
+    internal let relay2: Int?
+    internal let relay3: Int?
+    internal let relay4: Int?
+    internal let relay5: Int?
+    internal let relay6: Int?
+    internal let relay7: Int?
+    internal let relay8: Int?
+    internal let relay9: Int?
+    internal let relay10: Int?
+    internal let airQualityOut: Float?
+    internal let airQualityOut24: Float?
+    internal let airQualityIn: Float?
+    internal let airQualityIn24: Float?
+    internal let timeZone:  String?
+    internal let dateUTC:  Int?
+    internal let rainLastDate:  String?
+    internal let dewPointOut:  Float?
+    internal let dewPointIn:  Float?
+    internal let tempFeelsLikeOutF: Float?
+    internal let tempFeelsLikeInF: Float?
+    internal let dateStation:  String?
+    internal let tempFeelsLikeOut1: Float?
+    internal let tempFeelsLikeOut2: Float?
+    internal let tempFeelsLikeOut3: Float?
+    internal let tempFeelsLikeOut4: Float?
+    internal let tempFeelsLikeOut5: Float?
+    internal let tempFeelsLikeOut6: Float?
+    internal let tempFeelsLikeOut7: Float?
+    internal let tempFeelsLikeOut8: Float?
+    internal let tempFeelsLikeOut9: Float?
+    internal let tempFeelsLikeOut10: Float?
+    internal let dewPoint1: Float?
+    internal let dewPoint2: Float?
+    internal let dewPoint3: Float?
+    internal let dewPoint4: Float?
+    internal let dewPoint5: Float?
+    internal let dewPoint6: Float?
+    internal let dewPoint7: Float?
+    internal let dewPoint8: Float?
+    internal let dewPoint9: Float?
+    internal let dewPoint10: Float?
     
     enum CodingKeys: String, CodingKey {
         case windDirection = "winddir"
