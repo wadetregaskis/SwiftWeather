@@ -1,9 +1,4 @@
-//
-//  StationData+Battery.swift
-//  
-//
 //  Created by Mike Manzo on 5/11/20.
-//
 
 import Foundation
 

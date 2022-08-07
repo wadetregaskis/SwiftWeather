@@ -1,9 +1,4 @@
-//
-//  AmbientWeatherDevice.swift
-//  
-//
 //  Created by Mike Manzo on 5/17/20.
-//
 
 import CoreLocation
 import Foundation

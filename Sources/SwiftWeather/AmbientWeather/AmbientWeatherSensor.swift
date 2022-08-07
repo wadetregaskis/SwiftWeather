@@ -1,9 +1,4 @@
-//
-//  AmbientWeatherSensor.swift
-//  
-//
 //  Created by Mike Manzo on 5/30/20.
-//
 
 import Foundation
 

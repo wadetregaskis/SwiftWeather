@@ -1,9 +1,4 @@
-//
-//  Data+String.swift
-//  Buhito
-//
 //  Created by Wade Tregaskis on 6/8/2022.
-//
 
 import Foundation
 
