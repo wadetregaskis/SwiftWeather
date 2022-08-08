@@ -12,42 +12,42 @@ extension AmbientWeatherStationData {
     var AirQualityOutdoor: AmbientWeatherSensor? {
         guard let airQualityOut else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "Outdoor Air Quality", sensorID: "pm25", measurement: airQualityOut, unit: "µg/m^3", desc: "PM2.5 Outdoor Air Quality")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25", name: "Outdoor Air Quality", description: "PM2.5 Outdoor Air Quality", measurement: airQualityOut, unit: "µg/m^3")
     }
     
     var AirQualityOutdoor24Avg: AmbientWeatherSensor? {
         guard let airQualityOut24 else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "24 Average Outdoor Air Quality", sensorID: "pm25_24h", measurement: airQualityOut24, unit: "µg/m^3", desc: "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_24h", name: "24 Average Outdoor Air Quality", description: "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average", measurement: airQualityOut24, unit: "µg/m^3")
     }
     
     var AirQualityIndoor: AmbientWeatherSensor? {
         guard let airQualityIn else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "Indoor Air Quality", sensorID: "pm25_in", measurement: airQualityIn, unit: "µg/m^3", desc: "PM2.5 Indoor Air Quality")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_in", name: "Indoor Air Quality", description: "PM2.5 Indoor Air Quality", measurement: airQualityIn, unit: "µg/m^3")
     }
     
     var AirQualityIndoor24Avg: AmbientWeatherSensor? {
         guard let airQualityIn24 else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "24 Average Indoor Air Quality", sensorID: "pm25_in_24h", measurement: airQualityIn24, unit: "µg/m^3", desc: "PM2.5 Indoor Air Quality - 24 Hour Average")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_in_24h", name: "24 Average Indoor Air Quality", description: "PM2.5 Indoor Air Quality - 24 Hour Average", measurement: airQualityIn24, unit: "µg/m^3")
     }
     
     var UVIndex: AmbientWeatherSensor? {
         guard let uvIndex else { return nil }
 
-        return AmbientWeatherSensor(type: .Radiation, name: "UV Index", sensorID: "uv", measurement: uvIndex, unit: "None", desc: "Ultra-Violet Radiation Index")
+        return AmbientWeatherSensor(type: .Radiation, sensorID: "uv", name: "UV Index", description: "Ultra-Violet Radiation Index", measurement: uvIndex, unit: "None")
     }
     
     var SolarRadiation: AmbientWeatherSensor? {
         guard let solarRadiation else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "Solar Radiation", sensorID: "solarradiation", measurement: solarRadiation, unit: "W/m^2", desc: "Solar Radiation")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "solarradiation", name: "Solar Radiation", description: "Solar Radiation", measurement: solarRadiation, unit: "W/m^2")
     }
     
     var CarbonDioxide: AmbientWeatherSensor? {
         guard let carbonDioxide else { return nil }
 
-        return AmbientWeatherSensor(type: .AirQuality, name: "CO2 Level", sensorID: "co2", measurement: carbonDioxide, unit: "ppm", desc: "Carbon Dioxide Level")
+        return AmbientWeatherSensor(type: .AirQuality, sensorID: "co2", name: "CO2 Level", description: "Carbon Dioxide Level", measurement: carbonDioxide, unit: "ppm")
     }
 }

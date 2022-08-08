@@ -21,34 +21,24 @@ public enum WeatherSensorType {
 /// Base class for weather sensors.
 open class WeatherSensor {
     public let type: WeatherSensorType
-    public let description: String
     public let sensorID: String
-    public let unit: String
     public let name: String
+    public let description: String
     public let measurement: Any
-    
-    ///
-    /// A compact way to progamatically represent a "sensor" as defined in the API docs
-    /// - Parameters:
-    ///   - type: sensor type (e.g.,  Temperature, AirQuality, Pressure, Battery, Humidty, General, Rain, Wind)
-    ///   - name: user-defined name for the senor
-    ///   - sensorID: api-defined JSON key for the sensor
-    ///   - measurement: the current value the sensor is reporting
-    ///   - unit: api-defined default unit
-    ///   - desc: user-defined free-text description of what the sensor does and/or measures
-    ///
+    public let unit: String
+
     required public init(type: WeatherSensorType,
-                         name: String,
                          sensorID: String,
+                         name: String,
+                         description: String,
                          measurement: Any,
-                         unit: String,
-                         desc: String) {
-        self.measurement = measurement
-        self.sensorID = sensorID
-        self.description = desc
-        self.name = name
-        self.unit = unit
+                         unit: String) {
         self.type = type
+        self.sensorID = sensorID
+        self.name = name
+        self.description = description
+        self.measurement = measurement
+        self.unit = unit
     }
 }
 

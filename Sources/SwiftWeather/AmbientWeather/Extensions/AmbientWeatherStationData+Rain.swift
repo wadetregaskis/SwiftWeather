@@ -13,49 +13,49 @@ extension AmbientWeatherStationData {
     var RainRatePerHour: AmbientWeatherSensor? {
         guard let rainHourIn else { return nil }
 
-        return AmbientWeatherSensor(type: .RainRate, name: "Hourly Rain", sensorID: "hourlyrainin", measurement: rainHourIn, unit: "in/hr", desc: "Hourly Rain Rate")
+        return AmbientWeatherSensor(type: .RainRate, sensorID: "hourlyrainin", name: "Hourly Rain", description: "Hourly Rain Rate", measurement: rainHourIn, unit: "in/hr")
     }
     
     var RainDaily: AmbientWeatherSensor? {
         guard let rainDailyIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Rain Today", sensorID: "dailyrainin", measurement: rainDailyIn, unit: "in", desc: "Daily Rain")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "dailyrainin", name: "Rain Today", description: "Daily Rain", measurement: rainDailyIn, unit: "in")
     }
     
     var Rain24Hrs: AmbientWeatherSensor? {
         guard let rain24HourIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "24 Hour Rain", sensorID: "24hourrainin", measurement: rain24HourIn, unit: "in", desc: "Rain over last 24 Hours")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "24hourrainin", name: "24 Hour Rain", description: "Rain over last 24 Hours", measurement: rain24HourIn, unit: "in")
     }
     
     var RainWeekly: AmbientWeatherSensor? {
         guard let rainWeeklyIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Weekly Rain", sensorID: "weeklyrainin", measurement: rainWeeklyIn, unit: "in", desc: "Rain this week")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "weeklyrainin", name: "Weekly Rain", description: "Rain this week", measurement: rainWeeklyIn, unit: "in")
     }
     
     var RainMonthly: AmbientWeatherSensor? {
         guard let rainMonthlyIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Monthly Rain", sensorID: "monthlyrainin", measurement: rainMonthlyIn, unit: "in", desc: "Rain this month")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "monthlyrainin", name: "Monthly Rain", description: "Rain this month", measurement: rainMonthlyIn, unit: "in")
     }
     
     var RainYearly: AmbientWeatherSensor? {
         guard let rainYearlyIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Yearly Rain", sensorID: "yearlyrainin", measurement: rainYearlyIn, unit: "in", desc: "Rain this year")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "yearlyrainin", name: "Yearly Rain", description: "Rain this year", measurement: rainYearlyIn, unit: "in")
     }
     
     var RainEvent: AmbientWeatherSensor? {
         guard let rainEventIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Event Rain", sensorID: "eventrainin", measurement: rainEventIn, unit: "in", desc: "Event Rain")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "eventrainin", name: "Event Rain", description: "Event Rain", measurement: rainEventIn, unit: "in")
     }
     
     var RainTotal: AmbientWeatherSensor? {
         guard let rainTotalIn else { return nil }
 
-        return AmbientWeatherSensor(type: .Rain, name: "Total Rain", sensorID: "totalrainin", measurement: rainTotalIn, unit: "in", desc: "Total rain since last factory reset")
+        return AmbientWeatherSensor(type: .Rain, sensorID: "totalrainin", name: "Total Rain", description: "Total rain since last factory reset", measurement: rainTotalIn, unit: "in")
     }
 
     internal static let rainDateFormatter = {
@@ -75,10 +75,10 @@ extension AmbientWeatherStationData {
         }
 
         return AmbientWeatherSensor(type: .RainDate,
-                                    name: "Last Time it Rained",
                                     sensorID: "lastRain",
+                                    name: "Last Time it Rained",
+                                    description: "Last time hourly rain > 0 inches",
                                     measurement: date,
-                                    unit: "None",
-                                    desc: "Last time hourly rain > 0 inches")
+                                    unit: "None")
     }
 }

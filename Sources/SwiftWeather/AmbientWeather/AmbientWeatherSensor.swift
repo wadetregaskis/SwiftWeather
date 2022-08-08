@@ -3,12 +3,12 @@
 import Foundation
 
 open class AmbientWeatherSensor: WeatherSensor {
-    ///
-    /// A compact way to progamatically represent an AmbientWeather Sensor as defined in the API docs
-    /// - Parameters:
-    ///     - _value: We are taking advantage of the fact that some of the AW sensors can have units that are convertible.  Those that are fixed - are fixed.
-    ///
-    required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
+    required public init(type: WeatherSensorType,
+                         sensorID: String,
+                         name: String,
+                         description: String,
+                         measurement: Any,
+                         unit: String) {
         var value = measurement
 
         switch type {
@@ -32,6 +32,6 @@ open class AmbientWeatherSensor: WeatherSensor {
             break
         }
 
-        super.init(type: type, name: name, sensorID: sensorID, measurement: value, unit: unit, desc: desc)
+        super.init(type: type, sensorID: sensorID, name: name, description: description, measurement: value, unit: unit)
     }
 }

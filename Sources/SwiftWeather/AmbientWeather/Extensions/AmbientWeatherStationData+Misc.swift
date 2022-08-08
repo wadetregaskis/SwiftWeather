@@ -12,16 +12,16 @@ extension AmbientWeatherStationData {
         guard let dateUTC else { return nil }
 
         return AmbientWeatherSensor(type: .General,
-                                    name: "Date",
                                     sensorID: "dateutc",
+                                    name: "Date",
+                                    description: "Date & time at which the set of measurements were reported",
                                     measurement: Date(timeIntervalSince1970: Double(dateUTC) / 1000),
-                                    unit: "None",
-                                    desc: "Date & time at which the set of measurements were reported")
+                                    unit: "None")
     }
     
     var Timezone: AmbientWeatherSensor? {
         guard let timeZone else { return nil }
 
-        return AmbientWeatherSensor(type: .General, name: "Time Zone", sensorID: "tz", measurement: timeZone, unit: "None", desc: "IANA Time Zone")
+        return AmbientWeatherSensor(type: .General, sensorID: "tz", name: "Time Zone", description: "IANA Time Zone", measurement: timeZone, unit: "None")
     }
 }

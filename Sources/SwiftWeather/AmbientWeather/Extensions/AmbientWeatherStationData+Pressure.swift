@@ -11,12 +11,12 @@ extension AmbientWeatherStationData {
     var PressureRelative: AmbientWeatherSensor? {
         guard let barometerRelativeInHg else { return nil }
 
-        return AmbientWeatherSensor(type: .Pressure, name: "Relative Pressure", sensorID: "baromrelin", measurement: barometerRelativeInHg, unit: "inHg", desc: "Relative Pressure")
+        return AmbientWeatherSensor(type: .Pressure, sensorID: "baromrelin", name: "Relative Pressure", description: "Relative Pressure", measurement: barometerRelativeInHg, unit: "inHg")
     }
     
     var PressureAbsolute: AmbientWeatherSensor? {
         guard let barometerAbsoluteInHg else { return nil }
 
-        return AmbientWeatherSensor(type: .Pressure, name: "Absolute Pressure", sensorID: "baromabsin", measurement: barometerAbsoluteInHg, unit: "inHg", desc: "Absolute Pressure")
+        return AmbientWeatherSensor(type: .Pressure, sensorID: "baromabsin", name: "Absolute Pressure", description: "Absolute Pressure", measurement: barometerAbsoluteInHg, unit: "inHg")
     }
 }
