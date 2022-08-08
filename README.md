@@ -71,10 +71,10 @@ service.setupService(completionHandler: { stationStatus in
 For this use case we focus on *getLastMeasurement*:
 
 ```swift
-service.getLastMeasurement(uniqueID: device.deviceID, completionHandler: { stationData in
-    guard let data = stationData else { return }
-    print(data)
-})
+service.getLastMeasurement(device: ID) { report in
+    guard let report else { return }
+    print(report)
+}
 ```
 
 The code snippet above produces the following output for a weather station connected to AmbientWeather.net.  Each sensor can be interrogated for its intrinsic JSON value.
