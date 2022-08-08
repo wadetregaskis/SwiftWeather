@@ -190,10 +190,11 @@ public protocol WeatherDevice {
 }
 ```
 
-…that contains data:
+Each report contains at least a date & time of when it was generated, along with all available measures from that time.
 
 ```swift
-public protocol WeatherDeviceData {
+public protocol WeatherReport {
+    var date: Date { get }
     var sensors: [WeatherSensor] { get }
 }
 ```
