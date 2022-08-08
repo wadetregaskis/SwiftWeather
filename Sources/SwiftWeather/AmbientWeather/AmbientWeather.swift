@@ -244,7 +244,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             }
 
             do {
-                completionHandler((try JSONDecoder().decode([AmbientWeatherStationData].self, from: data)))
+                completionHandler(try JSONDecoder().decode([AmbientWeatherStationData].self, from: data))
             } catch {
                 print("Failed to decode response as weather station data: \(error)\nResponse body:\n\(String(data: data, encoding: .utf8) ?? data.debugDescription)")
                 completionHandler(nil)
