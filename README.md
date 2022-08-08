@@ -201,42 +201,13 @@ public protocol WeatherDeviceData {
 …where WeatherSensor is defined as:
 
 ```swift
-/// Supported Service Types
-public enum WeatherSensorType {
-    case WindDirection
-    case Temperature
-    case AirQuality
-    case WindSpeed
-    case Radiation
-    case RainRate
-    case Humidity
-    case RainDate
-    case Pressure
-    case Battery
-    case General
-    case Rain
-}
-
-/// 
-/// Base sensor descriptor for SwiftWeather
-/// Generic descriptors:
-/// - _description: What the sensor does
-/// - _sensorID: Uniqe Identifier of of the sensor
-/// - _unit: What the measurements are in (e.g., in, W, F, etc.)
-/// - _name: What do you want to call the sensor
-/// - _value: Current measurement for the sensor
-///
 open class WeatherSensor {
-    internal var _type: WeatherSensorType
-    internal var _description: String
-    internal var _sensorID: String
-    internal var _unit: String
-    internal var _name: String
-    internal var _value: Any
-
-    .
-    .
-    .
+    public let type: WeatherSensorType
+    public let sensorID: String
+    public let name: String
+    public let description: String
+    public let measurement: Any
+    public let unit: String
 }
 ```
 
