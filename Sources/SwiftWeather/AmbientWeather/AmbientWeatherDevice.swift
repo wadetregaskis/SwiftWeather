@@ -90,11 +90,6 @@ open class AmbientWeatherDevice: WeatherDevice {
         return lastData!.sensors as! [AmbientWeatherSensor]
     }
     
-    /// Returns an array containing of reporting sensor types
-    public var availabeSensorTypes: [WeatherSensorType] {
-        return lastData!.availabeSensorTypes
-    }
-    
     ///
     /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoder
     /// - Parameter decoder: JSON_Derived decoder

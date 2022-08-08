@@ -255,45 +255,6 @@ open class AmbientWeatherStationData: WeatherReport, Codable {
     public var sensors: [WeatherSensor] {
         (BatterySensors + MiscSensors + PressureSensors + RainSensors + RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors + HumiditySensors).compactMap { $0 }
     }
-    
-    /// Returns an array containing of reporting sensor types
-    public var availabeSensorTypes: [WeatherSensorType] {
-        var types = [WeatherSensorType]()
-        
-        if TemperatureSensors.count > 0 {
-            types.append(WeatherSensorType.Temperature)
-        }
-        
-        if AirQualitySensors.count > 0 {
-            types.append(WeatherSensorType.AirQuality)
-        }
-        
-        if WindSensors.count > 0 {
-            types.append(WeatherSensorType.WindSpeed)
-        }
-        
-        if HumiditySensors.count > 0 {
-            types.append(WeatherSensorType.Humidity)
-        }
-        
-        if PressureSensors.count > 0 {
-            types.append(WeatherSensorType.Pressure)
-        }
-        
-        if BatterySensors.count > 0 {
-            types.append(WeatherSensorType.Battery)
-        }
-        
-        if RelaySensors.count > 0 {
-            types.append(WeatherSensorType.General)
-        }
-        
-        if RainSensors.count > 0 {
-            types.append(WeatherSensorType.Rain)
-        }
-        
-        return types
-    }
 }
 
 extension AmbientWeatherStationData: CustomStringConvertible {
