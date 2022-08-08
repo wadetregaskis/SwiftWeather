@@ -246,7 +246,11 @@ open class AmbientWeatherStationData: WeatherReport, Codable {
         case dewPoint9 = "dewPoint9"
         case dewPoint10 = "dewPoint10"
     }
-    
+
+    public var date: Date {
+        (DateUTC?.measurement as? Date) ?? Date(timeIntervalSince1970: 0) // This value _really_ shouldn't be missing, so this icky, arbitrary 'else' value should never actually be used.  In theory.
+    }
+
     /// Returns an array containing all sensors that are reporting
     public var sensors: [WeatherSensor] {
         (BatterySensors + MiscSensors + PressureSensors + RainSensors + RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors + HumiditySensors).compactMap { $0 }

@@ -1,5 +1,8 @@
 //  Created by Mike Manzo on 5/10/20.
 
+import Foundation
+
+
 public protocol WeatherPlatform {
     func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
     func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherReport?) -> Void)
@@ -13,6 +16,10 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
 }
 
 public protocol WeatherReport: Codable, CustomStringConvertible {
+    /// The date & time at which the report was generated.
+    var date: Date { get }
+
+    /// Returns all the sensors in the report.
     var sensors: [WeatherSensor] { get }
 }
 
