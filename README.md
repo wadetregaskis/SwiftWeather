@@ -246,10 +246,11 @@ Have a look in the package - and experiment with this library against a real sta
 
 ## To Do
 
-- [ ] Add realtime Ambient Weather API support
-- [ ] Add support for another weather API - suggestions are welcome
-- [ ] Extensive testing for multiple reporting devices per service
-- [ ] Localization
+- Support retrieval of weather reports for arbitrary times in the past.
+- Add realtime Ambient Weather API support.
+- Add support for another weather API - suggestions are welcome.
+- Extensive testing for multiple reporting devices per service.
+- Localization.
 
 ## Copyright & License Information
 
