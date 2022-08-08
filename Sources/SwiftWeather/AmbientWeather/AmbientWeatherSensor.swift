@@ -13,21 +13,37 @@ open class AmbientWeatherSensor: WeatherSensor {
 
         switch type {
         case .Pressure:
-            value = Measurement(value: Double(measurement as! Float), unit: UnitPressure.inchesOfMercury)
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement), unit: UnitPressure.inchesOfMercury)
+            }
         case .Temperature:
-            value = Measurement(value: Double(measurement as! Float), unit: UnitTemperature.fahrenheit)
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement), unit: UnitTemperature.fahrenheit)
+            }
         case .AirQuality:
-            value = Measurement(value: Double(measurement as! Float), unit: Unit(symbol: "µg/m^3"))
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: "µg/m^3"))
+            }
         case .WindSpeed:
-            value = Measurement(value: Double(measurement as! Float), unit: UnitSpeed.milesPerHour)
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement), unit: UnitSpeed.milesPerHour)
+            }
         case .RainRate:
-            value = Measurement(value: Double(measurement as! Float) , unit: Unit(symbol: "in/hr"))
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement) , unit: Unit(symbol: "in/hr"))
+            }
         case .Rain:
-            value = Measurement(value: Double(measurement as! Float) , unit: UnitLength.inches)
+            if let measurement = measurement as? Float {
+                value = Measurement(value: Double(measurement) , unit: UnitLength.inches)
+            }
         case .Humidity:
-            value = Measurement(value: Double(measurement as! Int), unit: Unit(symbol: "%"))
+            if let measurement = measurement as? Int {
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: "%"))
+            }
         case .WindDirection:
-            value = Measurement(value: Double(measurement as! Int), unit: UnitAngle.degrees)
+            if let measurement = measurement as? Int {
+                value = Measurement(value: Double(measurement), unit: UnitAngle.degrees)
+            }
         case .Radiation, .Battery, .RainDate, .General: // Unit-less
             break
         }
