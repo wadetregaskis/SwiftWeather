@@ -17,7 +17,7 @@ A Swift weather package to support multiple weather APIs.
 
 ## Swift Package Manager
 
-Add the following package to your Package.swift file. Swift 4 & 5 are supported for macOS 10.12, iOS 12 and tvOS 12.
+Add the following package to your Package.swift file:
 
 ``` Swift
 .package(url: "https://github.com/wadetregaskis/SwiftWeather", .branch("master")),
