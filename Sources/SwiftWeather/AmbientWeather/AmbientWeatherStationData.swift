@@ -2,7 +2,7 @@
 
 import Foundation
 
-open class AmbientWeatherStationData: WeatherDeviceData, Codable {
+open class AmbientWeatherStationData: WeatherReport, Codable {
     internal let windDirection: Int?
     internal let windSpeedMPH: Float?
     internal let windGustMPH: Float?

@@ -204,7 +204,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter uniqueID: MAC address of the weather station
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     ///
-    public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void) {
+    public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherReport?) -> Void) {
         getHistoricalMeasurements(uniqueID: uniqueID, count: 1) { result in
             completionHandler(result?.first)
         }
@@ -217,7 +217,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     /// - Parameter count: number of entries that we want to get.  Min is 1: Max is 288
     ///
-    public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void) {
+    public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void) {
         let endpoint: URL
 
         do {

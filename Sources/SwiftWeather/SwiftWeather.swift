@@ -1,8 +1,8 @@
 //  Created by Mike Manzo on 5/10/20.
 
 public protocol WeatherPlatform {
-    func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherDeviceData]?) -> Void)
-    func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherDeviceData?) -> Void)
+    func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
+    func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherReport?) -> Void)
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
     
     var  reportingDevices: [[String: WeatherDevice]] { get }
@@ -12,7 +12,7 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
     var deviceID: String? { get }
 }
 
-public protocol WeatherDeviceData: Codable, CustomStringConvertible {
+public protocol WeatherReport: Codable, CustomStringConvertible {
     var availableSensors: [WeatherSensor] { get }
 }
 
