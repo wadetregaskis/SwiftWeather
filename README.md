@@ -1,6 +1,5 @@
 # SwiftWeather
 
-![Swift](https://github.com/wadetregaskis/SwiftWeather/workflows/Swift/badge.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wadetregaskis/SwiftWeather.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/wadetregaskis/SwiftWeather.svg)
 ![GitHub All Releases](https://img.shields.io/github/downloads/wadetregaskis/SwiftWeather/total.svg)
