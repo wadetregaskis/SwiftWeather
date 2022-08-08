@@ -28,9 +28,9 @@ Add the following package to your Package.swift file:
 SwiftWeather uses a factory pattern to create individual weather services.  To initialize the service, all you you need to do is specify a weather service type and pass it the required API key(s).  Some APIs require a single key; some require multiple keys.  For now, the only supported service is AmbientWeather.net.  AmbientWeather requires two keys.  To initialze the service, you need call only one function.  For example:
 
 ```swift
-guard let service = SwiftWeather.shared().getService(weatherServiceType: .Ambient,
-                                                     apiKeys: ["*** YOUR API Key ***",
-                                                               "*** YOUR Application Key***"]) else { return }
+guard let service = SwiftWeather.create(weatherServiceType: .AmbientWeather,
+                                        apiKeys: ["*** YOUR API Key ***",
+                                                  "*** YOUR Application Key***"]) else { return }
 ```
 
 Once you have successfully initialized the service, it needs to be setup for one of two possible use cases.
