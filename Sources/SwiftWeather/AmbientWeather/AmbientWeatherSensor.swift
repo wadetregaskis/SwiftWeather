@@ -11,7 +11,6 @@ open class AmbientWeatherSensor: WeatherSensor {
     required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
         var value = measurement
 
-
         switch type {
         case .Pressure:
             value = Measurement(value: Double(measurement as! Float), unit: UnitPressure.inchesOfMercury)
