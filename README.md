@@ -240,7 +240,9 @@ open class WeatherSensor {
 }
 ```
 
-Once you have successfully called either *getLastMeasurement* or *getHistoricalMeasurements* you will have access to every piece of data that the station is reporting back to the API service.  Have a look in the package for details on exposed Properties to use in your application.
+Measurements vary in their type - Foundation's Measurement class is used wherever applicable, but some are more primitive types (e.g. Date for the last time it rained).
+
+Have a look in the package - and experiment with this library against a real station of interest - for details on sensors available to use in your application.
 
 ## To Do
 
