@@ -8,7 +8,7 @@ import Foundation
 ///
 open class AmbientWeatherDevice: WeatherDevice {
     private let info: AmbientWeatherStationInfo?
-    private let macAddress: String?
+    private let macAddress: WeatherDeviceID
     public let lastData: AmbientWeatherStationData?
     
     enum CodingKeys: String, CodingKey {
@@ -71,7 +71,7 @@ open class AmbientWeatherDevice: WeatherDevice {
     }
     
     /// Return the MAC Address of the device as reported by AmbientWeather.net
-    public var deviceID: String? {
+    public var deviceID: WeatherDeviceID {
         return macAddress
     }
     
@@ -132,7 +132,7 @@ open class AmbientWeatherDevice: WeatherDevice {
 extension AmbientWeatherDevice: CustomStringConvertible {
     public var description: String {
         """
-        MAC Address: \(macAddress!)
+        ID (MAC Address): \(deviceID)
         \(info?.description ?? "INFO: Error")
         """
     }

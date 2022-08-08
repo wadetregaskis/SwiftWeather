@@ -99,7 +99,7 @@ extension AmbientWeatherError: LocalizedError {
 
 public final class AmbientWeather: WeatherPlatform, Codable {
     private let apiEndPoint = "https://api.ambientweather.net/"
-    private var knownDevices = [[String: AmbientWeatherDevice]]()
+    private var knownDevices = [[WeatherDeviceID: AmbientWeatherDevice]]()
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -110,7 +110,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     }
 
     /// Returns an array containing the devices AmbientWeather is reporting
-    public var reportingDevices: [[String: WeatherDevice]] {
+    public var reportingDevices: [[WeatherDeviceID: WeatherDevice]] {
         get {
             return knownDevices
         }
@@ -187,7 +187,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
 
             do {
                 for device in try JSONDecoder().decode([AmbientWeatherDevice].self, from: data) {
-                    self.knownDevices.append([device.deviceID!: device])
+                    self.knownDevices.append([device.deviceID: device])
                 }
             } catch {
                 completionHandler(.Error(AmbientWeatherError.from(apiResponse: data, else: error)))
@@ -201,11 +201,11 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     ///
     /// WeatherService protocol function
     /// Get the last measurement's worth of data from the station with the identified ID
-    /// - Parameter uniqueID: MAC address of the weather station
+    /// - Parameter device: The weather device of interest.
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     ///
-    public func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherReport?) -> Void) {
-        getHistoricalMeasurements(uniqueID: uniqueID, count: 1) { result in
+    public func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void) {
+        getHistoricalMeasurements(device: device, count: 1) { result in
             completionHandler(result?.first)
         }
     }
@@ -213,15 +213,15 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     ///
     /// WeatherService protocol function
     /// Get the last measurement's worth of data from the station with the identified ID
-    /// - Parameter uniqueID: MAC address of the weather station
+    /// - Parameter device: The weather device of interest.
     /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
     /// - Parameter count: number of entries that we want to get.  Min is 1: Max is 288
     ///
-    public func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void) {
+    public func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void) {
         let endpoint: URL
 
         do {
-            endpoint = try dataEndPoint(macAddress: uniqueID!, limit: count)
+            endpoint = try dataEndPoint(macAddress: device, limit: count)
         } catch let error {
             print(error)
             completionHandler(nil)

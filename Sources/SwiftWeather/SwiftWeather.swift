@@ -3,16 +3,19 @@
 import Foundation
 
 
+public typealias WeatherDeviceID = String
+
+
 public protocol WeatherPlatform {
-    func getHistoricalMeasurements(uniqueID: String?, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
-    func getLastMeasurement(uniqueID: String?, completionHandler: @escaping (WeatherReport?) -> Void)
+    func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
+    func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void)
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
     
-    var  reportingDevices: [[String: WeatherDevice]] { get }
+    var  reportingDevices: [[WeatherDeviceID: WeatherDevice]] { get }
 }
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
-    var deviceID: String? { get }
+    var deviceID: WeatherDeviceID { get }
 }
 
 public protocol WeatherReport: Codable, CustomStringConvertible {
