@@ -98,7 +98,7 @@ extension AmbientWeatherError: LocalizedError {
             )
         case .conflictingDeviceIDs(let a, let b):
             return NSLocalizedString(
-                "AmbientWeather: API reported two devices with the same ID (\(a.deviceID)):\n\n\(a)\n\n\(b)", comment: "Two (or more) devices reported that have the same ID.")
+                "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)", comment: "Two (or more) devices reported that have the same ID.")
         }
     }
 }
@@ -183,7 +183,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                 deviceList = try JSONDecoder().decode(type(of: deviceList), from: data)
 
                 self.devices = try Dictionary(
-                    deviceList.map { ($0.deviceID, $0) },
+                    deviceList.map { ($0.ID, $0) },
                     uniquingKeysWith: { throw AmbientWeatherError.conflictingDeviceIDs($0, $1) })
             } catch {
                 completionHandler(.Error(AmbientWeatherError.from(apiResponse: data, else: error)))

@@ -71,7 +71,7 @@ open class AmbientWeatherDevice: WeatherDevice {
     }
     
     /// Return the MAC Address of the device as reported by AmbientWeather.net
-    public var deviceID: WeatherDeviceID {
+    public var ID: WeatherDeviceID {
         return macAddress
     }
     
@@ -132,7 +132,7 @@ open class AmbientWeatherDevice: WeatherDevice {
 extension AmbientWeatherDevice: CustomStringConvertible {
     public var description: String {
         """
-        ID (MAC Address): \(deviceID)
+        ID (MAC Address): \(ID)
         \(info?.description ?? "INFO: Error")
         """
     }

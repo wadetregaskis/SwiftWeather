@@ -15,7 +15,7 @@ public protocol WeatherPlatform {
 }
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
-    var deviceID: WeatherDeviceID { get }
+    var ID: WeatherDeviceID { get }
 }
 
 public protocol WeatherReport: Codable, CustomStringConvertible {
