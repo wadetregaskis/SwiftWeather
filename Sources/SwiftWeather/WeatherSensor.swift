@@ -18,52 +18,14 @@ public enum WeatherSensorType {
     case Rain
 }
 
-/// 
-/// Base sensor descriptor for SwiftWeather
-/// Generic descriptors:
-/// - _description: What the sensor does
-/// - _sensorID: Uniqe Identifier of of the sensor
-/// - _unit: What the measurements are in (e.g., in, W, F, etc)
-/// - _name: What do you want to call the sensor
-/// - _value: Current measurement for the sensor
-///
+/// Base class for weather sensors.
 open class WeatherSensor {
-    internal var _type: WeatherSensorType
-    internal var _description: String
-    internal var _sensorID: String
-    internal var _unit: String
-    internal var _name: String
-    internal var _value: Any
-    
-    /// Return the value of the measurement for this sensor as reported by the API
-    open var measurement: Any {
-        return _value
-    }
-    
-    /// Return the value of the measurement for this sensor as reported by the API
-    open var type: WeatherSensorType {
-        return _type
-    }
-    
-    /// Return the user-defined name for this sensor
-    open var name: String {
-        return _name
-    }
-    
-    /// Return the api-defined ID for this sensor
-    open var sensorID: String {
-        return _sensorID
-    }
-    
-    /// Return the ap-defined default unit for this sensor
-    open var unit: String {
-        return _unit
-    }
-    
-    /// Return the user-defined description for this sensor
-    open var description: String {
-        return _description
-    }
+    public let type: WeatherSensorType
+    public let description: String
+    public let sensorID: String
+    public let unit: String
+    public let name: String
+    public let measurement: Any
     
     ///
     /// A compact way to progamatically represent a "sensor" as defined in the API docs
@@ -75,13 +37,18 @@ open class WeatherSensor {
     ///   - unit: api-defined default unit
     ///   - desc: user-defined free-text description of what the sensor does and/or measures
     ///
-    required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
-        _value = measurement
-        _sensorID = sensorID
-        _description = desc
-        _name = name
-        _unit = unit
-        _type = type
+    required public init(type: WeatherSensorType,
+                         name: String,
+                         sensorID: String,
+                         measurement: Any,
+                         unit: String,
+                         desc: String) {
+        self.measurement = measurement
+        self.sensorID = sensorID
+        self.description = desc
+        self.name = name
+        self.unit = unit
+        self.type = type
     }
 }
 

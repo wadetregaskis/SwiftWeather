@@ -9,27 +9,30 @@ open class AmbientWeatherSensor: WeatherSensor {
     ///     - _value: We are taking advantage of the fact that some of the AW sensors can have units that are convertible.  Those that are fixed - are fixed.
     ///
     required public init (type: WeatherSensorType, name: String, sensorID: String, measurement: Any, unit: String, desc: String) {
-        super.init(type: type, name: name, sensorID: sensorID, measurement: measurement, unit: unit, desc: desc)
-        
+        var value = measurement
+
+
         switch type {
         case .Pressure:
-            _value = Measurement(value: Double(measurement as! Float), unit: UnitPressure.inchesOfMercury)
+            value = Measurement(value: Double(measurement as! Float), unit: UnitPressure.inchesOfMercury)
         case .Temperature:
-            _value = Measurement(value: Double(measurement as! Float), unit: UnitTemperature.fahrenheit)
+            value = Measurement(value: Double(measurement as! Float), unit: UnitTemperature.fahrenheit)
         case .AirQuality:
-            _value = Measurement(value: Double(measurement as! Float), unit: Unit(symbol: "µg/m^3"))
+            value = Measurement(value: Double(measurement as! Float), unit: Unit(symbol: "µg/m^3"))
         case .WindSpeed:
-            _value = Measurement(value: Double(measurement as! Float), unit: UnitSpeed.milesPerHour)
+            value = Measurement(value: Double(measurement as! Float), unit: UnitSpeed.milesPerHour)
         case .RainRate:
-            _value = Measurement(value: Double(measurement as! Float) , unit: Unit(symbol: "in/hr"))
+            value = Measurement(value: Double(measurement as! Float) , unit: Unit(symbol: "in/hr"))
         case .Rain:
-            _value = Measurement(value: Double(measurement as! Float) , unit: UnitLength.inches)
+            value = Measurement(value: Double(measurement as! Float) , unit: UnitLength.inches)
         case .Humidity:
-            _value = Measurement(value: Double(measurement as! Int), unit: Unit(symbol: "%"))
+            value = Measurement(value: Double(measurement as! Int), unit: Unit(symbol: "%"))
         case .WindDirection:
-            _value = Measurement(value: Double(measurement as! Int), unit: UnitAngle.degrees)
+            value = Measurement(value: Double(measurement as! Int), unit: UnitAngle.degrees)
         case .Radiation, .Battery, .RainDate, .General: // Unit-less
             break
         }
+
+        super.init(type: type, name: name, sensorID: sensorID, measurement: value, unit: unit, desc: desc)
     }
 }
