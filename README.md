@@ -195,7 +195,7 @@ public protocol WeatherDevice {
 
 ```swift
 public protocol WeatherDeviceData {
-    var availableSensors: [WeatherSensor] { get }
+    var sensors: [WeatherSensor] { get }
 }
 ```
 

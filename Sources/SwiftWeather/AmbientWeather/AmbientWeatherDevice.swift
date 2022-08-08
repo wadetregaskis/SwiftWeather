@@ -87,7 +87,7 @@ open class AmbientWeatherDevice: WeatherDevice {
     
     /// Returns an array containing all sensors that are reporting
     public var sensors: [AmbientWeatherSensor] {
-        return lastData!.availableSensors as! [AmbientWeatherSensor]
+        return lastData!.sensors as! [AmbientWeatherSensor]
     }
     
     /// Returns an array containing of reporting sensor types

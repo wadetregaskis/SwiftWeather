@@ -13,7 +13,7 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
 }
 
 public protocol WeatherReport: Codable, CustomStringConvertible {
-    var availableSensors: [WeatherSensor] { get }
+    var sensors: [WeatherSensor] { get }
 }
 
 public enum WeatherServiceStatus {

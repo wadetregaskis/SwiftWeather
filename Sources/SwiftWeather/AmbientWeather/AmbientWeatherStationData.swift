@@ -248,7 +248,7 @@ open class AmbientWeatherStationData: WeatherReport, Codable {
     }
     
     /// Returns an array containing all sensors that are reporting
-    public var availableSensors: [WeatherSensor] {
+    public var sensors: [WeatherSensor] {
         (BatterySensors + MiscSensors + PressureSensors + RainSensors + RelaySensors + TemperatureSensors + WindSensors + AirQualitySensors + HumiditySensors).compactMap { $0 }
     }
     
@@ -294,6 +294,6 @@ open class AmbientWeatherStationData: WeatherReport, Codable {
 
 extension AmbientWeatherStationData: CustomStringConvertible {
     public var description: String {
-        availableSensors.map { $0.formatted() }.joined(separator: "\n")
+        sensors.map { $0.formatted() }.joined(separator: "\n")
     }
 }
