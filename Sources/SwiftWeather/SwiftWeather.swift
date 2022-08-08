@@ -8,12 +8,12 @@ public protocol WeatherPlatform {
     var  reportingDevices: [[String: WeatherDevice]] { get }
 }
 
-public protocol WeatherDeviceData: Codable, CustomStringConvertible {
-    var availableSensors: [WeatherSensor] { get }
-}
-
 public protocol WeatherDevice: Codable, CustomStringConvertible {
     var deviceID: String? { get }
+}
+
+public protocol WeatherDeviceData: Codable, CustomStringConvertible {
+    var availableSensors: [WeatherSensor] { get }
 }
 
 public enum WeatherServiceStatus {
