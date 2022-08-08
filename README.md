@@ -35,37 +35,32 @@ guard let service = SwiftWeather.create(weatherServiceType: .AmbientWeather,
 
 Once you have successfully initialized the service, it needs to be setup for one of two possible use cases.
 
-## Use Case #1: Latest Data Reported
+## Use Case #1: Retrieve the most recent report
 
 Retrieve the last good data reported by the weather station.  For example:
 
 ```swift
-service.setupService(completionHandler: { stationStatus in
+service.setupService { stationStatus in
     switch stationStatus {
     case .NotReporting:
         print("According to the weather service, you do not have any devices reporting data")
         break
-    case .Reporting:
-        sleep(1) // <-- DO NOT DO THIS!!  This is for the test stub ONLY: It just prevents the API from throwing us out w/ back-to-back calls within 1 second (e.g, rate exceeded)
-        for (_, device) in service.reportingDevices {
-            switch device {
-            case is AmbientWeatherDevice:
-                print(device)
+    case .Reporting(let devices):
+        for (ID, device) in devices {
+            print(device)
 
-                service.getLastMeasurement(uniqueID: device.deviceID, completionHandler: { stationData in
-                    guard let data = stationData else { return }
-                    print(data)
-                })
-            default:
-                print("Unknown device type detected")
-                break
+            service.getLastMeasurement(device: ID) { report in
+                guard let report else { return }
+                print(report)
             }
+
+            sleep(1) // <-- DO NOT DO THIS IN REAL CODE!!  This is for this example ONLY: It just prevents the API from throwing us out w/ back-to-back calls within 1 second (e.g, rate exceeded).
         }
     case .Error:
         print("There was an error retrieving weather information from the weather service")
         break
     }
-})
+}
 ```
 
 For this use case we focus on *getLastMeasurement*:
@@ -120,75 +115,19 @@ Outdoor Humidity: 63 %
 Indoor Humidity: 30 %
 ```
 
-## Use Case #2: Retrieve "n" Historical Measurements
+## Use Case #2: Retrieve historical reports
 
-The second use case is to retrieve  historical data.  By changing *count* in the function below, you can retrieve mulitple historical measurements for the desired station.  For example:
-
-```swift
-service.setupService(completionHandler: { stationStatus in
-    switch stationStatus {
-    case .NotReporting:
-        print("According to the selected service, you do not have any devices reporting weather data")
-        break
-    case .Reporting:
-        sleep(1) // <-- Test Sub: Just to prevent the API from throwing us out w/ back-to-back calls
-        for (_, device) in service.reportingDevices {
-            switch device {
-            case is AmbientWeatherDevice:
-                print(device)
-                service.getHistoricalMeasurements(uniqueID: device.deviceID, count: 288, completionHandler: { stationData in
-                    guard let historcalData = stationData else { return }
-                     print("Successfully returned:\(historcalData.count) Measurements from AmbientWeather")
-               })
-            default:
-                print("Unknown device type detected")
-                break
-            }
-        }
-    case .Error:
-        print("There was an error retrieving weather information from the selected service")
-        break
-    }
-})
-```
-
-For this use case we focus on *getHistoricalMeasurements*:
+The second use case is to retrieve historical data.  By using `getHistoricalMeasurements` instead, you can retrieve multiple recent measurements for the desired station.  For example:
 
 ```swift
-service.getHistoricalMeasurements(uniqueID: device.deviceID, count: 288, completionHandler: { stationData in
-    guard let historcalData = stationData else { return }
-    print("Successfully returned\(historcalData.count) Measurements")
-})
+service.getHistoricalMeasurements(device: ID, count: 288) { reports in
+    guard let reports else { return }
+    print("Successfully returned \(reports.count) reports from AmbientWeather.")
 ```
 
-The code snippet above produces the following output for a weather station connected to AmbientWeather.net.  As above, each sensor can be interrogated for its intrinsic JSON value.
+Currently this always returns the most recent `count` reports.
 
-```
-MAC Address: A1:B2:C3:D4:E5:F6
-  Info:
-      Name: My Station
-      Location: My Roof
-      GeoLocation:
-		Location: Somewhere
-		Address: Some Address
-		Elevation: Some Elevation
-	  Coordiates:
- 		Type: Point
- 		Latitude: YOUR LATITUDE
- 		Longitude: YOUR LONGITUDE
-
-Successfully returned 288 Measurements
-```
-
-## Access to Device (station) Data
-
-Each weather service consists of a Device:
-
-```swift
-public protocol WeatherDevice {
-    var deviceID: String? { get }
-}
-```
+## Weather report contents
 
 Each report contains at least a date & time of when it was generated, along with all available measures from that time.
 

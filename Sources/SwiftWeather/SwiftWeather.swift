@@ -10,8 +10,6 @@ public protocol WeatherPlatform {
     func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
     func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void)
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
-    
-    var devices: [WeatherDeviceID: WeatherDevice]? { get }
 }
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
@@ -28,7 +26,7 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
 
 public enum WeatherServiceStatus {
     case NotReporting
-    case Reporting
+    case Reporting([WeatherDeviceID: WeatherDevice])
     case Error(Error)
 }
 

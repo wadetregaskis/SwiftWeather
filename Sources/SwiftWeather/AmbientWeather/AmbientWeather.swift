@@ -105,7 +105,6 @@ extension AmbientWeatherError: LocalizedError {
 
 public final class AmbientWeather: WeatherPlatform, Codable {
     private let apiEndPoint = "https://api.ambientweather.net/"
-    public var devices: [WeatherDeviceID: WeatherDevice]?
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -161,9 +160,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             return
         }
 
-        URLSession.shared.dataTask(with: endpoint) { [weak self] data, response, downloadError in
-            guard let self else { return }
-
+        URLSession.shared.dataTask(with: endpoint) { data, response, downloadError in
             if let httpResponse = response as? HTTPURLResponse {
                 guard 200 == httpResponse.statusCode else {
                     print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data?.asString(encoding: .utf8) ?? data.debugDescription)")
@@ -177,12 +174,11 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                 return
             }
 
-            let deviceList: [AmbientWeatherDevice]
+            let devices: [WeatherDeviceID: WeatherDevice]?
 
             do {
-                deviceList = try JSONDecoder().decode(type(of: deviceList), from: data)
-
-                self.devices = try Dictionary(
+                let deviceList = try JSONDecoder().decode([AmbientWeatherDevice].self, from: data)
+                devices = try Dictionary(
                     deviceList.map { ($0.ID, $0) },
                     uniquingKeysWith: { throw AmbientWeatherError.conflictingDeviceIDs($0, $1) })
             } catch {
@@ -190,7 +186,11 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                 return
             }
 
-            completionHandler(deviceList.count > 0 ? .Reporting : .NotReporting)
+            if let devices {
+                completionHandler(.Reporting(devices))
+            } else {
+                completionHandler(.NotReporting)
+            }
         }.resume()
     }
     
