@@ -11,7 +11,7 @@ public protocol WeatherPlatform {
     func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void)
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
     
-    var  reportingDevices: [[WeatherDeviceID: WeatherDevice]] { get }
+    var devices: [WeatherDeviceID: WeatherDevice]? { get }
 }
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {

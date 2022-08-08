@@ -13,6 +13,9 @@ enum AmbientWeatherError: Error {
 
     case tooManyAPIKeys
 
+    /// Thrown whenever two devices appear with the same device ID in the list of available devices from the AmbientWeather API.
+    case conflictingDeviceIDs(AmbientWeatherDevice, AmbientWeatherDevice)
+
     case measurementLimitOutOfRange
     case userRateExceeded
     case corruptJSON
@@ -93,13 +96,16 @@ extension AmbientWeatherError: LocalizedError {
                 "AmbientWeather: Too many keys provided.  AmbientWeather requires two keys: Application (Developer) and API (User)..",
                 comment: "Too many API Keys"
             )
+        case .conflictingDeviceIDs(let a, let b):
+            return NSLocalizedString(
+                "AmbientWeather: API reported two devices with the same ID (\(a.deviceID)):\n\n\(a)\n\n\(b)", comment: "Two (or more) devices reported that have the same ID.")
         }
     }
 }
 
 public final class AmbientWeather: WeatherPlatform, Codable {
     private let apiEndPoint = "https://api.ambientweather.net/"
-    private var knownDevices = [[WeatherDeviceID: AmbientWeatherDevice]]()
+    public var devices: [WeatherDeviceID: WeatherDevice]?
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -107,20 +113,6 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     enum CodingKeys: CodingKey {
         case applicationKey
         case apiKey
-    }
-
-    /// Returns an array containing the devices AmbientWeather is reporting
-    public var reportingDevices: [[WeatherDeviceID: WeatherDevice]] {
-        get {
-            return knownDevices
-        }
-    }
-    
-    /// Returns the number of devices AmbientWeather is reporting
-    var numberOfReportingDevices: Int {
-        get {
-            return knownDevices.count
-        }
     }
 
     /// - Parameter apiKeys: API keys to be used.  You need two keys:
@@ -185,16 +177,20 @@ public final class AmbientWeather: WeatherPlatform, Codable {
                 return
             }
 
+            let deviceList: [AmbientWeatherDevice]
+
             do {
-                for device in try JSONDecoder().decode([AmbientWeatherDevice].self, from: data) {
-                    self.knownDevices.append([device.deviceID: device])
-                }
+                deviceList = try JSONDecoder().decode(type(of: deviceList), from: data)
+
+                self.devices = try Dictionary(
+                    deviceList.map { ($0.deviceID, $0) },
+                    uniquingKeysWith: { throw AmbientWeatherError.conflictingDeviceIDs($0, $1) })
             } catch {
                 completionHandler(.Error(AmbientWeatherError.from(apiResponse: data, else: error)))
                 return
             }
 
-            completionHandler(self.knownDevices.count > 0 ? .Reporting : .NotReporting)
+            completionHandler(deviceList.count > 0 ? .Reporting : .NotReporting)
         }.resume()
     }
     
