@@ -16,6 +16,8 @@ enum AmbientWeatherError: Error {
     /// Thrown whenever two devices appear with the same device ID in the list of available devices from the AmbientWeather API.
     case conflictingDeviceIDs(AmbientWeatherDevice, AmbientWeatherDevice)
 
+    case invalidReportCount(Int)
+
     case measurementLimitOutOfRange
     case userRateExceeded
     case corruptJSON
@@ -101,18 +103,22 @@ extension AmbientWeatherError: LocalizedError {
             )
         case .conflictingDeviceIDs(let a, let b):
             return NSLocalizedString(
-                "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)", comment: "Two (or more) devices reported that have the same ID.")
-
+                "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)",
+                comment: "Two (or more) devices reported that have the same ID.")
         case .platformMissingFromDecoderUserInfo:
             return NSLocalizedString(
-                "Parent WeatherPlatform missing from Decoder userInfo.",
+                "AmbientWeather: Parent AmbientWeather[Platform] missing from Decoder userInfo.",
                 comment: "When the WeatherPlatform object that is creating a WeatherDevice is not found in the Decoder's userInfo dictionary")
+        case .invalidReportCount(let count):
+            return NSLocalizedString(
+                "At least 1 weather report must be requested, not \(count).",
+                comment: "When a caller asks for an invalid number of weather reports (i.e. 0 or a negative number).")
         }
     }
 }
 
 public final class AmbientWeather: WeatherPlatform, Codable {
-    private let apiEndPoint = "https://api.ambientweather.net/"
+    private let apiEndPoint = "https://api.ambientweather.net"
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -179,88 +185,33 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             }
         }
     }
-    
-    ///
-    /// WeatherService protocol function
-    /// Get the last measurement's worth of data from the station with the identified ID
-    /// - Parameter device: The weather device of interest.
-    /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
-    ///
-    public func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void) {
-        getHistoricalMeasurements(device: device, count: 1) { result in
-            completionHandler(result?.first)
-        }
-    }
 
-    ///
-    /// WeatherService protocol function
-    /// Get the last measurement's worth of data from the station with the identified ID
-    /// - Parameter device: The weather device of interest.
-    /// - Parameter completionHandler: Return the last data collected by the station; returns nil if a failure occurs.
-    /// - Parameter count: number of entries that we want to get.  Min is 1: Max is 288
-    ///
-    public func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void) {
-        let endpoint: URL
-
-        do {
-            endpoint = try dataEndPoint(macAddress: device, limit: count)
-        } catch let error {
-            print(error)
-            completionHandler(nil)
-            return
-        }
-
-        URLSession.shared.dataTask(with: endpoint) { data, response, downloadError in
-            if let httpResponse = response as? HTTPURLResponse {
-                guard 200 == httpResponse.statusCode else {
-                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data?.asString(encoding: .utf8) ?? data.debugDescription)")
-                    completionHandler(nil)
-                    return
-                }
-            }
-
-            guard let data else {
-                print("Failed to fetch data from \(endpoint): \(downloadError?.localizedDescription ?? "no error details given")\nResponse:\n\(response?.debugDescription ?? "<missing>")")
-                completionHandler(nil)
-                return
-            }
-
-            do {
-                completionHandler(try JSONDecoder().decode([AmbientWeatherStationData].self, from: data))
-            } catch {
-                print("Failed to decode response as weather station data: \(error)\nResponse body:\n\(String(data: data, encoding: .utf8) ?? data.debugDescription)")
-                completionHandler(nil)
-            }
-        }.resume()
-    }
-    
-    ///
-    /// Build Device End Point URL so we can determine the number of devices supported by the account
-    /// - Throws: AmbientWeatherError
-    /// - Returns: Fully-formedDevince endpoint URL
-    ///
     private func deviceEndPoint() throws -> URL {
-        guard let url = URL(string: apiEndPoint + apiVersion + "/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
+        guard let url = URL(string: "\(apiEndPoint)/\(apiVersion)/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
             throw AmbientWeatherError.invalidURL
         }
 
         return url
     }
-    
-    ///
-    /// Build Device Data End Point URL so we can query the device for data
-    /// - Parameters:
-    ///   - macAddress: MAC address of the weather station
-    ///   - limit: the number of measurements you wish to recive.  The bounds on limit are 1 and 288
-    /// - Throws: AmbientWeatherError
-    /// - Returns: Fully-formedDevince endpoint URL
-    ///
-    private func dataEndPoint(macAddress: String, limit: Int = 1) throws -> URL {
+
+    private static let formatter = {
+        var formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    internal func dataEndPoint(macAddress: String, limit: Int = 1, date: Date? = nil) throws -> URL {
         guard limit >= 1 && limit <= 288 else {
             throw AmbientWeatherError.measurementLimitOutOfRange
         }
 
-        guard let url = URL(string: apiEndPoint + apiVersion + "/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)") else {
+        var urlString = "\(apiEndPoint)/\(apiVersion)/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)"
+
+        if let date {
+            urlString += "&endDate=\(AmbientWeather.formatter.string(from: date))"
+        }
+
+        guard let url = URL(string: urlString) else {
             throw AmbientWeatherError.invalidURL
         }
 

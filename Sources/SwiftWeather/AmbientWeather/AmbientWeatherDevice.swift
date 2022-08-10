@@ -7,6 +7,7 @@ import Foundation
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
 open class AmbientWeatherDevice: WeatherDevice {
+    private let _platform: AmbientWeather
     private let info: AmbientWeatherStationInfo?
     private let macAddress: WeatherDeviceID
 
@@ -15,12 +16,92 @@ open class AmbientWeatherDevice: WeatherDevice {
         case info = "info"
     }
 
-    internal(set) public var platform: WeatherPlatform
+    public var platform: WeatherPlatform {
+        _platform
+    }
 
     public var ID: WeatherDeviceID {
         return macAddress
     }
-    
+
+    public var latestReport: WeatherReport {
+        get async throws {
+            for try await report in reports(count: 1) {
+                return report
+            }
+
+            throw AmbientWeatherError.unknown
+        }
+    }
+
+    public func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error> {
+        reports(count: count)
+    }
+
+    public func reports(count: Int, upToAndIncluding: Date = .distantFuture) -> AsyncThrowingStream<WeatherReport, Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    guard 0 < count else {
+                        throw AmbientWeatherError.invalidReportCount(count)
+                    }
+                    
+                    var countRemaining = count
+                    var date = upToAndIncluding
+
+                    while 0 < countRemaining && !Task.isCancelled {
+                        let endpoint = try _platform.dataEndPoint(macAddress: ID,
+                                                                  limit: min(countRemaining, 288),
+                                                                  date: (date == .distantFuture) ? nil : date)
+                        let (data, response) = try await URLSession.shared.data(from: endpoint)
+                        let timeLastAPICallEnded = Date.now
+
+                        if let httpResponse = response as? HTTPURLResponse {
+                            guard 200 == httpResponse.statusCode else {
+                                print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data.asString(encoding: .utf8) ?? data.debugDescription)")
+                                throw AmbientWeatherError.from(apiResponse: data)
+                            }
+                        }
+
+                        let reports: [AmbientWeatherStationData]
+
+                        do {
+                            reports = try JSONDecoder().decode(type(of: reports), from: data)
+                        } catch {
+                            throw AmbientWeatherError.from(apiResponse: data, else: error)
+                        }
+
+                        for report in reports {
+                            continuation.yield(report)
+
+                            if Task.isCancelled {
+                                return
+                            }
+
+                            date = report.date.advanced(by: -1)
+                        }
+
+                        countRemaining -= reports.count
+
+                        if 0 < countRemaining {
+                            while !Task.isCancelled {
+                                let secondsOfCooldownLeft = timeLastAPICallEnded.advanced(by: 1).timeIntervalSinceNow
+
+                                if 0 < secondsOfCooldownLeft {
+                                    try? await Task.sleep(nanoseconds: UInt64(secondsOfCooldownLeft * 1e9))
+                                } else {
+                                    break
+                                }
+                            }
+                        }
+                    }
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     /// Return the station info.  Note, this returns all info the *user* has entered for the device
     public var information: AmbientWeatherStationInfo? {
         return info
@@ -31,7 +112,7 @@ open class AmbientWeatherDevice: WeatherDevice {
             throw AmbientWeatherError.platformMissingFromDecoderUserInfo
         }
 
-        self.platform = platform
+        self._platform = platform
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 

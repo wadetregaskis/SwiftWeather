@@ -8,15 +8,26 @@ public typealias WeatherDeviceID = String
 
 public protocol WeatherPlatform {
     var devices: [WeatherDeviceID: WeatherDevice] { get async throws }
-
-    func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
-    func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void)
 }
 
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
     var platform: WeatherPlatform { get }
     var ID: WeatherDeviceID { get }
+
+    /// The latest report.  This is just a convenience over calling latestReports(count:) or reports(count:upToAndIncluding:).
+    var latestReport: WeatherReport { get async throws }
+
+    /// Fetches the latest report(s).
+    /// - Parameter count: Number of reports to retrieve.  Must be at least one.
+    /// - Returns A stream of reports in reverse chronological order (i.e. starting with the newest).
+    func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error>
+
+    /// Fetches the report(s) leading up to the given date.
+    /// - Parameter count: Number of reports to retrieve.  Must be at least one.
+    /// - Parameter upToAndIncluding: The end date for the returned reports.
+    /// - Returns A stream of reports in reverse chronological order (i.e. starting with the newest).
+    func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<WeatherReport, Error>
 }
 
 
