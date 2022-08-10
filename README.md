@@ -2,7 +2,6 @@
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wadetregaskis/SwiftWeather.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/wadetregaskis/SwiftWeather.svg)
-![GitHub All Releases](https://img.shields.io/github/downloads/wadetregaskis/SwiftWeather/total.svg)
 ![Swift](https://img.shields.io/badge/%20in-swift%205.1-orange.svg)
 
 A Swift weather package to support multiple weather APIs.
