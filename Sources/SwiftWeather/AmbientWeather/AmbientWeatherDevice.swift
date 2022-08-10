@@ -12,7 +12,6 @@ open class AmbientWeatherDevice: WeatherDevice {
 
     enum CodingKeys: String, CodingKey {
         case macAddress = "macAddress"
-        case lastData = "lastData"
         case info = "info"
     }
 
