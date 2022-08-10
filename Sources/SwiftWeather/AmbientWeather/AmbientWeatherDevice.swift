@@ -16,7 +16,9 @@ open class AmbientWeatherDevice: WeatherDevice {
         case lastData = "lastData"
         case info = "info"
     }
-    
+
+    internal(set) public var platform: WeatherPlatform
+
     /// Return the timestamp from lastData, as a NSDate in UTC
     public var timestamp: Date? {
         guard let d = lastData?.dateUTC else {
@@ -97,6 +99,12 @@ open class AmbientWeatherDevice: WeatherDevice {
     ///
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        guard let platform = decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] as? AmbientWeather else {
+            throw AmbientWeatherError.platformMissingFromDecoderUserInfo
+        }
+
+        self.platform = platform
         
         do {
             macAddress = try container.decodeIfPresent(String.self, forKey: .macAddress) ?? "XXX"

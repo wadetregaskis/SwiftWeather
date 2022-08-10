@@ -20,6 +20,9 @@ enum AmbientWeatherError: Error {
     case userRateExceeded
     case corruptJSON
     case invalidURL
+
+    case platformMissingFromDecoderUserInfo
+
     case unknown
 
     internal static func from(apiResponse: Data?, else otherError: Error? = nil) -> Error {
@@ -99,6 +102,11 @@ extension AmbientWeatherError: LocalizedError {
         case .conflictingDeviceIDs(let a, let b):
             return NSLocalizedString(
                 "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)", comment: "Two (or more) devices reported that have the same ID.")
+
+        case .platformMissingFromDecoderUserInfo:
+            return NSLocalizedString(
+                "Parent WeatherPlatform missing from Decoder userInfo.",
+                comment: "When the WeatherPlatform object that is creating a WeatherDevice is not found in the Decoder's userInfo dictionary")
         }
     }
 }
@@ -144,54 +152,32 @@ public final class AmbientWeather: WeatherPlatform, Codable {
         self.applicationKey = applicationKey
     }
 
-    ///
-    /// WeatherService protocol function
-    /// All this function does (for now) is grab the devices that are associated with the account
-    ///
-    /// - Parameter completionHandler: returns one of three states to the caller: NotReporting; Reporting; Error
-    ///
-    public func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void) {
-        let endpoint: URL
+    internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
 
-        do {
-            endpoint = try deviceEndPoint()
-        } catch let error {
-            completionHandler(.Error(error))
-            return
-        }
+    public var devices: [WeatherDeviceID: WeatherDevice] {
+        get async throws {
+            let endpoint = try deviceEndPoint()
+            let (data, response) = try await URLSession.shared.data(from: endpoint)
 
-        URLSession.shared.dataTask(with: endpoint) { data, response, downloadError in
             if let httpResponse = response as? HTTPURLResponse {
                 guard 200 == httpResponse.statusCode else {
-                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data?.asString(encoding: .utf8) ?? data.debugDescription)")
-                    completionHandler(.Error(AmbientWeatherError.from(apiResponse: data)))
-                    return
+                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data.asString(encoding: .utf8) ?? data.debugDescription)")
+                    throw AmbientWeatherError.from(apiResponse: data)
                 }
             }
 
-            guard let data else {
-                completionHandler(.Error(downloadError ?? AmbientWeatherError.unknown))
-                return
-            }
-
-            let devices: [WeatherDeviceID: WeatherDevice]?
+            let decoder = JSONDecoder()
+            decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] = self
 
             do {
-                let deviceList = try JSONDecoder().decode([AmbientWeatherDevice].self, from: data)
-                devices = try Dictionary(
+                let deviceList = try decoder.decode([AmbientWeatherDevice].self, from: data)
+                return try Dictionary(
                     deviceList.map { ($0.ID, $0) },
                     uniquingKeysWith: { throw AmbientWeatherError.conflictingDeviceIDs($0, $1) })
             } catch {
-                completionHandler(.Error(AmbientWeatherError.from(apiResponse: data, else: error)))
-                return
+                throw AmbientWeatherError.from(apiResponse: data, else: error)
             }
-
-            if let devices {
-                completionHandler(.Reporting(devices))
-            } else {
-                completionHandler(.NotReporting)
-            }
-        }.resume()
+        }
     }
     
     ///

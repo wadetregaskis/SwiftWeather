@@ -7,13 +7,15 @@ public typealias WeatherDeviceID = String
 
 
 public protocol WeatherPlatform {
+    var devices: [WeatherDeviceID: WeatherDevice] { get async throws }
+
     func getHistoricalMeasurements(device: WeatherDeviceID, count: Int, completionHandler: @escaping ([WeatherReport]?) -> Void)
     func getLastMeasurement(device: WeatherDeviceID, completionHandler: @escaping (WeatherReport?) -> Void)
-    func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
 }
 
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
+    var platform: WeatherPlatform { get }
     var ID: WeatherDeviceID { get }
 }
 
@@ -24,13 +26,6 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
 
     /// Returns all the sensors in the report.
     var sensors: [WeatherSensor] { get }
-}
-
-
-public enum WeatherServiceStatus {
-    case NotReporting
-    case Reporting([WeatherDeviceID: WeatherDevice])
-    case Error(Error)
 }
 
 
