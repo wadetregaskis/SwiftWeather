@@ -28,11 +28,6 @@ open class AmbientWeatherDevice: WeatherDevice {
         return info
     }
     
-    ///
-    /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoder
-    /// - Parameter decoder: JSON_Derived decoder
-    /// - Throws: a decoding error if something has gone wrong
-    ///
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -50,12 +45,7 @@ open class AmbientWeatherDevice: WeatherDevice {
             throw error
         }
     }
-    
-    /// We have to roll our own Codable class due to custom properties
-    ///
-    /// - Parameter encoder: encoder to act on
-    /// - Throws: error
-    ///
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
