@@ -17,7 +17,6 @@ open class AmbientWeatherDevice: WeatherDevice {
 
     internal(set) public var platform: WeatherPlatform
 
-    /// Return the MAC Address of the device as reported by AmbientWeather.net
     public var ID: WeatherDeviceID {
         return macAddress
     }
