@@ -27,23 +27,19 @@ open class AmbientWeatherDevice: WeatherDevice {
     public var information: AmbientWeatherStationInfo? {
         return info
     }
-    
-    required public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
 
+    required public init(from decoder: Decoder) throws {
         guard let platform = decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] as? AmbientWeather else {
             throw AmbientWeatherError.platformMissingFromDecoderUserInfo
         }
 
         self.platform = platform
-        
-        do {
-            macAddress = try container.decodeIfPresent(String.self, forKey: .macAddress) ?? "XXX"
-            //let latestData = try container.decode(AmbientWeatherStationData.self, forKey: .lastData)
-            info = try container.decode(AmbientWeatherStationInfo.self, forKey: .info)
-        } catch let error as DecodingError {
-            throw error
-        }
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        macAddress = try container.decodeIfPresent(String.self, forKey: .macAddress) ?? "XXX"
+        //let latestData = try container.decode(AmbientWeatherStationData.self, forKey: .lastData)
+        info = try container.decode(AmbientWeatherStationInfo.self, forKey: .info)
     }
 
     public func encode(to encoder: Encoder) throws {
