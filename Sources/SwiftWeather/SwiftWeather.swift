@@ -40,7 +40,7 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
 }
 
 
-public enum WeatherServiceType: String, Codable {
+public enum WeatherPlatformType: String, Codable {
     case AmbientWeather
 }
 
@@ -51,7 +51,7 @@ public class SwiftWeather {
     ///   - weatherServiceType: desired weather service.
     ///   - apiKeys: key(s) that are required to initialize the service; it's up to the resulting service to handle the order and # of keys.
     /// - Returns: A new weather platform of the requested type.
-    public static func create(weatherServiceType: WeatherServiceType, apiKeys: [String]) throws -> WeatherPlatform {
+    public static func create(weatherServiceType: WeatherPlatformType, apiKeys: [String]) throws -> WeatherPlatform {
         switch weatherServiceType {
         case .AmbientWeather:
             return try AmbientWeather(apiKeys: apiKeys)
