@@ -25,54 +25,61 @@ Add the following package to your Package.swift file:
 
 # Getting Started
 
-SwiftWeather uses a factory pattern to create individual weather services.  To initialize the service, all you you need to do is specify a weather service type and pass it the required API key(s).  Some APIs require a single key; some require multiple keys.  For now, the only supported service is AmbientWeather.net.  AmbientWeather requires two keys.  To initialze the service, you need call only one function.  For example:
+SwiftWeather uses a factory pattern to create instances of specific weather platforms.  All you you need to do is specify a weather service type and pass it the required API key(s).  Some weather platforms require a single key; some require multiple keys.  For now, the only supported platform is AmbientWeather.net.  AmbientWeather requires two keys.  To initialze a platform instance, you need call only one function:
 
 ```swift
-guard let platform = SwiftWeather.create(weatherServiceType: .AmbientWeather,
+guard let platform = SwiftWeather.create(weatherPlatformType: .AmbientWeather,
                                          apiKeys: ["*** YOUR API Key ***",
                                                    "*** YOUR Application Key***"]) else { return }
 ```
 
-Once you have successfully initialized the service, it needs to be setup for one of two possible use cases.
+Once you have a platform instance, you can retrieve the list of available weather devices (stations):
+
+```swift
+let devices = try await platform.devices
+```
+
+Note that in real-world code you'll likely need to handle any exceptions that are thrown (which typically mean the desired platform isn't supported or the provided keys weren't valid).
+
+`devices` is a map of device IDs to device instances.  You can persist weather device IDs (e.g. into user preferences) in order to recall the same device later (but be aware that device IDs are only unique per weather platform type - make sure to also record which platform the ID is associated with).
+
+Once you've identified a device of interest, you can use it to retrieve weather reports in a variety of ways:
 
 ## Use Case #1: Retrieve the most recent report
 
-Retrieve the last good data reported by the weather station.  For example:
+```swift
+let report = try await device.latestReport
+```
+
+## Use Case #2: Retrieve the N most recent reports
 
 ```swift
-service.setupService { stationStatus in
-    switch stationStatus {
-    case .NotReporting:
-        print("According to the weather service, you do not have any devices reporting data")
-        break
-    case .Reporting(let devices):
-        for (ID, device) in devices {
-            print(device)
-
-            service.getLastMeasurement(device: ID) { report in
-                guard let report else { return }
-                print(report)
-            }
-
-            sleep(1) // <-- DO NOT DO THIS IN REAL CODE!!  This is for this example ONLY: It just prevents the API from throwing us out w/ back-to-back calls within 1 second (e.g, rate exceeded).
-        }
-    case .Error:
-        print("There was an error retrieving weather information from the weather service")
-        break
-    }
+for try await report in device.latestReports(count: N) {
+    …
 }
 ```
 
-For this use case we focus on *getLastMeasurement*:
+Reports are returned in reverse chronological order (i.e. starting with the most recent).  The date interval between them is weather-platform-dependent and/or device-dependent, and also may be irregular if e.g. the weather device in question had internet connectivity issues.
+
+## Use Case #3: Retrieve the report for a past date
 
 ```swift
-service.getLastMeasurement(device: ID) { report in
-    guard let report else { return }
-    print(report)
+for try await report in device.reports(count: 1, upToAndIncluding: date) {
+    …
 }
 ```
 
-The code snippet above produces the following output for a weather station connected to AmbientWeather.net.  Each sensor can be interrogated for its intrinsic JSON value.
+## Use Case #4: Retrieve N reports leading up to a given date
+
+```swift
+for try await report in device.reports(count: N, upToAndIncluding: date) {
+    …
+}
+```
+
+# Working with reports
+
+Exactly what each report contains depends both on the weather platform and weather device in use.  An example from AmbientWeather:
 
 ```
 MAC Address: A1:B2:C3:D4:E5:F6
@@ -115,21 +122,7 @@ Outdoor Humidity: 63 %
 Indoor Humidity: 30 %
 ```
 
-## Use Case #2: Retrieve historical reports
-
-The second use case is to retrieve historical data.  By using `getHistoricalMeasurements` instead, you can retrieve multiple recent measurements for the desired station.  For example:
-
-```swift
-service.getHistoricalMeasurements(device: ID, count: 288) { reports in
-    guard let reports else { return }
-    print("Successfully returned \(reports.count) reports from AmbientWeather.")
-```
-
-Currently this always returns the most recent `count` reports.
-
-## Weather report contents
-
-Each report contains at least a date & time of when it was generated, along with all available measures from that time.
+Each report contains at least a date & time of when it was generated, along with all available measures from that point in time.
 
 ```swift
 public protocol WeatherReport {
@@ -157,7 +150,6 @@ Have a look in the package - and experiment with this library against a real sta
 
 ## To Do
 
-- Support retrieval of weather reports for arbitrary times in the past.
 - Add realtime Ambient Weather API support.
 - Add support for another weather API - suggestions are welcome.
 - Extensive testing for multiple reporting devices per service.
