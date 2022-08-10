@@ -12,9 +12,11 @@ public protocol WeatherPlatform {
     func setupService(completionHandler: @escaping (WeatherServiceStatus) -> Void)
 }
 
+
 public protocol WeatherDevice: Codable, CustomStringConvertible {
     var ID: WeatherDeviceID { get }
 }
+
 
 public protocol WeatherReport: Codable, CustomStringConvertible {
     /// The date & time at which the report was generated.
@@ -24,15 +26,18 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
     var sensors: [WeatherSensor] { get }
 }
 
+
 public enum WeatherServiceStatus {
     case NotReporting
     case Reporting([WeatherDeviceID: WeatherDevice])
     case Error(Error)
 }
 
+
 public enum WeatherServiceType: String, Codable {
     case AmbientWeather
 }
+
 
 public class SwiftWeather {
     /// Initialize the desired service using a platform model
