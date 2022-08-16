@@ -2,6 +2,7 @@
 
 import CoreLocation
 import Foundation
+import SocketIO
 
 ///
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
@@ -95,6 +96,137 @@ open class AmbientWeatherDevice: WeatherDevice {
                             }
                         }
                     }
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+//    class Delegate: NSObject, URLSessionWebSocketDelegate {
+//        func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
+//            print("WebSocket connected (session: \(session), task: \(webSocketTask), protocol: \(proto ?? "nil").")
+//        }
+//
+//        func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+//            print("WebSocket disconnected (session: \(session), task: \(webSocketTask), closeCode: \(closeCode), reason: \(reason?.asString(encoding: .utf8) ?? "nil")).")
+//        }
+//
+//        func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+//            print("Task completed (session: \(session), task: \(task), error: \(error)).")
+//        }
+//
+//        func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+//            print("Session became invalid (session: \(session), error: \(error)).")
+//        }
+//    }
+
+    public var liveReports: AsyncThrowingStream<WeatherReport, Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    let manager = SocketManager(socketURL: try _platform.liveDataEndPoint(),
+                                                config: [.compress,
+                                                         .forceNew(true),
+                                                         .forceWebsockets(true),
+                                                         .log(true),
+                                                         .secure(true),
+                                                         .version(.three)])
+
+                    print("Socket.IO version: \(manager.version)")
+
+                    let socket = manager.defaultSocket
+
+                    socket.onAny { event in
+                        print("Event: \(event)")
+                    }
+
+                    socket.on(clientEvent: .connect) { _, _ in
+                        print("Connected.")
+
+                        // Nope:
+//                        socket.emit("connect")
+
+                        // Nope:
+//                        socket.emit("subscribe", "['ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044']".data(using: .utf8)!)
+
+                        // Nope:
+//                        socket.emit("subscribe", "['ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044']")
+
+                        // Nope:
+//                        socket.emit("subscribe", ["ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044"])
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { 'apiKeys': ['ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044'] }
+//                                """)
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { apiKeys: ['ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044'] }
+//                                """)
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { apiKeys: [ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044] }
+//                                """)
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { apiKeys: ["ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044"] }
+//                                """)
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { "apiKeys": ["ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044"] }
+//                                """.data(using: .utf8)!)
+
+                        // Nope:
+//                        socket.emit("subscribe", """
+//                                { "apiKeys": ["ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044"] }
+//                                """)
+
+                        // Nope:
+                        socket.emit("subscribe", ["apiKeys": ["ea219d5359fa4a16894eb7f186b610429ef38445ff5f407c842649d233168044"]])
+                    }
+
+                    socket.on(clientEvent: .disconnect) { _, _ in
+                        print("Disconnected.")
+                    }
+
+                    socket.on(clientEvent: .error) { error, _ in
+                        print("Error: \(error)")
+                    }
+
+                    socket.on("subscribed") { data, _ in
+                        print("Subscribed to: \(data)")
+                    }
+
+                    socket.on("data") { data, _ in
+                        print("Data: \(data)")
+                    }
+
+                    socket.connect()
+
+                    RunLoop.current.run()
+
+                    try await Task.sleep(nanoseconds: 1_000_000_000_000)
+
+                    print("Done.")
+
+//                    let webSocket = URLSession.shared.webSocketTask(with: try _platform.liveDataEndPoint())
+//                    webSocket.delegate = Delegate()
+//
+//                    webSocket.resume()
+//
+//                    try await webSocket.send(.string("connect"))
+//
+//                    let message = try await webSocket.receive()
+//
+//                    print(message)
+//
+//                    webSocket.cancel()
+
                 } catch {
                     continuation.finish(throwing: error)
                 }

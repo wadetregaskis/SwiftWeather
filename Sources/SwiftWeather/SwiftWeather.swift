@@ -28,6 +28,10 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
     /// - Parameter upToAndIncluding: The end date for the returned reports.
     /// - Returns A stream of reports in reverse chronological order (i.e. starting with the newest).
     func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<WeatherReport, Error>
+
+    /// Fetches reports live, as they're published by the weather device & platform.
+    /// Note that there may of course be some delay between the actual weather station recording data and it making its way through the internet & intermediary services to this client.
+    var liveReports: AsyncThrowingStream<WeatherReport, Error> { get }
 }
 
 

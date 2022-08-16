@@ -118,7 +118,8 @@ extension AmbientWeatherError: LocalizedError {
 }
 
 public final class AmbientWeather: WeatherPlatform, Codable {
-    private let apiEndPoint = "https://api.ambientweather.net"
+    private let RESTEndPoint = "https://api.ambientweather.net"
+    private let liveEndPoint = "wss://rt2.ambientweather.net"
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -187,7 +188,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     }
 
     private func deviceEndPoint() throws -> URL {
-        guard let url = URL(string: "\(apiEndPoint)/\(apiVersion)/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
+        guard let url = URL(string: "\(RESTEndPoint)/\(apiVersion)/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
             throw AmbientWeatherError.invalidURL
         }
 
@@ -205,13 +206,21 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             throw AmbientWeatherError.measurementLimitOutOfRange
         }
 
-        var urlString = "\(apiEndPoint)/\(apiVersion)/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)"
+        var urlString = "\(RESTEndPoint)/\(apiVersion)/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)"
 
         if let date {
             urlString += "&endDate=\(AmbientWeather.formatter.string(from: date))"
         }
 
         guard let url = URL(string: urlString) else {
+            throw AmbientWeatherError.invalidURL
+        }
+
+        return url
+    }
+
+    internal func liveDataEndPoint() throws -> URL {
+        guard let url = URL(string: "\(liveEndPoint)/?api=1&applicationKey=\(applicationKey)") else {
             throw AmbientWeatherError.invalidURL
         }
 
