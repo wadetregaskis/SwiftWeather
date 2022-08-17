@@ -24,6 +24,22 @@ open class AmbientWeatherDevice: WeatherDevice {
         macAddress
     }
 
+    public var name: String? {
+        information?.name
+    }
+
+    public var locationSummary: String? {
+        information?.location
+    }
+
+    public var location: CLLocation? {
+        information?.geolocation?.position
+    }
+
+    public var address: String? {
+        information?.geolocation?.address
+    }
+
     public var latestReport: WeatherReport {
         get async throws {
             for try await report in reports(count: 1) {

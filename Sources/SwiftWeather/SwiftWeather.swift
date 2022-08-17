@@ -1,5 +1,6 @@
 //  Created by Mike Manzo on 5/10/20.
 
+import CoreLocation
 import Foundation
 
 
@@ -24,6 +25,28 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
     ///
     /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
     var ID: WeatherDeviceID { get }
+
+    /// The name of the weather device, as specified by its owner.
+    var name: String? { get }
+
+    /// The location of the weather device, as specified by its owner.
+    ///
+    /// The format of this field is undefined - it is typically freeform text set by the owner.  Thus it could be anything from precise latitude & longitude to a street address to a region name to something abstract like "Home".
+    var locationSummary: String? { get }
+
+    /// The location of the weather device.
+    ///
+    /// It is unusual to find a weather device that does _not_ provide its geolocation, but it is possible.  You should handle this gracefully (e.g. by deferring to ``locationSummary`` or ``name`` if possible).
+    ///
+    /// The precision of this location is undefined, and may vary between platforms and stations.  Likewise it might or might not include elevation.
+    var location: CLLocation? { get }
+
+    /// The address of the weather device, as specified by its owner.
+    ///
+    /// This is not guaranteed to be correct, or even to match ``location``.  It might be specified manually by the device owner.  Its format is undefined.
+    ///
+    /// You may wish to reverse-geocode the address based on ``location`` (if available) when technical accuracy is most important.
+    var address: String? { get }
 
     /// The latest report.  This is just a convenience over calling ``latestReports(count:)`` or ``reports(count:upToAndIncluding:)``.
     var latestReport: WeatherReport { get async throws }
