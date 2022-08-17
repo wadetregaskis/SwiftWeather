@@ -5,13 +5,8 @@ import Foundation
 
 /// Error messages specific to the Ambient Weather API
 enum AmbientWeatherError: Error {
-    case missingApplicationKey
     case invalidApplicationKey
-
-    case missingAPIKey
     case invalidAPIKey
-
-    case tooManyAPIKeys
 
     /// Thrown whenever two devices appear with the same device ID in the list of available devices from the AmbientWeather API.
     case conflictingDeviceIDs(AmbientWeatherDevice, AmbientWeatherDevice)
@@ -86,21 +81,6 @@ extension AmbientWeatherError: LocalizedError {
                 "AmbientWeather: Invalid API (User) Key.",
                 comment: "Invalid API Key"
             )
-        case .missingApplicationKey:
-            return NSLocalizedString(
-                "AmbientWeather: Missing Application (Developer) Key.",
-                comment: "Missing Application Key"
-            )
-        case .missingAPIKey:
-            return NSLocalizedString(
-                "AmbientWeather: Missing API (User) Key.",
-                comment: "Missing API Key"
-            )
-        case .tooManyAPIKeys:
-            return NSLocalizedString(
-                "AmbientWeather: Too many keys provided.  AmbientWeather requires two keys: Application (Developer) and API (User)..",
-                comment: "Too many API Keys"
-            )
         case .conflictingDeviceIDs(let a, let b):
             return NSLocalizedString(
                 "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)",
@@ -128,34 +108,17 @@ public final class AmbientWeather: WeatherPlatform, Codable {
         case apiKey
     }
 
-    /// - Parameter apiKeys: API keys to be used.  You need two keys:
-    ///  - apiKeys[0] == Application Key (Developer Key)
-    ///  - apiKeys[1] == API Key (Customer/User Key)
-    ///
-    internal init(apiKeys: [String]) throws {
-        guard let applicationKey = apiKeys.first else {
-            throw AmbientWeatherError.missingApplicationKey
-        }
-
+    internal init(applicationKey: String, apiKey: String) throws {
         guard !applicationKey.isEmpty else {
-            throw AmbientWeatherError.missingApplicationKey
+            throw AmbientWeatherError.invalidApplicationKey
         }
-
-        guard 2 <= apiKeys.count else {
-            throw AmbientWeatherError.missingAPIKey
-        }
-
-        guard 2 == apiKeys.count else {
-            throw AmbientWeatherError.tooManyAPIKeys
-        }
-
-        apiKey = apiKeys[1]
 
         guard !apiKey.isEmpty else {
             throw AmbientWeatherError.invalidAPIKey
         }
 
         self.applicationKey = applicationKey
+        self.apiKey = apiKey
     }
 
     internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
