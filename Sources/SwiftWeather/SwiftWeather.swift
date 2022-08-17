@@ -19,11 +19,17 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
     var latestReport: WeatherReport { get async throws }
 
     /// Fetches the latest report(s).
+    ///
+    /// Note that the returned stream may eagerly fetch reports, ahead of the consumption rate.  This is generally preferable as it helps hide network latency (especially if multiple round trips are required to a server in order to fetch all `count` requested reports), but be aware that if your processing of the returned stream is slow there may be non-trivial memory usage from unread reports stacking up.
+    ///
     /// - Parameter count: Number of reports to retrieve.  Must be at least one.
     /// - Returns A stream of reports in reverse chronological order (i.e. starting with the newest).
     func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error>
 
     /// Fetches the report(s) leading up to the given date.
+    ///
+    /// Note that the returned stream may eagerly fetch reports, ahead of the consumption rate.  This is generally preferable as it helps hide network latency (especially if multiple round trips are required to a server in order to fetch all `count` requested reports), but be aware that if your processing of the returned stream is slow there may be non-trivial memory usage from unread reports stacking up.
+    ///
     /// - Parameter count: Number of reports to retrieve.  Must be at least one.
     /// - Parameter upToAndIncluding: The end date for the returned reports.
     /// - Returns A stream of reports in reverse chronological order (i.e. starting with the newest).
