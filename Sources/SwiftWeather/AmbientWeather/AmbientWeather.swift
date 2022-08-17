@@ -118,7 +118,7 @@ extension AmbientWeatherError: LocalizedError {
 }
 
 public final class AmbientWeather: WeatherPlatform, Codable {
-    private let apiEndPoint = "https://api.ambientweather.net"
+    private let apiHostname = "api.ambientweather.net"
     private let apiVersion = "v1"
     private let applicationKey: String
     private let apiKey: String
@@ -186,8 +186,24 @@ public final class AmbientWeather: WeatherPlatform, Codable {
         }
     }
 
+    private var baseURLComponents: URLComponents {
+        var components = URLComponents()
+
+        components.scheme = "https"
+        components.host = apiHostname
+        components.path = "/\(apiVersion)"
+        components.queryItems = [URLQueryItem(name: "applicationKey", value: applicationKey),
+                                 URLQueryItem(name: "apiKey", value: apiKey)]
+
+        return components
+    }
+
     private func deviceEndPoint() throws -> URL {
-        guard let url = URL(string: "\(apiEndPoint)/\(apiVersion)/devices?applicationKey=\(applicationKey)&apiKey=\(apiKey)") else {
+        var components = baseURLComponents
+
+        components.path.append("/devices")
+
+        guard let url = components.url else {
             throw AmbientWeatherError.invalidURL
         }
 
@@ -205,13 +221,20 @@ public final class AmbientWeather: WeatherPlatform, Codable {
             throw AmbientWeatherError.measurementLimitOutOfRange
         }
 
-        var urlString = "\(apiEndPoint)/\(apiVersion)/devices/\(macAddress)?apiKey=\(apiKey)&applicationKey=\(applicationKey)&limit=\(limit)"
+        var components = baseURLComponents
+
+        components.path.append("/devices/\(macAddress)")
+
+        var queryItems = components.queryItems ?? []
+        queryItems.append(URLQueryItem(name: "limit", value: limit.description))
 
         if let date {
-            urlString += "&endDate=\(AmbientWeather.formatter.string(from: date))"
+            queryItems.append(URLQueryItem(name: "endDate", value: AmbientWeather.formatter.string(from: date)))
         }
 
-        guard let url = URL(string: urlString) else {
+        components.queryItems = queryItems
+
+        guard let url = components.url else {
             throw AmbientWeatherError.invalidURL
         }
 
