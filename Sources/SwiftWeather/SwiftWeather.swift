@@ -25,7 +25,7 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
     /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
     var ID: WeatherDeviceID { get }
 
-    /// The latest report.  This is just a convenience over calling latestReports(count:) or reports(count:upToAndIncluding:).
+    /// The latest report.  This is just a convenience over calling ``latestReports(count:)`` or ``reports(count:upToAndIncluding:)``.
     var latestReport: WeatherReport { get async throws }
 
     /// Fetches the latest report(s).
