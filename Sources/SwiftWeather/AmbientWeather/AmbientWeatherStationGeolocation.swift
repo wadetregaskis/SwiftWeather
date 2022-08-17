@@ -20,7 +20,8 @@ public class AmbientWeatherStationGeolocation: Codable {
     open var position: CLLocation? {
         guard let coordinate = geoType.coordinate else {return nil}
         guard let altitude = elevation else {return nil}
-        return CLLocation(coordinate: coordinate, altitude: altitude,
+        return CLLocation(coordinate: coordinate,
+                          altitude: altitude,
                           horizontalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           verticalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           timestamp: Date())
