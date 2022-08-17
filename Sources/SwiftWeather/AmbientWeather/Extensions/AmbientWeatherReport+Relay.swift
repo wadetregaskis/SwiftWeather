@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var RelaySensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [RelaySensor1, RelaySensor2, RelaySensor3, RelaySensor4, RelaySensor5,
                                                 RelaySensor6, RelaySensor7, RelaySensor8, RelaySensor9, RelaySensor10]

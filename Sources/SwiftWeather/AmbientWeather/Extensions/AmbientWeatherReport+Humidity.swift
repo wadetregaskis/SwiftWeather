@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var HumiditySensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [HumidityOutdoor, HumidityIndoor, HumidityOutdoorSensor1, HumidityOutdoorSensor2,
                                                 HumidityOutdoorSensor3, HumidityOutdoorSensor4, HumidityOutdoorSensor5, HumidityOutdoorSensor6,

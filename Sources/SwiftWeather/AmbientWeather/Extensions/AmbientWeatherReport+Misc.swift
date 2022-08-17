@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var MiscSensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [DateUTC, Timezone]
         return sensors.compactMap{ $0 }

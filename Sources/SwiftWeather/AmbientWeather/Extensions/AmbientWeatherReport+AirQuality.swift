@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var AirQualitySensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [AirQualityOutdoor, AirQualityOutdoor24Avg, AirQualityIndoor,
                                                 AirQualityIndoor24Avg, UVIndex, SolarRadiation, CarbonDioxide]

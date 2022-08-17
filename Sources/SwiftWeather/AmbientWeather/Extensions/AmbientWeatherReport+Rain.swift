@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var RainSensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [RainRatePerHour, RainDaily, Rain24Hrs, RainWeekly,
                                                 RainMonthly, RainYearly, RainEvent, RainTotal,
@@ -69,7 +69,7 @@ extension AmbientWeatherStationData {
             return nil
         }
 
-        guard let date = AmbientWeatherStationData.rainDateFormatter.date(from: rainLastDate) else {
+        guard let date = AmbientWeatherReport.rainDateFormatter.date(from: rainLastDate) else {
             // TODO: logging or some other way of reporting the error.
             return nil
         }

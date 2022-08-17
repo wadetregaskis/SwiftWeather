@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var PressureSensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [PressureRelative, PressureAbsolute]
         return sensors.compactMap{ $0 }

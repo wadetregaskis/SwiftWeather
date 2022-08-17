@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var BatterySensors: [AmbientWeatherSensor] {
         let sensors: [AmbientWeatherSensor?] = [BatterySensor, BatterySensor1, BatterySensor2, BatterySensor3,
                                                 BatterySensor4, BatterySensor5, BatterySensor6, BatterySensor7,

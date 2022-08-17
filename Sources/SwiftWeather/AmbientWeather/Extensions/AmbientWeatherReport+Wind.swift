@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension AmbientWeatherStationData {
+extension AmbientWeatherReport {
     var WindSensors: [AmbientWeatherSensor] {
         get {
             let sensors: [AmbientWeatherSensor?] = [WindDirection, WindSpeed, WindGust, WindGustDailyMax,

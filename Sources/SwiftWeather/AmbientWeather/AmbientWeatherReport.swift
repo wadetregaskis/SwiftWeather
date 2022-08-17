@@ -2,7 +2,7 @@
 
 import Foundation
 
-open class AmbientWeatherStationData: WeatherReport, Codable {
+open class AmbientWeatherReport: WeatherReport, Codable {
     internal let windDirection: Int?
     internal let windSpeedMPH: Float?
     internal let windGustMPH: Float?
@@ -257,7 +257,7 @@ open class AmbientWeatherStationData: WeatherReport, Codable {
     }
 }
 
-extension AmbientWeatherStationData: CustomStringConvertible {
+extension AmbientWeatherReport: CustomStringConvertible {
     public var description: String {
         sensors.map { $0.formatted() }.joined(separator: "\n")
     }

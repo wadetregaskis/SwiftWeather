@@ -63,7 +63,7 @@ open class AmbientWeatherDevice: WeatherDevice {
                             }
                         }
 
-                        let reports: [AmbientWeatherStationData]
+                        let reports: [AmbientWeatherReport]
 
                         do {
                             reports = try JSONDecoder().decode(type(of: reports), from: data)
@@ -117,7 +117,7 @@ open class AmbientWeatherDevice: WeatherDevice {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         macAddress = try container.decodeIfPresent(String.self, forKey: .macAddress) ?? "XXX"
-        //let latestData = try container.decode(AmbientWeatherStationData.self, forKey: .lastData)
+        //let latestData = try container.decode(AmbientWeatherReport.self, forKey: .lastData)
         info = try container.decode(AmbientWeatherStationInfo.self, forKey: .info)
     }
 
