@@ -21,7 +21,7 @@ open class AmbientWeatherDevice: WeatherDevice {
     }
 
     public var ID: WeatherDeviceID {
-        return macAddress
+        macAddress
     }
 
     public var latestReport: WeatherReport {
