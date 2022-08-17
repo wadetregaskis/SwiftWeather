@@ -7,12 +7,22 @@ public typealias WeatherDeviceID = String
 
 
 public protocol WeatherPlatform {
+    /// All ``WeatherDevice``s reported by the platform.
+    ///
+    /// Which devices are listed depends on the nature and configuration of the platform - e.g. which API key(s) were used.  This property does _not_ list all devices globally available on the platform.  For platforms which don't have an implied list of devices based on their configuration parameters, this property may be empty - for such platforms, use other methods or properties for finding weather devices.
     var devices: [WeatherDeviceID: WeatherDevice] { get async throws }
 }
 
 
 public protocol WeatherDevice: Codable, CustomStringConvertible {
+    /// The platform the provides access to this device.
+    ///
+    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
     var platform: WeatherPlatform { get }
+
+    /// The unique identifier for this weather device within the source ``platform``.
+    ///
+    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
     var ID: WeatherDeviceID { get }
 
     /// The latest report.  This is just a convenience over calling latestReports(count:) or reports(count:upToAndIncluding:).
