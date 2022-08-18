@@ -21,7 +21,7 @@ public enum WeatherSensorType {
 /// Base class for weather sensors.
 open class WeatherSensor {
     public let type: WeatherSensorType
-    public let sensorID: String
+    public let ID: String
     public let name: String
     public let description: String
     public let measurement: Any
@@ -34,7 +34,7 @@ open class WeatherSensor {
                          measurement: Any,
                          unit: String) {
         self.type = type
-        self.sensorID = sensorID
+        self.ID = sensorID
         self.name = name
         self.description = description
         self.measurement = measurement
@@ -104,12 +104,12 @@ extension WeatherSensor { // Formatting
 
             if components.contains(.name) {
                 if components.contains(.sensorID) {
-                    result.append("\(value.name) (\(value.sensorID))")
+                    result.append("\(value.name) (\(value.ID))")
                 } else {
                     result.append(value.name)
                 }
             } else if components.contains(.sensorID) {
-                result.append(value.sensorID)
+                result.append(value.ID)
             }
 
             if components.contains(.type) {
