@@ -20,11 +20,41 @@ public enum WeatherSensorType {
 
 /// Base class for weather sensors.
 open class WeatherSensor {
+    /// The weather sensor type.
+    ///
+    /// In addition to direct utility for e.g. categorising / grouping sensors in UI, this can be helpful to infer the units of the ``measurement`` - but only when ``measurement`` isn't a ``Measurement`` instance.  When it is such an instance the exact units are specified within the measurement.
     public let type: WeatherSensorType
+
+    /// A unique identifier for this sensor within the given device.
+    ///
+    /// This identifier is not guaranteed to be consistent across different weather devices or weather platforms.
     public let ID: String
+
+    /// A human-readable name for the sensor.
+    ///
+    /// e.g. "Outdoor Humidity", "Weekly Rain", "Date", "Wind Direction", etc.
+    ///
+    /// This should not be used for identification, as it is:
+    ///   * Not guaranteed to be unique within any given weather device.
+    ///   * Not guaranteed to be consistent across weather devices or platforms.
+    ///   * Subject to change over time.
+    ///
+    /// Use ``ID`` to uniquely identify a sensor within a weather device.
     public let name: String
+
+    /// A human-readable description of the sensor.
+    ///
+    /// This may provide additional details or context regarding the sensor.
     public let description: String
+
+    /// The sensor measurement.
+    ///
+    /// Most sensors use the Foundation ``Measurement`` data type, but some use other types - e.g. ``Date`` for dates & times, ``Int`` for battery status / levels, etc.
     public let measurement: Any
+
+    /// The unit of the measurement.
+    ///
+    /// When the ``measurement`` is a ``Measurement``, the units are also specified in that ``Measurement`` instance.  This property exists mainly to support non-``Measurement`` values for ``measurement``.
     public let unit: String
 
     required public init(type: WeatherSensorType,
@@ -46,6 +76,9 @@ extension MeasurementFormatter.UnitOptions: Hashable {}
 extension Formatter.UnitStyle: Hashable {}
 
 extension WeatherSensor { // Formatting
+    /// A FormatStyle that creates human-readable representations, as ``String``s, from ``WeatherSensor``s.
+    ///
+    /// Warning: while nominally this supports the ``Codable`` protocol (as required of all FormatStyles), it actually does not.  Attempts to use it for coding or decoding will throw an exception.
     public struct FormatStyle: Foundation.FormatStyle {
         public typealias FormatInput = WeatherSensor
         public typealias FormatOutput = String
@@ -83,6 +116,18 @@ extension WeatherSensor { // Formatting
             formatter.numberFormatter = numbers
         }
 
+        /// Initialises a new format style with the specified configuration.
+        ///
+        /// - Parameters:
+        ///   - components: Specifies which data components are included in the output.
+        ///   - numbers: Specifies how to format numbers (sensor measurement values, where applicable).
+        ///   - dates: Specifies how to format dates (sensor measurement values, where applicable).
+        ///   - units: Specifies how to format units w.r.t. equivalent scales (e.g. Celsius vs Fahrenheit).
+        ///
+        ///      Note that this only applies to ``WeatherSensor/measurement``s  that are ``Measurement`` instances - for all other types, where the units are only available via ``WeatherSensor/unit``, the units are used as-is.
+        ///   - unitStyle: Specifies how to format units w.r.t. style / brevity.
+        ///
+        ///      Note that this only applies to ``WeatherSensor/measurement``s  that are ``Measurement`` instances - for all other types, where the units are only available via ``WeatherSensor/unit``, the units are used as-is.
         public init(components: Components = [.name, .valueAndUnit],
                     numbers: NumberFormatter? = nil,
                     dates: Date.FormatStyle = .dateTime,
@@ -174,10 +219,18 @@ extension WeatherSensor { // Formatting
 
     private static let defaultFormatter = FormatStyle()
 
+    /// Returns a human-readable string representation of the sensor with the given formatting style / configuration.
     public func formatted<S>(_ style: S) -> S.FormatOutput where S : Foundation.FormatStyle, S.FormatInput == WeatherSensor {
         style.format(self)
     }
 
+    /// Returns a human-readable string representation of the sensor.
+    ///
+    /// This representation is guaranteed to include the sensor name and measurement (including units), but other information - such as type, its description, and unique ID - might or might not be included.
+    ///
+    /// The representation might change in future versions of ``SwiftWeather``.
+    ///
+    /// If you need specific formatting, or formatting that is consistent across all versions of ``SwiftWeather``, use ``formatted(_:)``.
     public func formatted() -> String {
         WeatherSensor.defaultFormatter.format(self)
     }

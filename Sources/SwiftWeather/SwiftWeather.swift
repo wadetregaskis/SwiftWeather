@@ -7,6 +7,7 @@ import Foundation
 public typealias WeatherDeviceID = String
 
 
+/// A service that provides access to weather devices & their sensor data.
 public protocol WeatherPlatform {
     /// All ``WeatherDevice``s reported by the platform.
     ///
@@ -15,6 +16,7 @@ public protocol WeatherPlatform {
 }
 
 
+/// A weather device (e.g. weather station) that reports weather data for a specific location.
 public protocol WeatherDevice: Codable, CustomStringConvertible {
     /// The platform the provides access to this device.
     ///
@@ -70,6 +72,7 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
 }
 
 
+/// A specific report from a ``WeatherDevice``, containing sensor measurements for a particular date & time.
 public protocol WeatherReport: Codable, CustomStringConvertible {
     /// The date & time at which the report was generated.
     var date: Date { get }
