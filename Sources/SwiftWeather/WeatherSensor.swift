@@ -4,18 +4,18 @@ import Foundation
 
 /// Supported Service Types
 public enum WeatherSensorType {
-    case WindDirection
-    case Temperature
     case AirQuality
-    case WindSpeed
-    case Radiation
-    case RainRate
-    case Humidity
-    case RainDate
-    case Pressure
     case Battery
     case General
+    case Humidity
+    case Pressure
+    case Radiation
     case Rain
+    case RainDate
+    case RainRate
+    case Temperature
+    case WindDirection
+    case WindSpeed
 }
 
 /// Base class for weather sensors.
