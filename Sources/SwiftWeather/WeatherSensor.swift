@@ -97,6 +97,10 @@ extension WeatherSensor { // Formatting
                 return formatter
             }()
             self.dates = dates
+
+            self.measurementFormatter.numberFormatter = self.numbers
+            self.measurementFormatter.unitStyle = self.unitStyle
+            self.measurementFormatter.unitOptions = self.units
         }
 
         public func format(_ value: WeatherSensor) -> String {
