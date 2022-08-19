@@ -49,38 +49,31 @@ extension AmbientWeatherError: LocalizedError {
         case .measurementLimitOutOfRange:
             return NSLocalizedString(
                 "AmbientWeather: Measurements can only be between 1 and 288.",
-                comment: "Incorrect measurement range"
-            )
+                comment: "Incorrect measurement range")
         case .userRateExceeded:
             return NSLocalizedString(
                 "AmbientWeather: Too many requests; user rate exceeded.",
-                comment: "Rate Exceeded"
-            )
+                comment: "Rate Exceeded")
         case .unknown:
             return NSLocalizedString(
                 "AmbientWeather: Unknown Error Encountered.",
-                comment: "Unkown Error"
-            )
+                comment: "Unkown Error")
         case .invalidApplicationKey:
             return NSLocalizedString(
                 "AmbientWether: Invalid Application (Developer) Key.",
-                comment: "Invalid Application Key"
-            )
+                comment: "Invalid Application Key")
         case .corruptJSON:
             return NSLocalizedString(
                 "AmbientWeather: Corrupt JSON detected.",
-                comment: "Corrupt JSON"
-            )
+                comment: "Corrupt JSON")
         case .invalidURL:
             return NSLocalizedString(
                 "AmbientWeather: Invalid Endpoint URL.",
-                comment: "Invalid URL"
-            )
+                comment: "Invalid URL")
         case .invalidAPIKey:
             return NSLocalizedString(
                 "AmbientWeather: Invalid API (User) Key.",
-                comment: "Invalid API Key"
-            )
+                comment: "Invalid API Key")
         case .conflictingDeviceIDs(let a, let b):
             return NSLocalizedString(
                 "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)",
