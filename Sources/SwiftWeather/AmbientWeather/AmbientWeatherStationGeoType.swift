@@ -14,11 +14,11 @@ public class AmbientWeatherStationGeoType: Codable {
     
     /// If the data is present, return a CLLocation object from the reporting lat/lon
     var latLon: CLLocation? {
-        if coordinates[0] != -1000.0 && coordinates[1] != -1000 {
-            return CLLocation(latitude: coordinates[1], longitude: coordinates[0])
-        } else {
+        guard coordinates[0] != -1000.0 && coordinates[1] != -1000 else {
             return nil
         }
+
+        return CLLocation(latitude: coordinates[1], longitude: coordinates[0])
     }
     
     /// If the data is present, return a CLLocationCoordinate2D object from the reporting lat/lon
