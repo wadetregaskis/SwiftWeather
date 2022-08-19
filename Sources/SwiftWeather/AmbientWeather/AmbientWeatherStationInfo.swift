@@ -18,8 +18,8 @@ extension AmbientWeatherStationInfo: CustomStringConvertible {
     public var description: String {
         """
         Info:
-        Name: \(name ?? "Unknown Name")
-        Location: \(location ?? "Unknown Location")
+        Name: \(name ?? "Unknown")
+        Location: \(location ?? "Unknown")
         \(geolocation?.description ?? "Unknown Location")
         """
     }
