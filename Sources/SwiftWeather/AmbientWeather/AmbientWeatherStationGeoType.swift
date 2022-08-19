@@ -5,21 +5,14 @@ import CoreLocation
 public class AmbientWeatherStationGeoType: Codable {
     private let coordinates: [Double]
     let type: String
-
-    /// If the data is present, return a CLLocation object from the reporting lat/lon
-    var latLon: CLLocation? {
+    
+    /// If the data is present, return a CLLocationCoordinate2D object from the reporting lat/lon
+    var coordinate: CLLocationCoordinate2D? {
         guard 2 <= coordinates.count else {
             return nil
         }
 
-        return CLLocation(latitude: coordinates[1], longitude: coordinates[0])
-    }
-    
-    /// If the data is present, return a CLLocationCoordinate2D object from the reporting lat/lon
-    var coordinate: CLLocationCoordinate2D? {
-        guard let latLon else { return nil }
-
-        return latLon.coordinate
+        return CLLocationCoordinate2D(latitude: coordinates[1], longitude: coordinates[0])
     }
 }
 
