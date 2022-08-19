@@ -34,7 +34,7 @@ extension AmbientWeatherStationGeolocation: CustomStringConvertible {
         GeoLocation:
         \t\tLocation: \(location ?? "Unknown")
         \t\tAddress: \(address ?? "Unknown")
-        \t\tElevation: \(elevation ?? -1.0)
+        \t\tElevation: \(elevation?.description ?? "Unknown")
         \t\t\(geoType?.description ?? "Unknown coordinates")
         """
     }
