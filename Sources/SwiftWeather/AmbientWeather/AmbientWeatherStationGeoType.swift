@@ -29,14 +29,6 @@ public class AmbientWeatherStationGeoType: Codable {
     }
     
     ///
-    /// Empty init
-    ///
-    init() {
-        type = "XXX"
-        coordinates = [-1000, -1000]
-    }
-    
-    ///
     /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoer
     /// - Parameter decoder: JSON_Derived decoder
     /// - Throws: a decoding error if something has gone wrong

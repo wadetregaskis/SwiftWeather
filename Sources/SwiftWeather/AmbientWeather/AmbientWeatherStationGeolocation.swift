@@ -7,7 +7,7 @@ public class AmbientWeatherStationGeolocation: Codable {
     let location: String?
     let address: String?
     let elevation: Double?
-    let geoType: AmbientWeatherStationGeoType
+    let geoType: AmbientWeatherStationGeoType?
     
     enum CodingKeys: String, CodingKey {
         case elevation = "elevation"
@@ -18,23 +18,13 @@ public class AmbientWeatherStationGeolocation: Codable {
     
     /// If the data is present, return a CLLocation object from the reporting lat/lon
     open var position: CLLocation? {
-        guard let coordinate = geoType.coordinate else {return nil}
+        guard let coordinate = geoType?.coordinate else {return nil}
         guard let altitude = elevation else {return nil}
         return CLLocation(coordinate: coordinate,
                           altitude: altitude,
                           horizontalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           verticalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           timestamp: Date())
-    }
-    
-    ///
-    /// Empry Init
-    ///
-    init() {
-        location    = nil
-        address     = nil
-        elevation   = nil
-        geoType = AmbientWeatherStationGeoType()
     }
     
     ///
@@ -49,7 +39,7 @@ public class AmbientWeatherStationGeolocation: Codable {
             location = try container.decodeIfPresent(String.self, forKey: .location)
             address = try container.decodeIfPresent(String.self, forKey: .address)
             elevation = try container.decodeIfPresent(Double.self, forKey: .elevation)
-            geoType = try container.decodeIfPresent(AmbientWeatherStationGeoType.self, forKey: .geoType) ?? AmbientWeatherStationGeoType()
+            geoType = try container.decodeIfPresent(AmbientWeatherStationGeoType.self, forKey: .geoType)
         }
         catch let error as DecodingError {
             throw error
@@ -82,7 +72,7 @@ extension AmbientWeatherStationGeolocation: CustomStringConvertible {
         \t\tLocation: \(location ?? "Unknown")
         \t\tAddress: \(address ?? "Unknown")
         \t\tElevation: \(elevation ?? -1.0)
-        \t\t\(geoType)
+        \t\t\(geoType?.description ?? "Unknown coordinates")
         """
     }
 }
