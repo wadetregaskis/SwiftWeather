@@ -15,7 +15,6 @@ enum AmbientWeatherError: Error {
 
     case measurementLimitOutOfRange
     case userRateExceeded
-    case corruptJSON
     case invalidURL
 
     case platformMissingFromDecoderUserInfo
@@ -62,10 +61,6 @@ extension AmbientWeatherError: LocalizedError {
             return NSLocalizedString(
                 "AmbientWether: Invalid Application (Developer) Key.",
                 comment: "Invalid Application Key")
-        case .corruptJSON:
-            return NSLocalizedString(
-                "AmbientWeather: Corrupt JSON detected.",
-                comment: "Corrupt JSON")
         case .invalidURL:
             return NSLocalizedString(
                 "AmbientWeather: Invalid Endpoint URL.",
