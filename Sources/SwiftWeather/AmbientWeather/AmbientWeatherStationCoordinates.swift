@@ -21,11 +21,6 @@ public class AmbientWeatherStationCoordinates: Codable {
         }
     }
     
-    ///
-    /// Public & Codeable Initializer ... this creates the object and populates it w/ the JSON-derived decoer
-    /// - Parameter decoder: JSON-Derived decoder
-    /// - Throws: a decoding error if something has gone wrong
-    ///
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -36,12 +31,7 @@ public class AmbientWeatherStationCoordinates: Codable {
             throw error
         }
     }
-    
-    /// We have to roll our own Codable class due to MKMeteoPolyline
-    ///
-    /// - Parameter encoder: encoder to act on
-    /// - Throws: error
-    ///
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
