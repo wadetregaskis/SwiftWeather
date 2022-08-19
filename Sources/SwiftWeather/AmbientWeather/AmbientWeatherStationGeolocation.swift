@@ -26,33 +26,6 @@ public class AmbientWeatherStationGeolocation: Codable {
                           verticalAccuracy: kCLLocationAccuracyNearestTenMeters,
                           timestamp: Date())
     }
-
-    required public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        do {
-            location = try container.decodeIfPresent(String.self, forKey: .location)
-            address = try container.decodeIfPresent(String.self, forKey: .address)
-            elevation = try container.decodeIfPresent(Double.self, forKey: .elevation)
-            geoType = try container.decodeIfPresent(AmbientWeatherStationGeoType.self, forKey: .geoType)
-        }
-        catch let error as DecodingError {
-            throw error
-        }
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
-        do {
-            try container.encode(location, forKey: .location)
-            try container.encode(address, forKey: .address)
-            try container.encode(elevation, forKey: .elevation)
-            try container.encode(geoType, forKey: .geoType)
-        } catch let error as EncodingError {
-            throw error
-        }
-    }
 }
 
 extension AmbientWeatherStationGeolocation: CustomStringConvertible {
