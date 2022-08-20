@@ -4,50 +4,73 @@ import Foundation
 
 extension AmbientWeatherReport {
     var AirQualitySensors: [AmbientWeatherSensor] {
-        let sensors: [AmbientWeatherSensor?] = [AirQualityOutdoor, AirQualityOutdoor24Avg, AirQualityIndoor,
-                                                AirQualityIndoor24Avg, UVIndex, SolarRadiation, CarbonDioxide]
-        return sensors.compactMap{ $0 }
-    }
-    
-    var AirQualityOutdoor: AmbientWeatherSensor? {
-        guard let airQualityOut else { return nil }
+        let sensorMetadata: [(type: WeatherSensorType,
+                              ID: String,
+                              keyPath: PartialKeyPath<AmbientWeatherReport>,
+                              name: String,
+                              description: String,
+                              unit: String)] = [
+            (.AirQuality,
+             "pm25",
+             \.airQualityOut,
+             "Outdoor Air Quality",
+             "PM2.5 Outdoor Air Quality",
+             "µg/m^3"),
+            (.AirQuality,
+             "pm25_24h",
+             \.airQualityOut24,
+             "24 Average Outdoor Air Quality",
+             "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average",
+             "µg/m^3"),
+            (.AirQuality,
+             "pm25_in",
+             \.airQualityIn,
+             "Indoor Air Quality",
+             "PM2.5 Indoor Air Quality",
+             "µg/m^3"),
+            (.AirQuality,
+             "pm25_in_24h",
+             \.airQualityIn24,
+             "24 Average Indoor Air Quality",
+             "PM2.5 Indoor Air Quality - 24 Hour Average",
+             "µg/m^3"),
+            (.AirQuality,
+             "solarradiation",
+             \.solarRadiation,
+             "Solar Radiation",
+             "Solar Radiation",
+             "W/m^2"),
+            (.AirQuality,
+             "co2",
+             \.carbonDioxide,
+             "CO2 Level",
+             "Carbon Dioxide Level",
+             "ppm"),
+            (.Radiation,
+             "uv",
+             \.uvIndex,
+             "UV Index",
+             "Ultra-Violet Radiation Index",
+             "None")]
 
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25", name: "Outdoor Air Quality", description: "PM2.5 Outdoor Air Quality", measurement: airQualityOut, unit: "µg/m^3")
-    }
-    
-    var AirQualityOutdoor24Avg: AmbientWeatherSensor? {
-        guard let airQualityOut24 else { return nil }
+        return sensorMetadata.compactMap {
+            var value = self[keyPath: $0.keyPath]
+            let mirror = Mirror(reflecting: value)
 
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_24h", name: "24 Average Outdoor Air Quality", description: "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average", measurement: airQualityOut24, unit: "µg/m^3")
-    }
-    
-    var AirQualityIndoor: AmbientWeatherSensor? {
-        guard let airQualityIn else { return nil }
+            if mirror.displayStyle == .optional {
+                guard let first = mirror.children.first else {
+                    return nil
+                }
 
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_in", name: "Indoor Air Quality", description: "PM2.5 Indoor Air Quality", measurement: airQualityIn, unit: "µg/m^3")
-    }
-    
-    var AirQualityIndoor24Avg: AmbientWeatherSensor? {
-        guard let airQualityIn24 else { return nil }
+                value = first.value
+            }
 
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "pm25_in_24h", name: "24 Average Indoor Air Quality", description: "PM2.5 Indoor Air Quality - 24 Hour Average", measurement: airQualityIn24, unit: "µg/m^3")
-    }
-    
-    var UVIndex: AmbientWeatherSensor? {
-        guard let uvIndex else { return nil }
-
-        return AmbientWeatherSensor(type: .Radiation, sensorID: "uv", name: "UV Index", description: "Ultra-Violet Radiation Index", measurement: uvIndex, unit: "None")
-    }
-    
-    var SolarRadiation: AmbientWeatherSensor? {
-        guard let solarRadiation else { return nil }
-
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "solarradiation", name: "Solar Radiation", description: "Solar Radiation", measurement: solarRadiation, unit: "W/m^2")
-    }
-    
-    var CarbonDioxide: AmbientWeatherSensor? {
-        guard let carbonDioxide else { return nil }
-
-        return AmbientWeatherSensor(type: .AirQuality, sensorID: "co2", name: "CO2 Level", description: "Carbon Dioxide Level", measurement: carbonDioxide, unit: "ppm")
+            return AmbientWeatherSensor(type: $0.type,
+                                        sensorID: $0.ID,
+                                        name: $0.name,
+                                        description: $0.description,
+                                        measurement: value,
+                                        unit: $0.unit)
+        }
     }
 }
