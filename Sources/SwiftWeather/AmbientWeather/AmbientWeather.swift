@@ -11,6 +11,12 @@ enum AmbientWeatherError: Error {
     /// Thrown whenever two devices appear with the same device ID in the list of available devices from the AmbientWeather API.
     case conflictingDeviceIDs(AmbientWeatherDevice, AmbientWeatherDevice)
 
+    /// Thrown whenever two sensors appear within the same report with the same ID (as returned by the AmbientWeather API).
+    case conflictingSensorIDs(AmbientWeatherSensor, AmbientWeatherSensor)
+
+    /// Thrown whenever the last rain date, as reported by the AmbientWeather API, is not in the expected format.
+    case invalidLastRainDate(String)
+
     case invalidReportCount(Int)
 
     case measurementLimitOutOfRange
@@ -18,6 +24,8 @@ enum AmbientWeatherError: Error {
     case invalidURL
 
     case platformMissingFromDecoderUserInfo
+    case sensorNotSupportedForCodable(WeatherSensor)
+    case internalInconsistencyRegardingSensorValueFormats(Any.Type, Any)
 
     case unknown
 
@@ -73,10 +81,26 @@ extension AmbientWeatherError: LocalizedError {
             return NSLocalizedString(
                 "AmbientWeather: API reported two devices with the same ID (\(a.ID)):\n\n\(a)\n\n\(b)",
                 comment: "Two (or more) devices reported that have the same ID.")
+        case .conflictingSensorIDs(let a, let b):
+            return NSLocalizedString(
+                "AmbientWeather: API reported two sensors with the same ID (\(a.ID)) within a single report:\n\n\(a)\n\n\(b)",
+                comment: "Two (or more) sensors reported that have the same ID.")
+        case .invalidLastRainDate(let dateString):
+            return NSLocalizedString(
+                "AmbientWeather: API reported a date of last rain that is not in the expected format (ISO-8601 with fractional seconds): \(dateString)",
+                comment: "The AmbientWeather API reported an incorrectly- (or at least unexpectedly-) formatted date.")
         case .platformMissingFromDecoderUserInfo:
             return NSLocalizedString(
                 "AmbientWeather: Parent AmbientWeather[Platform] missing from Decoder userInfo.",
-                comment: "When the WeatherPlatform object that is creating a WeatherDevice is not found in the Decoder's userInfo dictionary")
+                comment: "When the WeatherPlatform object that is creating a WeatherDevice is not found in the Decoder's userInfo dictionary.")
+        case .sensorNotSupportedForCodable(let sensor):
+            return NSLocalizedString(
+                "AmbientWeather: Sensor is not supported for encoding (per Codable protocol) because its ID (\"\(sensor.ID)\") is not recognised:\n\(sensor)",
+                comment: "An internal inconsistency in which a sensor is somehow constructed that cannot be encoded, even though construction should have been via the same list of known sensor IDs as encoding supports.")
+        case .internalInconsistencyRegardingSensorValueFormats(let expectedType, let actualValue):
+            return NSLocalizedString(
+                "Internal inconsistency regarding sensor data formats - expected the input to be \(expectedType) but it is \(type(of: actualValue)): \(actualValue).",
+                comment: "An internal inconsistency in which a sensor value is expected to be a certain type - based on hard-coded prior steps - yet is not.")
         case .invalidReportCount(let count):
             return NSLocalizedString(
                 "At least 1 weather report must be requested, not \(count).",

@@ -2,38 +2,41 @@
 
 import Foundation
 
-open class AmbientWeatherSensor: WeatherSensor {
-    required public init(type: WeatherSensorType,
-                         sensorID: String,
-                         name: String,
-                         description: String,
-                         measurement: Any,
-                         unit: String) {
+public class AmbientWeatherSensor: WeatherSensor {
+    internal let rawValue: any Codable
+
+    required internal init(type: WeatherSensorType,
+                  sensorID: String,
+                  name: String,
+                  description: String,
+                  measurement: Any,
+                  unit: String,
+                  rawValue: any Codable) {
         var value = measurement
 
         switch type {
         case .Pressure:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement), unit: UnitPressure.inchesOfMercury)
             }
         case .Temperature:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement), unit: UnitTemperature.fahrenheit)
             }
         case .AirQuality:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement), unit: Unit(symbol: "µg/m^3"))
             }
         case .WindSpeed:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement), unit: UnitSpeed.milesPerHour)
             }
         case .RainRate:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement) , unit: Unit(symbol: "in/hr"))
             }
         case .Rain:
-            if let measurement = measurement as? Float {
+            if let measurement = measurement as? Double {
                 value = Measurement(value: Double(measurement) , unit: UnitLength.inches)
             }
         case .Humidity:
@@ -48,6 +51,22 @@ open class AmbientWeatherSensor: WeatherSensor {
             break
         }
 
-        super.init(type: type, sensorID: sensorID, name: name, description: description, measurement: value, unit: unit)
+        self.rawValue = rawValue
+        
+        super.init(type: type,
+                   sensorID: sensorID,
+                   name: name,
+                   description: description,
+                   measurement: value,
+                   unit: unit)
+    }
+
+    required public convenience init(type: WeatherSensorType,
+                sensorID: String,
+                name: String,
+                description: String,
+                measurement: Any,
+                unit: String) {
+        self.init(type: type, sensorID: sensorID, name: name, description: description, measurement: measurement, unit: unit, rawValue: measurement as! Codable) // TODO: Get rid of this forced cast.
     }
 }

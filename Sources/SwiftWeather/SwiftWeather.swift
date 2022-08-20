@@ -78,7 +78,7 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
     var date: Date { get }
 
     /// Returns all the sensors in the report.
-    var sensors: [WeatherSensor] { get }
+    var sensors: [String: WeatherSensor] { get }
 }
 
 
