@@ -47,7 +47,13 @@ public class AmbientWeatherSensor: WeatherSensor {
             if let measurement = measurement as? Int {
                 value = Measurement(value: Double(measurement), unit: UnitAngle.degrees)
             }
-        case .Radiation, .Battery, .RainDate, .General: // Unit-less
+        case .Radiation:
+            if let measurement = measurement as? Double {
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: unit))
+            } else if let measurement = measurement as? Int {
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: unit))
+            }
+        case .Battery, .Date, .General, .TimeZone: // Unit-less
             break
         }
 

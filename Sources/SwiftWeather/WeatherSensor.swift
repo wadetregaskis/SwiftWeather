@@ -6,14 +6,15 @@ import Foundation
 public enum WeatherSensorType {
     case AirQuality
     case Battery
+    case Date
     case General
     case Humidity
     case Pressure
     case Radiation
     case Rain
-    case RainDate
     case RainRate
     case Temperature
+    case TimeZone
     case WindDirection
     case WindSpeed
 }
