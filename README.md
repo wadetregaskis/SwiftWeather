@@ -91,8 +91,8 @@ MAC Address: A1:B2:C3:D4:E5:F6
 		Elevation: Some Elevation
 	  Coordiates:
  		Type: Point
- 		Latitude: YOUR LATITUDE
- 		Longitude: YOUR LONGITUDE
+ 		Latitude: Some Latitutde
+ 		Longitude: Some Longitude
 
 Outdoor Battery Status: 0
 Date: 1590605700000 ms
