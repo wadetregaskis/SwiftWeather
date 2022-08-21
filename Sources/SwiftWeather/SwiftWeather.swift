@@ -72,13 +72,16 @@ public protocol WeatherDevice: Codable, CustomStringConvertible {
 }
 
 
+public typealias WeatherSensorID = String
+
+
 /// A specific report from a ``WeatherDevice``, containing sensor measurements for a particular date & time.
 public protocol WeatherReport: Codable, CustomStringConvertible {
     /// The date & time at which the report was generated.
     var date: Date { get }
 
     /// Returns all the sensors in the report.
-    var sensors: [String: WeatherSensor] { get }
+    var sensors: [WeatherSensorID: WeatherSensor] { get }
 }
 
 

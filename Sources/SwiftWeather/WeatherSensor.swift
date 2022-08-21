@@ -28,7 +28,7 @@ open class WeatherSensor {
     /// A unique identifier for this sensor within the given device.
     ///
     /// This identifier is not guaranteed to be consistent across different weather devices or weather platforms.
-    public let ID: String
+    public let ID: WeatherSensorID
 
     /// A human-readable name for the sensor.
     ///
