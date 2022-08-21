@@ -25,7 +25,7 @@ public class AmbientWeatherSensor: WeatherSensor {
             }
         case .AirQuality:
             if let measurement = measurement as? Double {
-                value = Measurement(value: Double(measurement), unit: Unit(symbol: "µg/m^3"))
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: unit))
             }
         case .WindSpeed:
             if let measurement = measurement as? Double {
@@ -33,7 +33,7 @@ public class AmbientWeatherSensor: WeatherSensor {
             }
         case .RainRate:
             if let measurement = measurement as? Double {
-                value = Measurement(value: Double(measurement) , unit: Unit(symbol: "in/hr"))
+                value = Measurement(value: Double(measurement) , unit: Unit(symbol: unit))
             }
         case .Rain:
             if let measurement = measurement as? Double {
@@ -41,7 +41,7 @@ public class AmbientWeatherSensor: WeatherSensor {
             }
         case .Humidity:
             if let measurement = measurement as? Int {
-                value = Measurement(value: Double(measurement), unit: Unit(symbol: "%"))
+                value = Measurement(value: Double(measurement), unit: Unit(symbol: unit))
             }
         case .WindDirection:
             if let measurement = measurement as? Int {
