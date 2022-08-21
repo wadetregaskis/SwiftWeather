@@ -126,7 +126,7 @@ Each report contains at least a date & time of when it was generated, along with
 ```swift
 public protocol WeatherReport {
     var date: Date { get }
-    var sensors: [WeatherSensor] { get }
+    var sensors: [WeatherSensorID: WeatherSensor] { get }
 }
 ```
 
@@ -135,7 +135,7 @@ public protocol WeatherReport {
 ```swift
 open class WeatherSensor {
     public let type: WeatherSensorType
-    public let sensorID: String
+    public let ID: WeatherSensorID
     public let name: String
     public let description: String
     public let measurement: Any
