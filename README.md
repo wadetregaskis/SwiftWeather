@@ -150,7 +150,7 @@ Have a look in the package - and experiment with this library against a real sta
 - Add real-time AmbientWeather API support (blocked by said API being broken - https://github.com/ambient-weather/api-docs/issues/42).
 - Add support for another weather API - suggestions are welcome.
 - Extensive testing for multiple reporting devices per service.
-- Localization.
+- Complete localization (some parts of the code are localisation-aware and -ready, some are not - in any case, no translations have been performed; English is the only supported language).
 
 ## Copyright & License Information
 
