@@ -26,6 +26,7 @@ enum AmbientWeatherError: Error {
     case platformMissingFromDecoderUserInfo
     case sensorNotSupportedForCodable(WeatherSensor)
     case internalInconsistencyRegardingSensorValueFormats(Any.Type, Any)
+    case unsupportedSensorValueType(Any, Unit)
 
     case unknown
 
@@ -101,6 +102,10 @@ extension AmbientWeatherError: LocalizedError {
             return NSLocalizedString(
                 "Internal inconsistency regarding sensor data formats - expected the input to be \(expectedType) but it is \(type(of: actualValue)): \(actualValue).",
                 comment: "An internal inconsistency in which a sensor value is expected to be a certain type - based on hard-coded prior steps - yet is not.")
+        case .unsupportedSensorValueType(let value, let unit):
+            return NSLocalizedString(
+                "Unsupported sensor value type for a value with a unit (\(unit)): \(value) (\(type(of: value)))",
+                comment: "Essentially an internal inconsistency - the native value of the sensor, as reported in the response from AmbientWeather's API, is specified as having a known unit yet is not of a type that has a known way to convert to a Double.")
         case .invalidReportCount(let count):
             return NSLocalizedString(
                 "At least 1 weather report must be requested, not \(count).",

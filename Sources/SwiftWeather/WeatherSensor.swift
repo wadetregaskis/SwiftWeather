@@ -53,23 +53,16 @@ open class WeatherSensor {
     /// Most sensors use the Foundation ``Measurement`` data type, but some use other types - e.g. ``Date`` for dates & times, ``Int`` for battery status / levels, etc.
     public let measurement: Any
 
-    /// The unit of the measurement.
-    ///
-    /// When the ``measurement`` is a ``Measurement``, the units are also specified in that ``Measurement`` instance.  This property exists mainly to support non-``Measurement`` values for ``measurement``.
-    public let unit: String
-
     required public init(type: WeatherSensorType,
                          sensorID: String,
                          name: String,
                          description: String,
-                         measurement: Any,
-                         unit: String) {
+                         measurement: Any) {
         self.type = type
         self.ID = sensorID
         self.name = name
         self.description = description
         self.measurement = measurement
-        self.unit = unit
     }
 }
 
@@ -191,7 +184,9 @@ extension WeatherSensor { // Formatting
                                   ?? String(describing: value.measurement))
                 }
             } else if components.contains(.unit) {
-                result.append(value.unit) // TODO:  Use the proper Unit from the Measurement, where applicable.  Unfortunately doing so appears to be impossible given the Measurement is hidden behind Any and there's no way to cast it back.
+                if let measurement = value.measurement as? Measurement {
+                    result.append(measurementFormatter.string(from: measurement.unit))
+                }
             }
 
             if components.contains(.description) {

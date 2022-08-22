@@ -15,7 +15,7 @@ open class AmbientWeatherReport: WeatherReport {
         let valueType: Codable.Type
         let name: String
         let description: String
-        let unit: String
+        let unit: Unit?
         let converter: ((Any) throws -> Any)?
 
         init(_ ID: CodingKeys,
@@ -23,7 +23,7 @@ open class AmbientWeatherReport: WeatherReport {
              _ valueType: Codable.Type,
              _ name: String,
              _ description: String,
-             _ unit: String,
+             _ unit: Unit? = nil,
              _ converter: ((Any) throws -> Any)? = nil) {
             self.ID = ID
             self.sensorType = sensorType
@@ -41,6 +41,11 @@ open class AmbientWeatherReport: WeatherReport {
         return formatter
     }()
 
+    private static let microgramsPerCubicMetre = Unit(symbol: "µg/m^3")
+    private static let wattsPerSquareMetre = Unit(symbol: "W/m^2")
+    private static let percentage = Unit(symbol: "%")
+    private static let inchesPerHour = Unit(symbol: "in/hr")
+
     private static let sensorMetadata: [MD] = {
         var metadata: [MD] = [
             MD(.pm25,
@@ -48,79 +53,76 @@ open class AmbientWeatherReport: WeatherReport {
                Double.self,
                "Outdoor Air Quality",
                "PM2.5 Outdoor Air Quality",
-               "µg/m^3"),
+               microgramsPerCubicMetre),
             MD(.pm25_24h,
                .AirQuality,
                Double.self,
                "24 Average Outdoor Air Quality",
                "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average",
-               "µg/m^3"),
+               microgramsPerCubicMetre),
             MD(.pm25_in,
                .AirQuality,
                Double.self,
                "Indoor Air Quality",
                "PM2.5 Indoor Air Quality",
-               "µg/m^3"),
+               microgramsPerCubicMetre),
             MD(.pm25_in_24h,
                .AirQuality,
                Double.self,
                "24 Average Indoor Air Quality",
                "PM2.5 Indoor Air Quality - 24 Hour Average",
-               "µg/m^3"),
+               microgramsPerCubicMetre),
             MD(.co2,
                .AirQuality,
                Double.self,
                "CO2 Level",
                "Carbon Dioxide Level",
-               "ppm"),
+               UnitDispersion.partsPerMillion),
             MD(.solarradiation,
                .Radiation,
                Double.self,
                "Solar Radiation",
                "Solar Radiation",
-               "W/m^2"),
+               wattsPerSquareMetre),
             MD(.uv,
                .Radiation,
                Int.self,
                "UV Index",
                "Ultra-Violet Radiation Index",
-               "None"),
+               Unit(symbol: "UV Index")),
             MD(.batt_25,
                .Battery,
                Int.self,
                "Air Quality Battery Status",
-               "PM2.5 Air Quality Sensor Battery Status",
-               "None"),
+               "PM2.5 Air Quality Sensor Battery Status"),
             MD(.battout,
                .Battery,
                Int.self,
                "Outdoor Battery Status",
-               "Outdoor Battery Status",
-               "None"),
+               "Outdoor Battery Status"),
             MD(.humidity,
                .Humidity,
                Int.self,
                "Outdoor Humidity",
                "Outdoor Humidity, 0-l00%",
-               "%"),
+               percentage),
             MD(.humidityin,
                .Humidity,
                Int.self,
                "Indoor Humidity",
                "Indoor Humidity, 0-100%",
-               "%"),
+               percentage),
             MD(.tz,
                .TimeZone,
                String.self,
                "Time Zone",
-               "IANA Time Zone",
-               "None"),
+               "IANA Time Zone"),
             MD(.dateutc,
                .Date,
                Int.self,
                "Date",
                "Date & time at which the set of measurements were reported",
-               "None",
+               nil,
                {
                    guard let input = $0 as? Int else {
                        throw AmbientWeatherError.internalInconsistencyRegardingSensorValueFormats(Int.self, $0)
@@ -132,67 +134,67 @@ open class AmbientWeatherReport: WeatherReport {
                Double.self,
                "Relative Pressure",
                "Relative Pressure",
-               "inHg"),
+               UnitPressure.inchesOfMercury),
             MD(.baromabsin,
                .Pressure,
                Double.self,
                "Absolute Pressure",
                "Absolute Pressure",
-               "inHg"),
+               UnitPressure.inchesOfMercury),
             MD(.hourlyrainin,
                .RainRate,
                Double.self,
                "Hourly Rain",
                "Hourly Rain Rate",
-               "in/hr"),
+               inchesPerHour),
             MD(.todayrainin,
                .Rain,
                Double.self,
                "Rain Today",
                "Daily Rain",
-               "in"),
+               UnitLength.inches),
             MD(.dailyrainin,
                .Rain,
                Double.self,
                "24 Hour Rain",
                "Rain over last 24 Hours",
-               "in"),
+               UnitLength.inches),
             MD(.weeklyrainin,
                .Rain,
                Double.self,
                "Weekly Rain",
                "Rain this week",
-               "in"),
+               UnitLength.inches),
             MD(.monthlyrainin,
                .Rain,
                Double.self,
                "Monthly Rain",
                "Rain this month",
-               "in"),
+               UnitLength.inches),
             MD(.yearlyrainin,
                .Rain,
                Double.self,
                "Yearly Rain",
                "Rain this year",
-               "in"),
+               UnitLength.inches),
             MD(.eventrainin,
                .Rain,
                Double.self,
                "Event Rain",
                "Event Rain",
-               "in"),
+               UnitLength.inches),
             MD(.totalrainin,
                .Rain,
                Double.self,
                "Total Rain",
                "Total rain since last factory reset",
-               "in"),
+               UnitLength.inches),
             MD(.lastRain,
                .Date,
                String.self,
                "Last Time it Rained",
                "Last time it rained",
-               "None",
+               nil,
                {
                    guard let input = $0 as? String else {
                        throw AmbientWeatherError.internalInconsistencyRegardingSensorValueFormats(String.self, $0)
@@ -209,148 +211,146 @@ open class AmbientWeatherReport: WeatherReport {
                Int.self,
                "Wind Direction",
                "Instantaneous wind direction, 0-360°",
-               "°"),
+               UnitAngle.degrees),
             MD(.windspeedmph,
                .WindSpeed,
                Double.self,
                "Wind Speed",
                "Instantaneous wind speed",
-               "MPH"),
+               UnitSpeed.milesPerHour),
             MD(.windgustmph,
                .WindSpeed,
                Double.self,
                "Wind Gust",
                "Maximum wind speed in the last 10 minutes",
-               "MPH"),
+               UnitSpeed.milesPerHour),
             MD(.maxdailygust,
                .WindSpeed,
                Double.self,
                "Max Wind Gust Today",
                "Maximum wind speed in last day",
-               "MPH"),
+               UnitSpeed.milesPerHour),
             MD(.windgustdir,
                .WindDirection,
                Int.self,
                "Wind Gust Direction",
                "Wind direction at which the wind gust occurred",
-               "°"),
+               UnitAngle.degrees),
             MD(.windspdmph_avg2m,
                .WindSpeed,
                Double.self,
                "2 Minute Wind Speed Avg",
                "Average wind speed, 2 minute average",
-               "MPH"),
+               UnitSpeed.milesPerHour),
             MD(.winddir_avg2m,
                .WindDirection,
                Int.self,
                "2 Minute Wind Direction Avg",
                "Average wind direction, 2 minute average",
-               "°"),
+               UnitAngle.degrees),
             MD(.windspdmph_avg10m,
                .WindSpeed,
                Double.self,
                "10 Minute Wind Speed Avg",
                "Average wind speed, 10 minute average",
-               "MPH"),
+               UnitSpeed.milesPerHour),
             MD(.winddir_avg10m,
                .WindDirection,
                Int.self,
                "10 Minute Wind Direction Avg",
                "Average wind direction, 10 minute average",
-               "°"),
+               UnitAngle.degrees),
             MD(.tempinf,
                .Temperature,
                Double.self,
                "Indoor Temperature",
                "Indoor Temperature",
-               "℉"),
+               UnitTemperature.fahrenheit),
             MD(.tempf,
                .Temperature,
                Double.self,
                "Outdoor Temperature",
                "Outdoor Temperature",
-               "℉"),
+               UnitTemperature.fahrenheit),
             MD(.dewPoint,
                .Temperature,
                Double.self,
                "Outdoor Dew Point",
                "Outdoor Dew Point",
-               "℉"),
+               UnitTemperature.fahrenheit),
             MD(.dewPointIn,
                .Temperature,
                Double.self,
                "Indoor Dew Point",
                "Indoor Dew Point",
-               "℉"),
+               UnitTemperature.fahrenheit),
             MD(.feelsLike,
                .Temperature,
                Double.self,
                "Outdoor Temperature Feels Like",
                "If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
-               "℉"),
+               UnitTemperature.fahrenheit),
             MD(.feelsLikeIn,
                .Temperature,
                Double.self,
                "Indoor Temperature Feels Like",
                "Indoor Feels Like",
-               "℉")]
+               UnitTemperature.fahrenheit)]
 
         metadata.append(contentsOf: [.batt1, .batt2, .batt3, .batt4, .batt5, .batt6, .batt7, .batt8, .batt9, .batt10].enumerated().map {
             MD($1,
                .Battery,
                Int.self,
                "Battery Status: \($0 + 1)",
-               "Outdoor Battery Status - Sensor #\($0 + 1)",
-               "None") })
+               "Outdoor Battery Status - Sensor #\($0 + 1)") })
         metadata.append(contentsOf: [.humidity1, .humidity2, .humidity3, .humidity4, .humidity5, .humidity6, .humidity7, .humidity8, .humidity9, .humidity10].enumerated().map {
             MD($1,
                .Humidity,
                Int.self,
                "Outdoor Humidity: \($0 + 1)",
                "Outdoor Humidity Sensor #\($0 + 1), 0-l00%",
-               "%") })
+               percentage) })
         metadata.append(contentsOf: [.soilhum1, .soilhum2, .soilhum3, .soilhum4, .soilhum5, .soilhum6, .soilhum7, .soilhum8, .soilhum9, .soilhum10].enumerated().map {
             MD($1,
                .Humidity,
                Int.self,
                "Soil Humidity: \($0 + 1)",
                "Soil Humidity Sensor #\($0 + 1), 0-l00%",
-               "%") })
+               percentage) })
         metadata.append(contentsOf: [.relay1, .relay2, .relay3, .relay4, .relay5, .relay6, .relay7, .relay8, .relay9, .relay10].enumerated().map {
             MD($1,
                .General,
                Int.self,
                "Relay \($0 + 1)",
-               "Relay Sensor #\($0 + 1)",
-               "None") })
+               "Relay Sensor #\($0 + 1)") })
         metadata.append(contentsOf: [.temp1f, .temp2f, .temp3f, .temp4f, .temp5f, .temp6f, .temp7f, .temp8f, .temp9f, .temp10f].enumerated().map {
             MD($1,
                .Temperature,
                Double.self,
                "Outdoor Temperature: \($0 + 1)",
                "Outdoor Temperature Sensor #\($0 + 1)",
-               "℉") })
+               UnitTemperature.fahrenheit) })
         metadata.append(contentsOf: [.soiltemp1f, .soiltemp2f, .soiltemp3f, .soiltemp4f, .soiltemp5f, .soiltemp6f, .soiltemp7f, .soiltemp8f, .soiltemp9f, .soiltemp10f].enumerated().map {
             MD($1,
                .Temperature,
                Double.self,
                "Soil Temperature: \($0 + 1)",
                "Soil Temperature Sensor #\($0 + 1)",
-               "℉") })
+               UnitTemperature.fahrenheit) })
         metadata.append(contentsOf: [.feelsLike1, .feelsLike2, .feelsLike3, .feelsLike4, .feelsLike5, .feelsLike6, .feelsLike7, .feelsLike8, .feelsLike9, .feelsLike10].enumerated().map {
             MD($1,
                .Temperature,
                Double.self,
                "Outdoor Temperature Feels Like: \($0 + 1)",
                "Sensor \($0 + 1): If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
-               "℉") })
+               UnitTemperature.fahrenheit) })
         metadata.append(contentsOf: [.dewPoint1, .dewPoint2, .dewPoint3, .dewPoint4, .dewPoint5, .dewPoint6, .dewPoint7, .dewPoint8, .dewPoint9, .dewPoint10].enumerated().map {
             MD($1,
                .Temperature,
                Double.self,
                "Dew Point: \($0 + 1)",
                "Sensor \($0 + 1): Dew Point",
-               "℉") })
+               UnitTemperature.fahrenheit) })
 
         return metadata
     }()
@@ -370,12 +370,25 @@ open class AmbientWeatherReport: WeatherReport {
                     value = try converter(value)
                 }
 
+                if let unit = md.unit {
+                    let valueAsDouble: Double
+
+                    if let valueAlreadyIsDouble = value as? Double {
+                        valueAsDouble = valueAlreadyIsDouble
+                    } else if let valueAsBinaryInteger = value as? any BinaryInteger {
+                        valueAsDouble = Double(valueAsBinaryInteger)
+                    } else {
+                        throw AmbientWeatherError.unsupportedSensorValueType(value, unit)
+                    }
+
+                    value = Measurement(value: valueAsDouble, unit: unit)
+                }
+
                 return AmbientWeatherSensor(type: md.sensorType,
                                             sensorID: md.ID.rawValue,
                                             name: md.name,
                                             description: md.description,
                                             measurement: value,
-                                            unit: md.unit,
                                             rawValue: rawValue)
             }.map { ($0.ID, $0) },
             uniquingKeysWith: {
