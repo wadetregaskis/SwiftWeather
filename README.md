@@ -147,7 +147,7 @@ Have a look in the package - and experiment with this library against a real sta
 
 ## To Do
 
-- Add realtime Ambient Weather API support.
+- Add real-time AmbientWeather API support (blocked by said API being broken - https://github.com/ambient-weather/api-docs/issues/42).
 - Add support for another weather API - suggestions are welcome.
 - Extensive testing for multiple reporting devices per service.
 - Localization.
