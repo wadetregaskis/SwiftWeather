@@ -371,6 +371,16 @@ open class AmbientWeatherReport: WeatherReport {
             uniquingKeysWith: {
                 throw AmbientWeatherError.conflictingSensorIDs($0, $1)
             })
+
+        guard let dateSensor = self._sensors["dateutc"] ?? self._sensors["date"] else {
+            throw AmbientWeatherError.missingReportDate(Array(self._sensors.keys))
+        }
+
+        guard let date = dateSensor.measurement as? Date else {
+            throw AmbientWeatherError.unexpectedSensorValueType(sensorID: "dateutc", value: dateSensor.measurement, expected: Date.self)
+        }
+
+        self.date = date
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -525,9 +535,7 @@ open class AmbientWeatherReport: WeatherReport {
         case dewPoint10
     }
 
-    public var date: Date {
-        (self.sensors["dateutc"]?.measurement as? Date) ?? Date(timeIntervalSince1970: 0) // This value _really_ shouldn't be missing, so this icky, arbitrary 'else' value should never actually be used.  In theory.
-    }
+    private(set) public var date: Date
 }
 
 extension AmbientWeatherReport: CustomStringConvertible {

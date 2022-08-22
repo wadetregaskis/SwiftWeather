@@ -26,6 +26,8 @@ enum AmbientWeatherError: Error {
     case platformMissingFromDecoderUserInfo
     case sensorNotSupportedForCodable(WeatherSensor)
     case unsupportedSensorValueType(Any, Unit)
+    case unexpectedSensorValueType(sensorID: WeatherSensorID, value: Any, expected: Any.Type)
+    case missingReportDate([WeatherSensorID])
 
     case unknown
 
@@ -101,10 +103,18 @@ extension AmbientWeatherError: LocalizedError {
             return NSLocalizedString(
                 "Unsupported sensor value type for a value with a unit (\(unit)): \(value) (\(type(of: value)))",
                 comment: "Essentially an internal inconsistency - the native value of the sensor, as reported in the response from AmbientWeather's API, is specified as having a known unit yet is not of a type that has a known way to convert to a Double.")
+        case .missingReportDate(let sensorIDs):
+            return NSLocalizedString(
+                "AmbientWeather: weather report did not contain a date [specifying when the report was generated].  Included sensors: " + sensorIDs.sorted().formatted(.list(type: .and, width: .standard)),
+                comment: "When the AmbientWeather API returns a set of sensors, constituting a weather report, that don't include the date & time at which the report was generated.")
         case .invalidReportCount(let count):
             return NSLocalizedString(
                 "At least 1 weather report must be requested, not \(count).",
                 comment: "When a caller asks for an invalid number of weather reports (i.e. 0 or a negative number).")
+        case .unexpectedSensorValueType(sensorID: let sensorID, value: let value, expected: let expected):
+            return NSLocalizedString(
+                "AmbientWeather: expected the \"\(sensorID)\" sensor to have a value of type \(expected), but it is a \(type(of: value)): \(value)",
+                comment: "A kind of internal inconsistency, where a helper function (or property) that utilises a specific sensor finds that the sensor's value is not of the expected type.  The types of all the sensors is determined internally, so this situation should in principle be impossible.")
         }
     }
 }
