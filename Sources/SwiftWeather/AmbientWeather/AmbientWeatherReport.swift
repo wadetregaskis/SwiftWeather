@@ -5,14 +5,14 @@ import Foundation
 
 // Sigh.  Dealing with generics in Swift is real pain in the fucking arse sometimes.  All this boilerplate is because of Swift's inability to elegantly support collections of a generic type with varied specialisations.  This type-erasing "AnyMD" is the manual workaround to that stupidity.  Sigh.  Not that I'm bitter.
 protocol AnyMD {
+    associatedtype InputValue: Codable
+
     var ID: AmbientWeatherReport.CodingKeys { get }
     var sensorType: WeatherSensorType { get }
-    var valueType: Codable.Type { get }
     var name: String { get }
     var description: String { get }
-    var converter: ((Any) throws -> Any)? { get }
 
-    func createMeasurement(value: Any) throws -> Any
+    func createMeasurement(from: KeyedDecodingContainer<AmbientWeatherReport.CodingKeys>) throws -> (InputValue, Any)?
 }
 
 
@@ -23,36 +23,37 @@ open class AmbientWeatherReport: WeatherReport {
         _sensors
     }
 
-    private struct MD<UnitType: Unit>: AnyMD {
+    private struct MD<InputValue: Codable, UnitType: Unit>: AnyMD {
         let ID: CodingKeys
         let sensorType: WeatherSensorType
-        let valueType: Codable.Type
         let name: String
         let description: String
         let unit: UnitType
-        let converter: ((Any) throws -> Any)?
+        let converter: ((InputValue) throws -> Any)?
 
         init(_ ID: CodingKeys,
              _ sensorType: WeatherSensorType,
-             _ valueType: Codable.Type,
              _ name: String,
              _ description: String,
              _ unit: UnitType = noUnit,
-             _ converter: ((Any) throws -> Any)? = nil) {
+             _ converter: ((InputValue) throws -> Any)? = nil) {
             self.ID = ID
             self.sensorType = sensorType
-            self.valueType = valueType
             self.name = name
             self.description = description
             self.unit = unit
             self.converter = converter
         }
 
-        func createMeasurement(value rawValue: Any) throws -> Any {
+        func createMeasurement(from json: KeyedDecodingContainer<AmbientWeatherReport.CodingKeys>) throws -> (InputValue, Any)? {
+            guard let rawValue = try json.decodeIfPresent(InputValue.self, forKey: self.ID) else {
+                return nil
+            }
+
             let value = try self.converter?(rawValue) ?? rawValue
 
             guard self.unit != noUnit else {
-                return value
+                return (rawValue, value)
             }
 
             let valueAsDouble: Double
@@ -65,7 +66,7 @@ open class AmbientWeatherReport: WeatherReport {
                 throw AmbientWeatherError.unsupportedSensorValueType(value, unit)
             }
 
-            return Measurement<UnitType>(value: valueAsDouble, unit: self.unit)
+            return (rawValue, Measurement<UnitType>(value: valueAsDouble, unit: self.unit))
         }
     }
 
@@ -81,312 +82,256 @@ open class AmbientWeatherReport: WeatherReport {
     private static let percentage = Unit(symbol: "%")
     private static let inchesPerHour = Unit(symbol: "in/hr")
 
-    private static let sensorMetadata: [AnyMD] = {
+    private static let sensorMetadata: [any AnyMD] = {
         // The "as AnyMD" crap on the end of all these is because the Swift compiler shits itself if there's more than a couple of entries with different UnitTypes, even though it's utterly explicit from the variable's type declaration what the expected result is.  Thankfully the "as AnyMD" _doesn't_ change the actual type it instantiates - that's still a suitably specific type like MD<UnitTemperature>.
-        var metadata: [AnyMD] = [
-            MD(.pm25,
-               .AirQuality,
-               Double.self,
-               "Outdoor Air Quality",
-               "PM2.5 Outdoor Air Quality",
-               microgramsPerCubicMetre) as AnyMD,
-            MD(.pm25_24h,
-               .AirQuality,
-               Double.self,
-               "24 Average Outdoor Air Quality",
-               "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average",
-               microgramsPerCubicMetre) as AnyMD,
-            MD(.pm25_in,
-               .AirQuality,
-               Double.self,
-               "Indoor Air Quality",
-               "PM2.5 Indoor Air Quality",
-               microgramsPerCubicMetre) as AnyMD,
-            MD(.pm25_in_24h,
-               .AirQuality,
-               Double.self,
-               "24 Average Indoor Air Quality",
-               "PM2.5 Indoor Air Quality - 24 Hour Average",
-               microgramsPerCubicMetre) as AnyMD,
-            MD(.co2,
-               .AirQuality,
-               Double.self,
-               "CO2 Level",
-               "Carbon Dioxide Level",
-               UnitDispersion.partsPerMillion) as AnyMD,
-            MD(.solarradiation,
-               .Radiation,
-               Double.self,
-               "Solar Radiation",
-               "Solar Radiation",
-               wattsPerSquareMetre) as AnyMD,
-            MD(.uv,
-               .Radiation,
-               Int.self,
-               "UV Index",
-               "Ultra-Violet Radiation Index",
-               Unit(symbol: "UV Index")) as AnyMD,
-            MD(.batt_25,
-               .Battery,
-               Int.self,
-               "Air Quality Battery Status",
-               "PM2.5 Air Quality Sensor Battery Status") as AnyMD,
-            MD(.battout,
-               .Battery,
-               Int.self,
-               "Outdoor Battery Status",
-               "Outdoor Battery Status") as AnyMD,
-            MD(.humidity,
-               .Humidity,
-               Int.self,
-               "Outdoor Humidity",
-               "Outdoor Humidity, 0-l00%",
-               percentage) as AnyMD,
-            MD(.humidityin,
-               .Humidity,
-               Int.self,
-               "Indoor Humidity",
-               "Indoor Humidity, 0-100%",
-               percentage) as AnyMD,
-            MD(.tz,
-               .TimeZone,
-               String.self,
-               "Time Zone",
-               "IANA Time Zone") as AnyMD,
-            MD(.dateutc,
-               .Date,
-               Int.self,
-               "Date",
-               "Date & time at which the set of measurements were reported",
-               noUnit,
-               {
-                   guard let input = $0 as? Int else {
-                       throw AmbientWeatherError.internalInconsistencyRegardingSensorValueFormats(Int.self, $0)
-                   }
+        var metadata: [any AnyMD] = [
+            MD<Double, Unit>(.pm25,
+                             .AirQuality,
+                             "Outdoor Air Quality",
+                             "PM2.5 Outdoor Air Quality",
+                             microgramsPerCubicMetre),
+            MD<Double, Unit>(.pm25_24h,
+                             .AirQuality,
+                             "24 Average Outdoor Air Quality",
+                             "PM2.5 Outdoor Air Quality Outdoor - 24 Hour Average",
+                             microgramsPerCubicMetre),
+            MD<Double, Unit>(.pm25_in,
+                             .AirQuality,
+                             "Indoor Air Quality",
+                             "PM2.5 Indoor Air Quality",
+                             microgramsPerCubicMetre),
+            MD<Double, Unit>(.pm25_in_24h,
+                             .AirQuality,
+                             "24 Average Indoor Air Quality",
+                             "PM2.5 Indoor Air Quality - 24 Hour Average",
+                             microgramsPerCubicMetre),
+            MD<Double, UnitDispersion>(.co2,
+                                       .AirQuality,
+                                       "CO2 Level",
+                                       "Carbon Dioxide Level",
+                                       .partsPerMillion),
+            MD<Double, Unit>(.solarradiation,
+                             .Radiation,
+                             "Solar Radiation",
+                             "Solar Radiation",
+                             wattsPerSquareMetre),
+            MD<Int, Unit>(.uv,
+                          .Radiation,
+                          "UV Index",
+                          "Ultra-Violet Radiation Index",
+                          Unit(symbol: "UV Index")),
+            MD<Int, Unit>(.batt_25,
+                          .Battery,
+                          "Air Quality Battery Status",
+                          "PM2.5 Air Quality Sensor Battery Status"),
+            MD<Int, Unit>(.battout,
+                          .Battery,
+                          "Outdoor Battery Status",
+                          "Outdoor Battery Status"),
+            MD<Int, Unit>(.humidity,
+                          .Humidity,
+                          "Outdoor Humidity",
+                          "Outdoor Humidity, 0-l00%",
+                          percentage),
+            MD<Int, Unit>(.humidityin,
+                          .Humidity,
+                          "Indoor Humidity",
+                          "Indoor Humidity, 0-100%",
+                          percentage),
+            MD<String, Unit>(.tz,
+                             .TimeZone,
+                             "Time Zone",
+                             "IANA Time Zone"),
+            MD<Int, Unit>(.dateutc,
+                          .Date,
+                          "Date",
+                          "Date & time at which the set of measurements were reported",
+                          noUnit,
+                          { Date(timeIntervalSince1970: Double($0) / 1000) }),
+            MD<Double, UnitPressure>(.baromrelin,
+                                     .Pressure,
+                                     "Relative Pressure",
+                                     "Relative Pressure",
+                                     .inchesOfMercury),
+            MD<Double, UnitPressure>(.baromabsin,
+                                     .Pressure,
+                                     "Absolute Pressure",
+                                     "Absolute Pressure",
+                                     .inchesOfMercury),
+            MD<Double, Unit>(.hourlyrainin,
+                             .RainRate,
+                             "Hourly Rain",
+                             "Hourly Rain Rate",
+                             inchesPerHour),
+            MD<Double, UnitLength>(.todayrainin,
+                                   .Rain,
+                                   "Rain Today",
+                                   "Daily Rain",
+                                   .inches),
+            MD<Double, UnitLength>(.dailyrainin,
+                                   .Rain,
+                                   "24 Hour Rain",
+                                   "Rain over last 24 Hours",
+                                   .inches),
+            MD<Double, UnitLength>(.weeklyrainin,
+                                   .Rain,
+                                   "Weekly Rain",
+                                   "Rain this week",
+                                   .inches),
+            MD<Double, UnitLength>(.monthlyrainin,
+                                   .Rain,
+                                   "Monthly Rain",
+                                   "Rain this month",
+                                   .inches),
+            MD<Double, UnitLength>(.yearlyrainin,
+                                   .Rain,
+                                   "Yearly Rain",
+                                   "Rain this year",
+                                   .inches),
+            MD<Double, UnitLength>(.eventrainin,
+                                   .Rain,
+                                   "Event Rain",
+                                   "Event Rain",
+                                   .inches),
+            MD<Double, UnitLength>(.totalrainin,
+                                   .Rain,
+                                   "Total Rain",
+                                   "Total rain since last factory reset",
+                                   .inches),
+            MD<String, Unit>(.lastRain,
+                             .Date,
+                             "Last Time it Rained",
+                             "Last time it rained",
+                             noUnit,
+                             {
+                                 guard let date = AmbientWeatherReport.rainDateFormatter.date(from: $0) else {
+                                     throw AmbientWeatherError.invalidLastRainDate($0)
+                                 }
 
-                   return Date(timeIntervalSince1970: Double(input) / 1000) }) as AnyMD,
-            MD(.baromrelin,
-               .Pressure,
-               Double.self,
-               "Relative Pressure",
-               "Relative Pressure",
-               UnitPressure.inchesOfMercury) as AnyMD,
-            MD(.baromabsin,
-               .Pressure,
-               Double.self,
-               "Absolute Pressure",
-               "Absolute Pressure",
-               UnitPressure.inchesOfMercury) as AnyMD,
-            MD(.hourlyrainin,
-               .RainRate,
-               Double.self,
-               "Hourly Rain",
-               "Hourly Rain Rate",
-               inchesPerHour) as AnyMD,
-            MD(.todayrainin,
-               .Rain,
-               Double.self,
-               "Rain Today",
-               "Daily Rain",
-               UnitLength.inches) as AnyMD,
-            MD(.dailyrainin,
-               .Rain,
-               Double.self,
-               "24 Hour Rain",
-               "Rain over last 24 Hours",
-               UnitLength.inches) as AnyMD,
-            MD(.weeklyrainin,
-               .Rain,
-               Double.self,
-               "Weekly Rain",
-               "Rain this week",
-               UnitLength.inches) as AnyMD,
-            MD(.monthlyrainin,
-               .Rain,
-               Double.self,
-               "Monthly Rain",
-               "Rain this month",
-               UnitLength.inches) as AnyMD,
-            MD(.yearlyrainin,
-               .Rain,
-               Double.self,
-               "Yearly Rain",
-               "Rain this year",
-               UnitLength.inches) as AnyMD,
-            MD(.eventrainin,
-               .Rain,
-               Double.self,
-               "Event Rain",
-               "Event Rain",
-               UnitLength.inches) as AnyMD,
-            MD(.totalrainin,
-               .Rain,
-               Double.self,
-               "Total Rain",
-               "Total rain since last factory reset",
-               UnitLength.inches) as AnyMD,
-            MD(.lastRain,
-               .Date,
-               String.self,
-               "Last Time it Rained",
-               "Last time it rained",
-               noUnit,
-               {
-                   guard let input = $0 as? String else {
-                       throw AmbientWeatherError.internalInconsistencyRegardingSensorValueFormats(String.self, $0)
-                   }
-
-                   guard let date = AmbientWeatherReport.rainDateFormatter.date(from: input) else {
-                       throw AmbientWeatherError.invalidLastRainDate(input)
-                   }
-
-                   return date
-               }) as AnyMD,
-            MD(.winddir,
-               .WindDirection,
-               Int.self,
-               "Wind Direction",
-               "Instantaneous wind direction, 0-360°",
-               UnitAngle.degrees) as AnyMD,
-            MD(.windspeedmph,
-               .WindSpeed,
-               Double.self,
-               "Wind Speed",
-               "Instantaneous wind speed",
-               UnitSpeed.milesPerHour) as AnyMD,
-            MD(.windgustmph,
-               .WindSpeed,
-               Double.self,
-               "Wind Gust",
-               "Maximum wind speed in the last 10 minutes",
-               UnitSpeed.milesPerHour) as AnyMD,
-            MD(.maxdailygust,
-               .WindSpeed,
-               Double.self,
-               "Max Wind Gust Today",
-               "Maximum wind speed in last day",
-               UnitSpeed.milesPerHour) as AnyMD,
-            MD(.windgustdir,
-               .WindDirection,
-               Int.self,
-               "Wind Gust Direction",
-               "Wind direction at which the wind gust occurred",
-               UnitAngle.degrees) as AnyMD,
-            MD(.windspdmph_avg2m,
-               .WindSpeed,
-               Double.self,
-               "2 Minute Wind Speed Avg",
-               "Average wind speed, 2 minute average",
-               UnitSpeed.milesPerHour) as AnyMD,
-            MD(.winddir_avg2m,
-               .WindDirection,
-               Int.self,
-               "2 Minute Wind Direction Avg",
-               "Average wind direction, 2 minute average",
-               UnitAngle.degrees) as AnyMD,
-            MD(.windspdmph_avg10m,
-               .WindSpeed,
-               Double.self,
-               "10 Minute Wind Speed Avg",
-               "Average wind speed, 10 minute average",
-               UnitSpeed.milesPerHour) as AnyMD,
-            MD(.winddir_avg10m,
-               .WindDirection,
-               Int.self,
-               "10 Minute Wind Direction Avg",
-               "Average wind direction, 10 minute average",
-               UnitAngle.degrees) as AnyMD,
-            MD(.tempinf,
-               .Temperature,
-               Double.self,
-               "Indoor Temperature",
-               "Indoor Temperature",
-               UnitTemperature.fahrenheit) as AnyMD,
-            MD(.tempf,
-               .Temperature,
-               Double.self,
-               "Outdoor Temperature",
-               "Outdoor Temperature",
-               UnitTemperature.fahrenheit) as AnyMD,
-            MD(.dewPoint,
-               .Temperature,
-               Double.self,
-               "Outdoor Dew Point",
-               "Outdoor Dew Point",
-               UnitTemperature.fahrenheit) as AnyMD,
-            MD(.dewPointIn,
-               .Temperature,
-               Double.self,
-               "Indoor Dew Point",
-               "Indoor Dew Point",
-               UnitTemperature.fahrenheit) as AnyMD,
-            MD(.feelsLike,
-               .Temperature,
-               Double.self,
-               "Outdoor Temperature Feels Like",
-               "If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
-               UnitTemperature.fahrenheit) as AnyMD,
-            MD(.feelsLikeIn,
-               .Temperature,
-               Double.self,
-               "Indoor Temperature Feels Like",
-               "Indoor Feels Like",
-               UnitTemperature.fahrenheit) as AnyMD]
+                                 return date
+                             }),
+            MD<Int, UnitAngle>(.winddir,
+                               .WindDirection,
+                               "Wind Direction",
+                               "Instantaneous wind direction, 0-360°",
+                               .degrees),
+            MD<Double, UnitSpeed>(.windspeedmph,
+                                  .WindSpeed,
+                                  "Wind Speed",
+                                  "Instantaneous wind speed",
+                                  .milesPerHour),
+            MD<Double, UnitSpeed>(.windgustmph,
+                                  .WindSpeed,
+                                  "Wind Gust",
+                                  "Maximum wind speed in the last 10 minutes",
+                                  .milesPerHour),
+            MD<Double, UnitSpeed>(.maxdailygust,
+                                  .WindSpeed,
+                                  "Max Wind Gust Today",
+                                  "Maximum wind speed in last day",
+                                  .milesPerHour),
+            MD<Int, UnitAngle>(.windgustdir,
+                               .WindDirection,
+                               "Wind Gust Direction",
+                               "Wind direction at which the wind gust occurred",
+                               .degrees),
+            MD<Double, UnitSpeed>(.windspdmph_avg2m,
+                                  .WindSpeed,
+                                  "2 Minute Wind Speed Avg",
+                                  "Average wind speed, 2 minute average",
+                                  .milesPerHour),
+            MD<Int, UnitAngle>(.winddir_avg2m,
+                               .WindDirection,
+                               "2 Minute Wind Direction Avg",
+                               "Average wind direction, 2 minute average",
+                               .degrees),
+            MD<Double, UnitSpeed>(.windspdmph_avg10m,
+                                  .WindSpeed,
+                                  "10 Minute Wind Speed Avg",
+                                  "Average wind speed, 10 minute average",
+                                  .milesPerHour),
+            MD<Int, UnitAngle>(.winddir_avg10m,
+                               .WindDirection,
+                               "10 Minute Wind Direction Avg",
+                               "Average wind direction, 10 minute average",
+                               .degrees),
+            MD<Double, UnitTemperature>(.tempinf,
+                                        .Temperature,
+                                        "Indoor Temperature",
+                                        "Indoor Temperature",
+                                        .fahrenheit),
+            MD<Double, UnitTemperature>(.tempf,
+                                        .Temperature,
+                                        "Outdoor Temperature",
+                                        "Outdoor Temperature",
+                                        .fahrenheit),
+            MD<Double, UnitTemperature>(.dewPoint,
+                                        .Temperature,
+                                        "Outdoor Dew Point",
+                                        "Outdoor Dew Point",
+                                        .fahrenheit),
+            MD<Double, UnitTemperature>(.dewPointIn,
+                                        .Temperature,
+                                        "Indoor Dew Point",
+                                        "Indoor Dew Point",
+                                        .fahrenheit),
+            MD<Double, UnitTemperature>(.feelsLike,
+                                        .Temperature,
+                                        "Outdoor Temperature Feels Like",
+                                        "If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
+                                        .fahrenheit),
+            MD<Double, UnitTemperature>(.feelsLikeIn,
+                                        .Temperature,
+                                        "Indoor Temperature Feels Like",
+                                        "Indoor Feels Like",
+                                        .fahrenheit)]
 
         metadata.append(contentsOf: [.batt1, .batt2, .batt3, .batt4, .batt5, .batt6, .batt7, .batt8, .batt9, .batt10].enumerated().map {
-            MD($1,
-               .Battery,
-               Int.self,
-               "Battery Status: \($0 + 1)",
-               "Outdoor Battery Status - Sensor #\($0 + 1)") })
+            MD<Int, Unit>($1,
+                          .Battery,
+                          "Battery Status: \($0 + 1)",
+                          "Outdoor Battery Status - Sensor #\($0 + 1)") })
         metadata.append(contentsOf: [.humidity1, .humidity2, .humidity3, .humidity4, .humidity5, .humidity6, .humidity7, .humidity8, .humidity9, .humidity10].enumerated().map {
-            MD($1,
-               .Humidity,
-               Int.self,
-               "Outdoor Humidity: \($0 + 1)",
-               "Outdoor Humidity Sensor #\($0 + 1), 0-l00%",
-               percentage) })
+            MD<Int, Unit>($1,
+                          .Humidity,
+                          "Outdoor Humidity: \($0 + 1)",
+                          "Outdoor Humidity Sensor #\($0 + 1), 0-l00%",
+                          percentage) })
         metadata.append(contentsOf: [.soilhum1, .soilhum2, .soilhum3, .soilhum4, .soilhum5, .soilhum6, .soilhum7, .soilhum8, .soilhum9, .soilhum10].enumerated().map {
-            MD($1,
-               .Humidity,
-               Int.self,
-               "Soil Humidity: \($0 + 1)",
-               "Soil Humidity Sensor #\($0 + 1), 0-l00%",
-               percentage) })
+            MD<Int, Unit>($1,
+                          .Humidity,
+                          "Soil Humidity: \($0 + 1)",
+                          "Soil Humidity Sensor #\($0 + 1), 0-l00%",
+                          percentage) })
         metadata.append(contentsOf: [.relay1, .relay2, .relay3, .relay4, .relay5, .relay6, .relay7, .relay8, .relay9, .relay10].enumerated().map {
-            MD($1,
-               .General,
-               Int.self,
-               "Relay \($0 + 1)",
-               "Relay Sensor #\($0 + 1)") })
+            MD<Int, Unit>($1,
+                          .General,
+                          "Relay \($0 + 1)",
+                          "Relay Sensor #\($0 + 1)") })
         metadata.append(contentsOf: [.temp1f, .temp2f, .temp3f, .temp4f, .temp5f, .temp6f, .temp7f, .temp8f, .temp9f, .temp10f].enumerated().map {
-            MD($1,
-               .Temperature,
-               Double.self,
-               "Outdoor Temperature: \($0 + 1)",
-               "Outdoor Temperature Sensor #\($0 + 1)",
-               UnitTemperature.fahrenheit) })
+            MD<Double, UnitTemperature>($1,
+                                        .Temperature,
+                                        "Outdoor Temperature: \($0 + 1)",
+                                        "Outdoor Temperature Sensor #\($0 + 1)",
+                                        .fahrenheit) })
         metadata.append(contentsOf: [.soiltemp1f, .soiltemp2f, .soiltemp3f, .soiltemp4f, .soiltemp5f, .soiltemp6f, .soiltemp7f, .soiltemp8f, .soiltemp9f, .soiltemp10f].enumerated().map {
-            MD($1,
-               .Temperature,
-               Double.self,
-               "Soil Temperature: \($0 + 1)",
-               "Soil Temperature Sensor #\($0 + 1)",
-               UnitTemperature.fahrenheit) })
+            MD<Double, UnitTemperature>($1,
+                                        .Temperature,
+                                        "Soil Temperature: \($0 + 1)",
+                                        "Soil Temperature Sensor #\($0 + 1)",
+                                        .fahrenheit) })
         metadata.append(contentsOf: [.feelsLike1, .feelsLike2, .feelsLike3, .feelsLike4, .feelsLike5, .feelsLike6, .feelsLike7, .feelsLike8, .feelsLike9, .feelsLike10].enumerated().map {
-            MD($1,
-               .Temperature,
-               Double.self,
-               "Outdoor Temperature Feels Like: \($0 + 1)",
-               "Sensor \($0 + 1): If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
-               UnitTemperature.fahrenheit) })
+            MD<Double, UnitTemperature>($1,
+                                        .Temperature,
+                                        "Outdoor Temperature Feels Like: \($0 + 1)",
+                                        "Sensor \($0 + 1): If < 50℉ => Wind Chill, if > 68℉ => Heat Index",
+                                        .fahrenheit) })
         metadata.append(contentsOf: [.dewPoint1, .dewPoint2, .dewPoint3, .dewPoint4, .dewPoint5, .dewPoint6, .dewPoint7, .dewPoint8, .dewPoint9, .dewPoint10].enumerated().map {
-            MD($1,
-               .Temperature,
-               Double.self,
-               "Dew Point: \($0 + 1)",
-               "Sensor \($0 + 1): Dew Point",
-               UnitTemperature.fahrenheit) })
+            MD<Double, UnitTemperature>($1,
+                                        .Temperature,
+                                        "Dew Point: \($0 + 1)",
+                                        "Sensor \($0 + 1): Dew Point",
+                                        .fahrenheit) })
 
         return metadata
     }()
@@ -396,7 +341,7 @@ open class AmbientWeatherReport: WeatherReport {
 
         self._sensors = try Dictionary(
             try AmbientWeatherReport.sensorMetadata.compactMap { md -> AmbientWeatherSensor? in
-                guard let value = try json.decodeIfPresent(md.valueType, forKey: md.ID) else {
+                guard let (rawValue, value) = try md.createMeasurement(from: json) else {
                     return nil
                 }
 
@@ -404,8 +349,8 @@ open class AmbientWeatherReport: WeatherReport {
                                             sensorID: md.ID.rawValue,
                                             name: md.name,
                                             description: md.description,
-                                            measurement: try md.createMeasurement(value: value),
-                                            rawValue: value)
+                                            measurement: value,
+                                            rawValue: rawValue)
             }.map { ($0.ID, $0) },
             uniquingKeysWith: {
                 throw AmbientWeatherError.conflictingSensorIDs($0, $1)

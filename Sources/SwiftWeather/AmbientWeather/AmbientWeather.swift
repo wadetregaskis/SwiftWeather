@@ -25,7 +25,6 @@ enum AmbientWeatherError: Error {
 
     case platformMissingFromDecoderUserInfo
     case sensorNotSupportedForCodable(WeatherSensor)
-    case internalInconsistencyRegardingSensorValueFormats(Any.Type, Any)
     case unsupportedSensorValueType(Any, Unit)
 
     case unknown
@@ -98,10 +97,6 @@ extension AmbientWeatherError: LocalizedError {
             return NSLocalizedString(
                 "AmbientWeather: Sensor is not supported for encoding (per Codable protocol) because its ID (\"\(sensor.ID)\") is not recognised:\n\(sensor)",
                 comment: "An internal inconsistency in which a sensor is somehow constructed that cannot be encoded, even though construction should have been via the same list of known sensor IDs as encoding supports.")
-        case .internalInconsistencyRegardingSensorValueFormats(let expectedType, let actualValue):
-            return NSLocalizedString(
-                "Internal inconsistency regarding sensor data formats - expected the input to be \(expectedType) but it is \(type(of: actualValue)): \(actualValue).",
-                comment: "An internal inconsistency in which a sensor value is expected to be a certain type - based on hard-coded prior steps - yet is not.")
         case .unsupportedSensorValueType(let value, let unit):
             return NSLocalizedString(
                 "Unsupported sensor value type for a value with a unit (\(unit)): \(value) (\(type(of: value)))",
