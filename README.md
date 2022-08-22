@@ -37,7 +37,7 @@ Once you have a platform instance, you can retrieve the list of available weathe
 let devices = try await platform.devices
 ```
 
-Note that in real-world code you'll likely need to handle any exceptions that are thrown (which typically mean the desired platform isn't supported or the provided keys weren't valid).
+Note that in real-world code you'll likely need to handle any exceptions that are thrown (e.g. the provided keys weren't valid).
 
 `devices` is a map of device IDs to device instances.  You can persist weather device IDs (e.g. into user preferences) in order to recall the same device later (but be aware that device IDs are only unique per weather platform type - make sure to also record which platform the ID is associated with).
 
