@@ -63,7 +63,7 @@ open class AmbientWeatherReport: WeatherReport {
             } else if let valueAsBinaryInteger = value as? any BinaryInteger {
                 valueAsDouble = Double(valueAsBinaryInteger)
             } else {
-                throw AmbientWeatherError.unsupportedSensorValueType(value, unit)
+                throw AmbientWeatherError.unsupportedSensorValueType(value: value)
             }
 
             return (rawValue, Measurement<UnitType>(value: valueAsDouble, unit: self.unit))
@@ -373,11 +373,11 @@ open class AmbientWeatherReport: WeatherReport {
             })
 
         guard let dateSensor = self._sensors["dateutc"] ?? self._sensors["date"] else {
-            throw AmbientWeatherError.missingReportDate(Array(self._sensors.keys))
+            throw AmbientWeatherError.missingReportDate(availableSensors: Array(self._sensors.keys))
         }
 
         guard let date = dateSensor.measurement as? Date else {
-            throw AmbientWeatherError.unexpectedSensorValueType(sensorID: "dateutc", value: dateSensor.measurement, expected: Date.self)
+            throw AmbientWeatherError.unexpectedSensorValueType(sensorID: "dateutc", value: dateSensor.measurement, expectedType: Date.self)
         }
 
         self.date = date
