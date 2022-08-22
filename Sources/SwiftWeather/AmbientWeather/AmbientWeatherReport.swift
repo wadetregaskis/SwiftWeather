@@ -70,7 +70,7 @@ open class AmbientWeatherReport: WeatherReport {
         }
     }
 
-    internal static let rainDateFormatter = {
+    internal static let dateFormatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
@@ -123,6 +123,21 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.battout,
                           .Battery,
                           "Outdoor Sensor Battery Status"),
+            MD<Int, Unit>(.battin,
+                          .Battery,
+                          "Indoor Sensor Battery Status"),
+            MD<Int, Unit>(.batt_lightning,
+                          .Battery,
+                          "Lightning Detector Battery Status",
+                          noUnit,
+                          nil,
+                          { 1 - $0 }),
+            MD<Int, Unit>(.batt_co2,
+                          .Battery,
+                          "CO2 Sensor Battery Status"),
+            MD<Int, Unit>(.batt_cellgateway,
+                          .Battery,
+                          "Cellular Gateway Battery Status"),
             MD<Int, Unit>(.humidity,
                           .Humidity,
                           "Outdoor Humidity",
@@ -134,6 +149,18 @@ open class AmbientWeatherReport: WeatherReport {
             MD<String, Unit>(.tz,
                              .TimeZone,
                              "Time Zone"),
+            MD<String, Unit>(.date,
+                             .Date,
+                             "Date",
+                             noUnit,
+                             "Date & time at which the measurements were reported",
+                             {
+                                 guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
+                                     throw AmbientWeatherError.invalidLastRainDate($0)
+                                 }
+
+                                 return date
+                             }),
             MD<Int, Unit>(.dateutc,
                           .Date,
                           "Date",
@@ -188,7 +215,7 @@ open class AmbientWeatherReport: WeatherReport {
                              noUnit,
                              nil,
                              {
-                                 guard let date = AmbientWeatherReport.rainDateFormatter.date(from: $0) else {
+                                 guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
                                      throw AmbientWeatherError.invalidLastRainDate($0)
                                  }
 
@@ -244,7 +271,7 @@ open class AmbientWeatherReport: WeatherReport {
                                         .Temperature,
                                         "Outdoor Dew Point",
                                         .fahrenheit),
-            MD<Double, UnitTemperature>(.dewPointIn,
+            MD<Double, UnitTemperature>(.dewPointin,
                                         .Temperature,
                                         "Indoor Dew Point",
                                         .fahrenheit),
@@ -252,11 +279,37 @@ open class AmbientWeatherReport: WeatherReport {
                                         .Temperature,
                                         "Outdoor Temperature Feels Like",
                                         .fahrenheit),
-            MD<Double, UnitTemperature>(.feelsLikeIn,
+            MD<Double, UnitTemperature>(.feelsLikein,
                                         .Temperature,
                                         "Indoor Temperature Feels Like",
-                                        .fahrenheit)]
-
+                                        .fahrenheit),
+            MD<Int, Unit>(.lightning_day,
+                          .Lightning,
+                          "Lightning Strikes Today"),
+            MD<Int, Unit>(.lightning_hour,
+                          .Lightning,
+                          "Lightning Strikes in the Last Hour"),
+            MD<Int, Unit>(.lightning_time,
+                          .Date,
+                          "Latest Lightning Strike Date",
+                          noUnit,
+                          nil,
+                          { Date(timeIntervalSince1970: Double($0) / 1000) }),
+            MD<Double, UnitLength>(.lightning_distance,
+                                   .Lightning,
+                                   "Latest Lightning Strike Distance",
+                                   .miles)]
+        metadata.append(contentsOf: [.batleak1, .batleak2, .batleak3, .batleak4].enumerated().map {
+            MD<Int, Unit>($1,
+                          .Battery,
+                          "Leak Detector #\($0 + 1) Battery Status",
+                          noUnit,
+                          nil,
+                          { 1 - $0 }) })
+        metadata.append(contentsOf: [.battsm1, .battsm2, .battsm3, .battsm4].enumerated().map {
+            MD<Int, Unit>($1,
+                          .Battery,
+                          "Soil Moisture Sensor #\($0 + 1) Battery Status") })
         metadata.append(contentsOf: [.batt1, .batt2, .batt3, .batt4, .batt5, .batt6, .batt7, .batt8, .batt9, .batt10].enumerated().map {
             MD<Int, Unit>($1,
                           .Battery,
@@ -333,6 +386,7 @@ open class AmbientWeatherReport: WeatherReport {
     }
 
     enum CodingKeys: String, CodingKey {
+
         case winddir
         case windspeedmph
         case windgustmph
@@ -387,6 +441,7 @@ open class AmbientWeatherReport: WeatherReport {
         case soilhum9
         case soilhum10
         case battout
+        case battin
         case batt1
         case batt2
         case batt3
@@ -398,6 +453,17 @@ open class AmbientWeatherReport: WeatherReport {
         case batt9
         case batt10
         case batt_25
+        case batt_lightning
+        case batleak1
+        case batleak2
+        case batleak3
+        case batleak4
+        case battsm1
+        case battsm2
+        case battsm3
+        case battsm4
+        case batt_co2
+        case batt_cellgateway
         case hourlyrainin
         case todayrainin = "dailyrainin"
         case dailyrainin = "24hourrainin"
@@ -425,13 +491,18 @@ open class AmbientWeatherReport: WeatherReport {
         case pm25_24h
         case pm25_in
         case pm25_in_24h
+        case lightning_day
+        case lightning_hour
+        case lightning_time
+        case lightning_distance
         case tz
+        case date
         case dateutc
         case lastRain
         case dewPoint
-        case dewPointIn
+        case dewPointin
         case feelsLike
-        case feelsLikeIn
+        case feelsLikein
         case feelsLike1
         case feelsLike2
         case feelsLike3

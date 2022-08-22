@@ -9,6 +9,7 @@ public enum WeatherSensorType {
     case Date
     case General
     case Humidity
+    case Lightning
     case Pressure
     case Radiation
     case Rain
