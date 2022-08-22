@@ -8,7 +8,7 @@ public class AmbientWeatherSensor: WeatherSensor {
     required internal init(type: WeatherSensorType,
                   sensorID: String,
                   name: String,
-                  description: String,
+                  description: String?,
                   measurement: Any,
                   rawValue: any Codable) {
         self.rawValue = rawValue
@@ -23,8 +23,13 @@ public class AmbientWeatherSensor: WeatherSensor {
     required public convenience init(type: WeatherSensorType,
                 sensorID: String,
                 name: String,
-                description: String,
+                description: String?,
                 measurement: Any) {
-        self.init(type: type, sensorID: sensorID, name: name, description: description, measurement: measurement, rawValue: measurement as! Codable) // TODO: Get rid of this forced cast.
+        self.init(type: type,
+                  sensorID: sensorID,
+                  name: name,
+                  description: description,
+                  measurement: measurement,
+                  rawValue: measurement as! Codable) // TODO: Get rid of this forced cast.
     }
 }

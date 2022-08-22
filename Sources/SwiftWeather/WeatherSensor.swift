@@ -45,8 +45,8 @@ open class WeatherSensor {
 
     /// A human-readable description of the sensor.
     ///
-    /// This may provide additional details or context regarding the sensor.
-    public let description: String
+    /// This may provide additional details or context regarding the sensor.  It is only present if there is meaningful additional information to convey, beyond what's already in the name & measurement units.
+    public let description: String?
 
     /// The sensor measurement.
     ///
@@ -56,7 +56,7 @@ open class WeatherSensor {
     required public init(type: WeatherSensorType,
                          sensorID: String,
                          name: String,
-                         description: String,
+                         description: String?,
                          measurement: Any) {
         self.type = type
         self.ID = sensorID
@@ -190,10 +190,12 @@ extension WeatherSensor { // Formatting
             }
 
             if components.contains(.description) {
-                if result.isEmpty {
-                    result.append(value.description)
-                } else {
-                    result.append("(\(value.description))")
+                if let description = value.description {
+                    if result.isEmpty {
+                        result.append(description)
+                    } else {
+                        result.append("(\(description))")
+                    }
                 }
             }
 
