@@ -24,12 +24,11 @@ Add the following package to your Package.swift file:
 
 # Getting Started
 
-SwiftWeather uses a factory pattern to create instances of specific weather platforms.  All you you need to do is specify a weather service type and pass it the required API key(s).  Some weather platforms require a single key; some require multiple keys.  For now, the only supported platform is AmbientWeather.net.  AmbientWeather requires two keys.  To initialze a platform instance, you need call only one function:
+SwiftWeather uses a factory pattern to create instances of specific weather platforms.  All you you need to do is specify a weather service type (and any relevant configuration parameters, such as API keys).  To initialze a platform instance, you call one function:
 
 ```swift
-guard let platform = SwiftWeather.create(weatherPlatformType: .AmbientWeather,
-                                         apiKeys: ["*** YOUR API Key ***",
-                                                   "*** YOUR Application Key***"]) else { return }
+guard let platform = SwiftWeather.create(weatherPlatformType: .AmbientWeather(applicationKey: yourApplicationKey,
+                                                                              apiKey: yourAPIKey)) else { return }
 ```
 
 Once you have a platform instance, you can retrieve the list of available weather devices (stations):
@@ -137,9 +136,8 @@ open class WeatherSensor {
     public let type: WeatherSensorType
     public let ID: WeatherSensorID
     public let name: String
-    public let description: String
+    public let description: String?
     public let measurement: Any
-    public let unit: String
 }
 ```
 
