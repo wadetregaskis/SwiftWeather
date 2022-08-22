@@ -46,7 +46,7 @@ open class AmbientWeatherDevice: WeatherDevice {
                 return report
             }
 
-            throw AmbientWeatherError.unknown
+            throw AmbientWeatherError.noReportsAvailable
         }
     }
 
