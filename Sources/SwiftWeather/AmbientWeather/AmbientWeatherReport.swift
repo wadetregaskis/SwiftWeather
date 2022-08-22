@@ -396,7 +396,6 @@ open class AmbientWeatherReport: WeatherReport {
     }
 
     enum CodingKeys: String, CodingKey {
-
         case winddir
         case windspeedmph
         case windgustmph
