@@ -143,6 +143,17 @@ open class AmbientWeatherDevice: WeatherDevice {
         try container.encode(macAddress, forKey: .macAddress)
         try container.encode(info, forKey: .info)
     }
+
+    public static func fakeDeviceForTesting() throws -> AmbientWeatherDevice {
+        let decoder = JSONDecoder()
+
+        let platform = try! SwiftWeather.create(weatherServiceType: .AmbientWeather(applicationKey: "test", apiKey: "test"))
+        decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] = platform
+
+        return try! decoder.decode(AmbientWeatherDevice.self, from: """
+            {"macAddress":"00:11:22:33:44:55","lastData":{"dateutc":1659228720000,"winddir":251,"windspeedmph":0,"windgustmph":0,"maxdailygust":14.99,"tempf":55.8,"battout":1,"humidity":90,"hourlyrainin":0,"eventrainin":0,"dailyrainin":0,"weeklyrainin":0,"monthlyrainin":0,"yearlyrainin":3.9,"totalrainin":3.9,"tempinf":67.6,"battin":0,"humidityin":49,"baromrelin":30.03,"baromabsin":28.11,"uv":2,"solarradiation":96.09,"feelsLike":55.8,"dewPoint":52.91,"feelsLikein":67.6,"dewPointin":47.8,"lastRain":"2022-06-05T17:47:00.000Z","tz":"America/Los_Angeles","date":"2022-07-31T00:52:00.000Z"},"info":{"name":"Global Dynamics","location":"Eureka","coords":{"coords":{"lat":42.25403,"lon":-118.31364},"address":"1234 Eureka Parkway, OR, USA","location":"Secret County","elevation":235.28756,"geo":{"type":"Point","coordinates":[-118.31364,42.25403]}}}}
+            """.data(using: .utf8)!)
+    }
 }
 
 extension AmbientWeatherDevice: CustomStringConvertible {
