@@ -218,7 +218,6 @@ public final class AmbientWeather: WeatherPlatform {
         config.allowsExpensiveNetworkAccess = true
         config.allowsConstrainedNetworkAccess = true
 
-        // These are also overridden in init(), but include them here so that anything looking at this default configuration will see the full picture.
         config.tlsMinimumSupportedProtocolVersion = .TLSv13
         config.httpMaximumConnectionsPerHost = 1
 
@@ -238,14 +237,7 @@ public final class AmbientWeather: WeatherPlatform {
 
         self.applicationKey = applicationKey
         self.apiKey = apiKey
-
-        let config: URLSessionConfiguration = sessionConfiguration?.copy() as! URLSessionConfiguration? ?? AmbientWeather.defaultConfiguration
-
-        // Force use of these two essential configuration options, as they're essential to security & reliability (multiple simultaneous connections significantly increases the likelihood of hitting rate-limiting errors).
-        config.tlsMinimumSupportedProtocolVersion = .TLSv13
-        config.httpMaximumConnectionsPerHost = 1
-
-        self.session = URLSession(configuration: config)
+        self.session = URLSession(configuration: sessionConfiguration?.copy() as! URLSessionConfiguration? ?? AmbientWeather.defaultConfiguration)
     }
 
     internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
