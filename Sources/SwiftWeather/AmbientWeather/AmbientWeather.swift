@@ -208,10 +208,14 @@ public final class AmbientWeather: WeatherPlatform {
 
         config.timeoutIntervalForResource = 120
         config.waitsForConnectivity = true
+
         config.httpCookieAcceptPolicy = .never
         config.httpShouldSetCookies = false
-        config.requestCachePolicy = .reloadRevalidatingCacheData
+
+        config.httpMaximumConnectionsPerHost = 1
         config.httpShouldUsePipelining = true
+
+        config.requestCachePolicy = .reloadRevalidatingCacheData
 
         // Weather data is quite small and compresses very well (with gzip transfer compression) so it's unlikely to be a concern regarding use over cellular or "expensive" connections.  Framework users can always override this if they wish (by providing a custom URLSessionConfiguration), to better match their app's needs.
         config.allowsCellularAccess = true
@@ -219,7 +223,6 @@ public final class AmbientWeather: WeatherPlatform {
         config.allowsConstrainedNetworkAccess = true
 
         config.tlsMinimumSupportedProtocolVersion = .TLSv13
-        config.httpMaximumConnectionsPerHost = 1
 
         return config
     }
