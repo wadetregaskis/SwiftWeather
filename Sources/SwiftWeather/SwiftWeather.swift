@@ -93,11 +93,15 @@ public enum WeatherPlatformType: Codable {
 public class SwiftWeather {
     /// Initialize the desired service using a platform model
     /// - Parameter weatherServiceType: Desired weather service.
+    /// - Parameter sessionConfiguration: An optional configuration to use for network connectivity.  Note that some configuration options may be overridden by the framework if necessary (e.g. some weather APIs contractually require certain headers or caching behaviours).
     /// - Returns: A new weather platform of the requested type.
-    public static func create(weatherServiceType: WeatherPlatformType) throws -> WeatherPlatform {
+    public static func create(_ weatherServiceType: WeatherPlatformType,
+                              sessionConfiguration: URLSessionConfiguration? = nil) throws -> WeatherPlatform {
         switch weatherServiceType {
         case .AmbientWeather(let applicationKey, let apiKey):
-            return try AmbientWeather(applicationKey: applicationKey, apiKey: apiKey)
+            return try AmbientWeather(applicationKey: applicationKey,
+                                      apiKey: apiKey,
+                                      sessionConfiguration: sessionConfiguration)
         }
     }
 }

@@ -66,10 +66,10 @@ open class AmbientWeatherDevice: WeatherDevice {
                     var date = upToAndIncluding
 
                     while 0 < countRemaining && !Task.isCancelled {
-                        let endpoint = try _platform.dataEndPoint(macAddress: ID,
-                                                                  limit: min(countRemaining, 288),
-                                                                  date: (date == .distantFuture) ? nil : date)
-                        let (data, response) = try await URLSession.shared.data(from: endpoint)
+                        let endpoint = try self._platform.dataEndPoint(macAddress: ID,
+                                                                       limit: min(countRemaining, 288),
+                                                                       date: (date == .distantFuture) ? nil : date)
+                        let (data, response) = try await self._platform.session.data(from: endpoint)
                         let timeLastAPICallEnded = Date.now
 
                         if let httpResponse = response as? HTTPURLResponse {
@@ -147,7 +147,7 @@ open class AmbientWeatherDevice: WeatherDevice {
     public static func fakeDeviceForTesting() throws -> AmbientWeatherDevice {
         let decoder = JSONDecoder()
 
-        let platform = try! SwiftWeather.create(weatherServiceType: .AmbientWeather(applicationKey: "test", apiKey: "test"))
+        let platform = try! SwiftWeather.create(.AmbientWeather(applicationKey: "test", apiKey: "test"))
         decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] = platform
 
         return try! decoder.decode(AmbientWeatherDevice.self, from: """

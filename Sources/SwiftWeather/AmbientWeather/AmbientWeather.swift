@@ -194,18 +194,40 @@ extension AmbientWeatherError: LocalizedError {
     }
 }
 
-public final class AmbientWeather: WeatherPlatform, Codable {
+public final class AmbientWeather: WeatherPlatform {
     private let apiHostname = "api.ambientweather.net"
     private let apiVersion = "v1"
+
     private let applicationKey: String
     private let apiKey: String
 
-    enum CodingKeys: CodingKey {
-        case applicationKey
-        case apiKey
+    internal let session: URLSession
+
+    private static var defaultConfiguration: URLSessionConfiguration {
+        let config = URLSessionConfiguration.ephemeral
+
+        config.timeoutIntervalForResource = 120
+        config.waitsForConnectivity = true
+        config.httpCookieAcceptPolicy = .never
+        config.httpShouldSetCookies = false
+        config.requestCachePolicy = .reloadRevalidatingCacheData
+        config.httpShouldUsePipelining = true
+
+        // Weather data is quite small and compresses very well (with gzip transfer compression) so it's unlikely to be a concern regarding use over cellular or "expensive" connections.  Framework users can always override this if they wish (by providing a custom URLSessionConfiguration), to better match their app's needs.
+        config.allowsCellularAccess = true
+        config.allowsExpensiveNetworkAccess = true
+        config.allowsConstrainedNetworkAccess = true
+
+        // These are also overridden in init(), but include them here so that anything looking at this default configuration will see the full picture.
+        config.tlsMinimumSupportedProtocolVersion = .TLSv13
+        config.httpMaximumConnectionsPerHost = 1
+
+        return config
     }
 
-    internal init(applicationKey: String, apiKey: String) throws {
+    internal init(applicationKey: String,
+                  apiKey: String,
+                  sessionConfiguration: URLSessionConfiguration?) throws {
         guard !applicationKey.isEmpty else {
             throw AmbientWeatherError.invalidApplicationKey
         }
@@ -216,6 +238,14 @@ public final class AmbientWeather: WeatherPlatform, Codable {
 
         self.applicationKey = applicationKey
         self.apiKey = apiKey
+
+        let config: URLSessionConfiguration = sessionConfiguration?.copy() as! URLSessionConfiguration? ?? AmbientWeather.defaultConfiguration
+
+        // Force use of these two essential configuration options, as they're essential to security & reliability (multiple simultaneous connections significantly increases the likelihood of hitting rate-limiting errors).
+        config.tlsMinimumSupportedProtocolVersion = .TLSv13
+        config.httpMaximumConnectionsPerHost = 1
+
+        self.session = URLSession(configuration: config)
     }
 
     internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
@@ -223,7 +253,7 @@ public final class AmbientWeather: WeatherPlatform, Codable {
     public var devices: [WeatherDeviceID: WeatherDevice] {
         get async throws {
             let endpoint = try deviceEndPoint()
-            let (data, response) = try await URLSession.shared.data(from: endpoint)
+            let (data, response) = try await session.data(from: endpoint)
 
             if let httpResponse = response as? HTTPURLResponse {
                 guard 200 == httpResponse.statusCode else {
