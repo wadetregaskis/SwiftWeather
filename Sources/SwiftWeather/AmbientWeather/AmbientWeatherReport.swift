@@ -387,12 +387,12 @@ open class AmbientWeatherReport: WeatherReport {
     public func encode(to encoder: Encoder) throws {
         var json = encoder.container(keyedBy: CodingKeys.self)
 
-        try self._sensors.forEach {
-            guard let codingKey = CodingKeys(rawValue: $0.value.ID) else {
-                throw AmbientWeatherError.sensorNotSupportedForCodable($0.value)
+        for sensor in self._sensors {
+            guard let codingKey = CodingKeys(rawValue: sensor.value.ID) else {
+                throw AmbientWeatherError.sensorNotSupportedForCodable(sensor.value)
             }
 
-            try json.encode($0.value.rawValue, forKey: codingKey)
+            try json.encode(sensor.value.rawValue, forKey: codingKey)
         }
     }
 
