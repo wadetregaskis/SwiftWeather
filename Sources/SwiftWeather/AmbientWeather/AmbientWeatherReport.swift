@@ -77,8 +77,8 @@ open class AmbientWeatherReport: WeatherReport {
     }()
 
     private static let noUnit = Unit(symbol: "")
-    private static let microgramsPerCubicMetre = Unit(symbol: "µg/m^3")
-    private static let wattsPerSquareMetre = Unit(symbol: "W/m^2")
+    private static let microgramsPerCubicMetre = Unit(symbol: "µg/㎥")
+    private static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
     private static let percentage = Unit(symbol: "%")
     private static let inchesPerHour = Unit(symbol: "in/hr")
 
