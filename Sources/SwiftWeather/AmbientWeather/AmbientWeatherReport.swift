@@ -70,7 +70,7 @@ open class AmbientWeatherReport: WeatherReport {
         }
     }
 
-    internal static let dateFormatter = {
+    private static let dateFormatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
