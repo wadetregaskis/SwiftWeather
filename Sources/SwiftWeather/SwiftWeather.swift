@@ -17,7 +17,7 @@ public protocol WeatherPlatform {
 
 
 /// A weather device (e.g. weather station) that reports weather data for a specific location.
-public protocol WeatherDevice: Codable, CustomStringConvertible {
+public protocol WeatherDevice: CustomStringConvertible {
     /// The platform the provides access to this device.
     ///
     /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.

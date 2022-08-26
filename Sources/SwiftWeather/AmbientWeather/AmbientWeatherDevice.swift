@@ -6,7 +6,7 @@ import Foundation
 ///
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
-open class AmbientWeatherDevice: WeatherDevice {
+open class AmbientWeatherDevice: WeatherDevice, Codable {
     private let _platform: AmbientWeather
     private let info: AmbientWeatherStationInfo?
     private let macAddress: WeatherDeviceID
