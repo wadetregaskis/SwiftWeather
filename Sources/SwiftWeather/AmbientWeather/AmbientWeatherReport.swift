@@ -4,7 +4,7 @@ import Foundation
 
 
 // Sigh.  Dealing with generics in Swift is real pain in the fucking arse sometimes.  All this boilerplate is because of Swift's inability to elegantly support collections of a generic type with varied specialisations.  This type-erasing "AnyMD" is the manual workaround to that stupidity.  Sigh.  Not that I'm bitter.
-protocol AnyMD {
+private protocol AnyMD {
     associatedtype InputValue: Codable
 
     var ID: AmbientWeatherReport.CodingKeys { get }
