@@ -81,6 +81,7 @@ open class AmbientWeatherReport: WeatherReport {
     private static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
     private static let percentage = Unit(symbol: "%")
     private static let inchesPerHour = Unit(symbol: "in/h")
+    private static let uv = Unit(symbol: "UV Index")
 
     private static let sensorMetadata: [any AnyMD] = {
         // The "as AnyMD" crap on the end of all these is because the Swift compiler shits itself if there's more than a couple of entries with different UnitTypes, even though it's utterly explicit from the variable's type declaration what the expected result is.  Thankfully the "as AnyMD" _doesn't_ change the actual type it instantiates - that's still a suitably specific type like MD<UnitTemperature>.
@@ -116,7 +117,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.uv,
                           .Radiation,
                           "UV Index",
-                          Unit(symbol: "UV Index")),
+                          uv),
             MD<Int, Unit>(.batt_25,
                           .Battery,
                           "Air Quality Sensor Battery Status"),
