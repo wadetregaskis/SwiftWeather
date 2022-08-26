@@ -17,9 +17,9 @@ private protocol AnyMD {
 
 
 open class AmbientWeatherReport: WeatherReport {
-    private let _sensors: [String: AmbientWeatherSensor]
+    private let _sensors: [WeatherSensorID: AmbientWeatherSensor]
 
-    public var sensors: [String: WeatherSensor] {
+    public var sensors: [WeatherSensorID: WeatherSensor] {
         _sensors
     }
 
