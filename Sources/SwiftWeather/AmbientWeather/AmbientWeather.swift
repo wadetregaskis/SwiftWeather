@@ -252,7 +252,7 @@ public final class AmbientWeather: WeatherPlatform {
 
             if let httpResponse = response as? HTTPURLResponse {
                 guard 200 == httpResponse.statusCode else {
-                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data.asString(encoding: .utf8) ?? data.debugDescription)")
+                    print("AmbientWeather API \(endpoint) responded with HTTP status \(httpResponse.statusCode).\nHeaders:\n\(httpResponse)\nBody:\n\(data.asString(encoding: .utf8) ?? data.asHexString())")
                     throw AmbientWeatherError.from(apiResponse: data)
                 }
             }
