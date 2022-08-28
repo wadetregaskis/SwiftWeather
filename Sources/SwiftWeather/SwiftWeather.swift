@@ -84,6 +84,11 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
     var sensors: [WeatherSensorID: WeatherSensor] { get }
 }
 
+extension WeatherReport {
+    public var description: String {
+        sensors.sorted { $0.key < $1.key }.map { $0.value.formatted() }.joined(separator: "\n")
+    }
+}
 
 public enum WeatherPlatformType: Codable {
     case AmbientWeather(applicationKey: String, apiKey: String)

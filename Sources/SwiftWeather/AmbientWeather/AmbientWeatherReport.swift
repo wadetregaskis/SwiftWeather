@@ -537,9 +537,3 @@ open class AmbientWeatherReport: WeatherReport {
 
     private(set) public var date: Date
 }
-
-extension AmbientWeatherReport: CustomStringConvertible {
-    public var description: String {
-        sensors.map { $0.value.formatted() }.joined(separator: "\n")
-    }
-}
