@@ -7,17 +7,13 @@ import Foundation
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
 open class AmbientWeatherDevice: WeatherDevice, Codable {
-    private let _platform: AmbientWeather
+    public let platform: AmbientWeather
     private let info: AmbientWeatherStationInfo?
     private let macAddress: WeatherDeviceID
 
     enum CodingKeys: String, CodingKey {
         case macAddress = "macAddress"
         case info = "info"
-    }
-
-    public var platform: WeatherPlatform {
-        _platform
     }
 
     public var ID: WeatherDeviceID {
@@ -66,10 +62,10 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
                     var date = upToAndIncluding
 
                     while 0 < countRemaining && !Task.isCancelled {
-                        let endpoint = try self._platform.dataEndPoint(macAddress: ID,
-                                                                       limit: min(countRemaining, 288),
-                                                                       date: (date == .distantFuture) ? nil : date)
-                        let (data, response) = try await self._platform.session.data(from: endpoint)
+                        let endpoint = try self.platform.dataEndPoint(macAddress: ID,
+                                                                      limit: min(countRemaining, 288),
+                                                                      date: (date == .distantFuture) ? nil : date)
+                        let (data, response) = try await self.platform.session.data(from: endpoint)
                         let timeLastAPICallEnded = Date.now
 
                         if let httpResponse = response as? HTTPURLResponse {
@@ -128,7 +124,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
             throw AmbientWeatherError.platformMissingFromDecoderUserInfo
         }
 
-        self._platform = platform
+        self.platform = platform
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 

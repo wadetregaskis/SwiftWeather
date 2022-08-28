@@ -16,7 +16,7 @@ public enum WeatherError: Error {
     case locationNotAvailable
 
     /// Thrown whenever two devices appear with the same device ID in the response from a weather platform's API.
-    case conflictingDeviceIDs(WeatherDevice, WeatherDevice)
+    case conflictingDeviceIDs(any WeatherDevice, any WeatherDevice)
 
     /// Thrown whenever two sensors appear within the same report with the same ID in the response from a weather platform's API.
     case conflictingSensorIDs(WeatherSensor, WeatherSensor)
