@@ -132,7 +132,14 @@ public final class AmbientWeather: WeatherPlatform {
 
     internal let session: URLSession
 
-    private static var defaultConfiguration: URLSessionConfiguration {
+    /// The default network connectivity configuration used by ``init``.
+    ///
+    /// This returns a new ``URLSessionConfiguration`` instance every time it is read, so you may customise the returned value without worrying about the changes affecting future values returned by this property.
+    ///
+    /// Some configuration options are particularly important for correct function, such as turning off concurrent connections in order to lessen the probability of rate-limiting errors from the AmbientWeather API.  Be conservative about what you change, and test thoroughly.
+    ///
+    /// These default settings are _not_ guaranteed to remain unchanged across versions of this framework.  If you need a specific setting for correct function of your application, make sure to set it explicitly.  e.g. if you have a preference on whether to wait for network connectivity, explicitly set `waitsForConnectivity` irrespective of the default value provided here.
+    public static var defaultConfiguration: URLSessionConfiguration {
         let config = URLSessionConfiguration.ephemeral
 
         config.timeoutIntervalForResource = 120
@@ -156,9 +163,13 @@ public final class AmbientWeather: WeatherPlatform {
         return config
     }
 
-    internal init(applicationKey: String,
-                  apiKey: String,
-                  sessionConfiguration: URLSessionConfiguration?) throws {
+    /// - Parameter applicationKey: The application (developer) key.  This is a key assigned to _your_ application by AmbientWeather.  Typically you will hard-code this into your application.  Application keys can be created at https://ambientweather.net/account.
+    /// - Parameter apiKey: The API (user) key.  This is a key assigned to each of your users, that functions essentially as their access credientials.  Typically you do _not_ hard-code this into your application, but rather require your users to input it.  You may wish to direct your users to https://ambientweather.net/account to create their API keys.
+    /// - Parameter sessionConfiguration: An optional configuration to use for network connectivity.  Generally if you wish to customise this you should start with ``defaultConfiguration`` and customise that, in order to inherit any settings which are important to correct function.
+    /// - Throws: ``WeatherError.invalidAPIKey`` or ``AmbientWeatherError.invalidApplicationKey`` if either of the keys are obviously invalid (e.g. blank).
+    public init(applicationKey: String,
+                apiKey: String,
+                sessionConfiguration: URLSessionConfiguration = defaultConfiguration) throws {
         guard !applicationKey.isEmpty else {
             throw AmbientWeatherError.invalidApplicationKey
         }
@@ -169,12 +180,15 @@ public final class AmbientWeather: WeatherPlatform {
 
         self.applicationKey = applicationKey
         self.apiKey = apiKey
-        self.session = URLSession(configuration: sessionConfiguration?.copy() as! URLSessionConfiguration? ?? AmbientWeather.defaultConfiguration)
+        self.session = URLSession(configuration: sessionConfiguration.copy() as! URLSessionConfiguration)
     }
 
     internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
 
-    public var usersDevices: [WeatherDeviceID: WeatherDevice] {
+    /// All ``AmbientWeatherDevice``s owned by the user (as specified in platform initialisation, sometimes implicitly via e.g. an API key).
+    ///
+    /// This property does _not_ list all devices globally available on AmbientWeather.  There is no way to query AmbientWeather about other user's devices.
+    public var usersDevices: [WeatherDeviceID: AmbientWeatherDevice] {
         get async throws {
             let endpoint = try deviceEndPoint()
             let (data, response) = try await session.data(from: endpoint)

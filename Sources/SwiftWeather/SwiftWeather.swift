@@ -11,18 +11,9 @@ public typealias WeatherDeviceID = String
 
 
 /// A service that provides access to weather devices & their sensor data.
-public protocol WeatherPlatform {
-    /// All ``WeatherDevice``s owned by the user (as specified in platform initialisation, sometimes implicitly via e.g. an API key).
-    ///
-    /// This property does _not_ list all devices globally available on the platform.
-    ///
-    /// For platforms which don't have a connection between users and devices, this property will be empty.
-    ///
-    /// For platforms which do have a connection between users and devices, but don't provide APIs for obtaining that information, this will throw ``WeatherError.notSupportedByPlatform``.
-    ///
-    /// For such platforms, use other methods or properties for finding weather devices.
-    var usersDevices: [WeatherDeviceID: WeatherDevice] { get async throws }
-}
+///
+/// Currently this exposes no methods or properties.  It might in future.  Even in their absence, it can be convenient as a way to refer abstractly to a weather platform (e.g. if you wish to store a heterogeneous collection of platforms you're using, which can be convenient for providing a user interface that allows your user to select which platform to work with).
+public protocol WeatherPlatform {}
 
 
 /// A weather device (e.g. weather station) that reports weather data for a specific location.
@@ -99,26 +90,5 @@ public protocol WeatherReport: Codable, CustomStringConvertible {
 extension WeatherReport {
     public var description: String {
         sensors.sorted { $0.key < $1.key }.map { $0.value.formatted() }.joined(separator: "\n")
-    }
-}
-
-public enum WeatherPlatformType: Codable {
-    case AmbientWeather(applicationKey: String, apiKey: String)
-}
-
-
-public class SwiftWeather {
-    /// Initialize the desired service using a platform model
-    /// - Parameter weatherServiceType: Desired weather service.
-    /// - Parameter sessionConfiguration: An optional configuration to use for network connectivity.  Note that some configuration options may be overridden by the framework if necessary (e.g. some weather APIs contractually require certain headers or caching behaviours).
-    /// - Returns: A new weather platform of the requested type.
-    public static func create(_ weatherServiceType: WeatherPlatformType,
-                              sessionConfiguration: URLSessionConfiguration? = nil) throws -> WeatherPlatform {
-        switch weatherServiceType {
-        case .AmbientWeather(let applicationKey, let apiKey):
-            return try AmbientWeather(applicationKey: applicationKey,
-                                      apiKey: apiKey,
-                                      sessionConfiguration: sessionConfiguration)
-        }
     }
 }

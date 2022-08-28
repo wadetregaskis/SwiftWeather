@@ -147,7 +147,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
     public static func fakeDeviceForTesting() throws -> AmbientWeatherDevice {
         let decoder = JSONDecoder()
 
-        let platform = try! SwiftWeather.create(.AmbientWeather(applicationKey: "test", apiKey: "test"))
+        let platform = try! AmbientWeather(applicationKey: "test", apiKey: "test")
         decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] = platform
 
         return try! decoder.decode(AmbientWeatherDevice.self, from: """
