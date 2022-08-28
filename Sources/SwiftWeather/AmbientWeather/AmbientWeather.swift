@@ -44,11 +44,14 @@ enum AmbientWeatherError: Error {
 
 /// Localized error messages
 extension AmbientWeatherError: LocalizedError {
+    private static let localisedStringsTable = "AmbientWeatherErrors"
+
     var errorDescription: String? {
         switch self {
         case .invalidApplicationKey:
             return NSLocalizedString(
                 "invalidApplicationKey",
+                tableName: AmbientWeatherError.localisedStringsTable,
                 value: "Invalid AmbientWeather application (developer) key.",
                 comment: "When the application key is either obviously invalid (e.g. an empty string) or rejected by the AmbientWeather API.")
 
@@ -56,6 +59,7 @@ extension AmbientWeatherError: LocalizedError {
             return String.localizedStringWithFormat(
                 NSLocalizedString(
                     "invalidReportCount",
+                    tableName: AmbientWeatherError.localisedStringsTable,
                     value: "At least 1 weather report must be requested, not \(count).",
                     comment: "When a caller asks for an invalid number of weather reports (i.e. 0 or a negative number).  The count requested is provided as an integer parameter."),
                 count)
@@ -64,6 +68,7 @@ extension AmbientWeatherError: LocalizedError {
             return String.localizedStringWithFormat(
                 NSLocalizedString(
                     "unsupportedReportCount",
+                    tableName: AmbientWeatherError.localisedStringsTable,
                     value: "AmbientWeather only supports returning between 1 and 288 weather reports per API call, not %d.",
                     comment: "When a nominally valid (i.e. >0) report count is requested, but it's simply not supported.  \"invalidReportCount\" is used for outright bogus values (e.g. zero, or negative counts).  The count requested is provided as an integer parameter."),
                 count)
@@ -71,18 +76,21 @@ extension AmbientWeatherError: LocalizedError {
         case .userRateExceeded:
             return NSLocalizedString(
                 "userRateExceeded",
+                tableName: AmbientWeatherError.localisedStringsTable,
                 value: "The AmbientWeather API rejected the request because [it believes] too many requests have been made recently, and it is enforcing a rate limit (which is or at least was one request per second).",
                 comment: "When the AmbientWeather API rejects a request with a 429 (or similar indicator of rate-limiting).")
 
         case .invalidURL:
             return NSLocalizedString(
                 "invalidURL",
+                tableName: AmbientWeatherError.localisedStringsTable,
                 value: "Invalid AmbientWeather endpoint URL.",
                 comment: "In principle should never happen - indicates that the hard-coded URL(s) for working with the AmbientWeather API are invalid in some way, at least according to the URL or URLComponents classes.")
 
         case .platformMissingFromDecoderUserInfo:
             return NSLocalizedString(
                 "platformMissingFromDecoderUserInfo",
+                tableName: AmbientWeatherError.localisedStringsTable,
                 value: "Parent AmbientWeather[Platform] missing from Decoder userInfo.",
                 comment: "In principle should never happen.  This means the AmbientWeather (platform) that is creating an AmbientWeatherDevice is not found in the Decoder's userInfo dictionary.")
 
@@ -90,6 +98,7 @@ extension AmbientWeatherError: LocalizedError {
             return String.localizedStringWithFormat(
                 NSLocalizedString(
                     "sensorNotSupportedForCodable",
+                    tableName: AmbientWeatherError.localisedStringsTable,
                     value: "AmbientWeatherSensor is not supported for encoding (per Codable protocol) because its ID (%@) is not recognised:\n%@",
                     comment: "In principle should never happens.  This means there's an internal inconsistency - code bug - in which a sensor is somehow constructed that cannot be encoded, even though construction should have been via the same list of known sensor IDs as encoding supports.  The sensor ID is passed as the first parameter (as a String), followed by a description of the sensor overall (also as a String)."),
                 sensor.ID,
@@ -98,6 +107,7 @@ extension AmbientWeatherError: LocalizedError {
         case .noAPIResponse:
             return NSLocalizedString(
                 "noAPIResponse",
+                tableName: AmbientWeatherError.localisedStringsTable,
                 value: "The AmbientWeather API did not provide a response.",
                 comment: "This covers both whether the API outright failed and therefore there was no response (logically), and when the API did _seem_ to work but the literal HTTP response body was empty.")
             
@@ -105,6 +115,7 @@ extension AmbientWeatherError: LocalizedError {
             return String.localizedStringWithFormat(
                 NSLocalizedString(
                     "unrecognisedAPIFailure",
+                    tableName: AmbientWeatherError.localisedStringsTable,
                     value: "Unrecognised error when calling the AmbientWeather API: %@",
                     comment: "This indicates that there _was_ a response - so it's not merely that the API was unreachable or somesuch - but the response was either unintelligible (not the expected JSON format & structure) or specified an error code that is not recognised.  An error message is included as the parameter, though it may itself just be a localised placeholder saying that there was no error message."),
                 message)
