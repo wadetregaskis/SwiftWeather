@@ -29,12 +29,12 @@ public protocol WeatherPlatform {
 public protocol WeatherDevice: CustomStringConvertible {
     /// The platform the provides access to this device.
     ///
-    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
+    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each ``WeatherDevice`` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct WeatherDevice instances, which may even have different ``ID``s.
     var platform: WeatherPlatform { get }
 
     /// The unique identifier for this weather device within the source ``platform``.
     ///
-    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each `WeatherDevice` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct `WeatherDevice` instances, which may even have different ``ID``s.
+    /// While actual weather stations (in the real-world sense) can publish data to multiple platforms, each ``WeatherDevice`` represents a specific platform & device combination.  The same station reported via multiple platforms will appear as distinct WeatherDevice instances, which may even have different ``ID``s.
     var ID: WeatherDeviceID { get }
 
     /// The name of the weather device, as specified by its owner.
