@@ -34,7 +34,7 @@ open class AmbientWeatherReport: WeatherReport {
         init(_ ID: CodingKeys,
              _ sensorType: WeatherSensorType,
              _ name: String,
-             _ unit: UnitType = noUnit,
+             _ unit: UnitType = Unit.none,
              _ description: String? = nil,
              _ converter: ((InputValue) throws -> Any)? = nil) {
             self.ID = ID
@@ -52,7 +52,7 @@ open class AmbientWeatherReport: WeatherReport {
 
             let value = try self.converter?(rawValue) ?? rawValue
 
-            guard self.unit != noUnit else {
+            guard self.unit != .none else {
                 return (rawValue, value)
             }
 
@@ -76,35 +76,28 @@ open class AmbientWeatherReport: WeatherReport {
         return formatter
     }()
 
-    private static let noUnit = Unit(symbol: "")
-    private static let microgramsPerCubicMetre = Unit(symbol: "µg/㎥")
-    private static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
-    private static let percentage = Unit(symbol: "%")
-    private static let inchesPerHour = Unit(symbol: "in/h")
-    private static let uv = Unit(symbol: "UV Index")
-
     private static let sensorMetadata: [any AnyMD] = {
         // The "as AnyMD" crap on the end of all these is because the Swift compiler shits itself if there's more than a couple of entries with different UnitTypes, even though it's utterly explicit from the variable's type declaration what the expected result is.  Thankfully the "as AnyMD" _doesn't_ change the actual type it instantiates - that's still a suitably specific type like MD<UnitTemperature>.
         var metadata: [any AnyMD] = [
             MD<Double, Unit>(.pm25,
                              .AirQuality,
                              "Outdoor Air Quality",
-                             microgramsPerCubicMetre,
+                             .microgramsPerCubicMetre,
                              "Measuring PM2.5"),
             MD<Double, Unit>(.pm25_24h,
                              .AirQuality,
                              "24 Average Outdoor Air Quality",
-                             microgramsPerCubicMetre,
+                             .microgramsPerCubicMetre,
                              "Measuring PM2.5"),
             MD<Double, Unit>(.pm25_in,
                              .AirQuality,
                              "Indoor Air Quality",
-                             microgramsPerCubicMetre,
+                             .microgramsPerCubicMetre,
                              "Measuring PM2.5"),
             MD<Double, Unit>(.pm25_in_24h,
                              .AirQuality,
                              "24 Average Indoor Air Quality",
-                             microgramsPerCubicMetre,
+                             .microgramsPerCubicMetre,
                              "Measuring PM2.5"),
             MD<Double, UnitDispersion>(.co2,
                                        .AirQuality,
@@ -113,11 +106,11 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Double, Unit>(.solarradiation,
                              .Radiation,
                              "Solar Radiation",
-                             wattsPerSquareMetre),
+                             .wattsPerSquareMetre),
             MD<Int, Unit>(.uv,
                           .Radiation,
                           "UV Index",
-                          uv),
+                          .uv),
             MD<Int, Unit>(.batt_25,
                           .Battery,
                           "Air Quality Sensor Battery Status"),
@@ -130,7 +123,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.batt_lightning,
                           .Battery,
                           "Lightning Detector Battery Status",
-                          noUnit,
+                          .none,
                           nil,
                           { 1 - $0 }),
             MD<Int, Unit>(.batt_co2,
@@ -142,18 +135,18 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.humidity,
                           .Humidity,
                           "Outdoor Humidity",
-                          percentage),
+                          .percentage),
             MD<Int, Unit>(.humidityin,
                           .Humidity,
                           "Indoor Humidity",
-                          percentage),
+                          .percentage),
             MD<String, Unit>(.tz,
                              .TimeZone,
                              "Time Zone"),
             MD<String, Unit>(.date,
                              .Date,
                              "Date",
-                             noUnit,
+                             .none,
                              "Date & time at which the measurements were reported",
                              {
                                  guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
@@ -165,7 +158,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.dateutc,
                           .Date,
                           "Date",
-                          noUnit,
+                          .none,
                           "Date & time at which the measurements were reported",
                           { Date(timeIntervalSince1970: Double($0) / 1000) }),
             MD<Double, UnitPressure>(.baromrelin,
@@ -179,7 +172,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Double, Unit>(.hourlyrainin,
                              .RainRate,
                              "Hourly Rain",
-                             inchesPerHour),
+                             .inchesPerHour),
             MD<Double, UnitLength>(.todayrainin,
                                    .Rain,
                                    "Rain Today",
@@ -213,7 +206,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<String, Unit>(.lastRain,
                              .Date,
                              "Last Rain",
-                             noUnit,
+                             .none,
                              nil,
                              {
                                  guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
@@ -293,7 +286,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>(.lightning_time,
                           .Date,
                           "Latest Lightning Strike Date",
-                          noUnit,
+                          .none,
                           nil,
                           { Date(timeIntervalSince1970: Double($0) / 1000) }),
             MD<Double, UnitLength>(.lightning_distance,
@@ -304,7 +297,7 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>($1,
                           .Battery,
                           "Leak Detector #\($0 + 1) Battery Status",
-                          noUnit,
+                          .none,
                           nil,
                           { 1 - $0 }) })
         metadata.append(contentsOf: [.battsm1, .battsm2, .battsm3, .battsm4].enumerated().map {
@@ -319,12 +312,12 @@ open class AmbientWeatherReport: WeatherReport {
             MD<Int, Unit>($1,
                           .Humidity,
                           "Sensor #\($0 + 1) Humidity",
-                          percentage) })
+                          .percentage) })
         metadata.append(contentsOf: [.soilhum1, .soilhum2, .soilhum3, .soilhum4, .soilhum5, .soilhum6, .soilhum7, .soilhum8, .soilhum9, .soilhum10].enumerated().map {
             MD<Int, Unit>($1,
                           .Humidity,
                           "Soil Sensor #\($0 + 1) Humidity",
-                          percentage) })
+                          .percentage) })
         metadata.append(contentsOf: [.relay1, .relay2, .relay3, .relay4, .relay5, .relay6, .relay7, .relay8, .relay9, .relay10].enumerated().map {
             MD<Int, Unit>($1,
                           .General,
