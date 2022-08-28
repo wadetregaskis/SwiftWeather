@@ -45,7 +45,7 @@ open class AmbientWeatherReport: WeatherReport {
             self.converter = converter
         }
 
-        func createMeasurement(from json: KeyedDecodingContainer<AmbientWeatherReport.CodingKeys>) throws -> (InputValue, Any)? {
+        func createMeasurement(from json: KeyedDecodingContainer<CodingKeys>) throws -> (InputValue, Any)? {
             guard let rawValue = try json.decodeIfPresent(InputValue.self, forKey: self.ID) else {
                 return nil
             }
