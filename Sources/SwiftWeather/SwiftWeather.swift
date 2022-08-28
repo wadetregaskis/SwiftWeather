@@ -4,6 +4,9 @@ import CoreLocation
 import Foundation
 
 
+/// The type for all weather device IDs.
+///
+/// Though this _happens_ to be a String currently, you should not assume that will always be the case.  You may assume it is Equatable, Hashable, and CustomStringConvertible.
 public typealias WeatherDeviceID = String
 
 
@@ -78,6 +81,9 @@ public protocol WeatherDevice: CustomStringConvertible {
 }
 
 
+/// The type for all weather sensor IDs.
+///
+/// Though this _happens_ to be a String currently, you should not assume that will always be the case.  You may assume it is Equatable, Hashable, and CustomStringConvertible.
 public typealias WeatherSensorID = String
 
 
