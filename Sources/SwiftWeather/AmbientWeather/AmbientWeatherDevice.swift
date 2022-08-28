@@ -46,7 +46,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
                 return report
             }
 
-            throw AmbientWeatherError.noReportsAvailable
+            throw WeatherError.noReportsAvailable
         }
     }
 

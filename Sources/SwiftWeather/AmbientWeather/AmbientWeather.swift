@@ -6,29 +6,15 @@ import Foundation
 /// Error messages specific to the Ambient Weather API
 enum AmbientWeatherError: Error {
     case invalidApplicationKey
-    case invalidAPIKey
-
-    /// Thrown whenever two devices appear with the same device ID in the list of available devices from the AmbientWeather API.
-    case conflictingDeviceIDs(AmbientWeatherDevice, AmbientWeatherDevice)
-
-    /// Thrown whenever two sensors appear within the same report with the same ID (as returned by the AmbientWeather API).
-    case conflictingSensorIDs(AmbientWeatherSensor, AmbientWeatherSensor)
-
-    /// Thrown whenever the last rain date, as reported by the AmbientWeather API, is not in the expected format.
-    case invalidLastRainDate(String)
 
     case invalidReportCount(Int)
     case unsupportedReportCount(Int)
-    case noReportsAvailable
 
     case userRateExceeded
     case invalidURL
 
     case platformMissingFromDecoderUserInfo
     case sensorNotSupportedForCodable(WeatherSensor)
-    case unsupportedSensorValueType(value: Any)
-    case unexpectedSensorValueType(sensorID: WeatherSensorID, value: Any, expectedType: Any.Type)
-    case missingReportDate(availableSensors: [WeatherSensorID])
 
     case noAPIResponse
     case unrecognisedAPIFailure(String)
@@ -47,7 +33,7 @@ enum AmbientWeatherError: Error {
         case "applicationKey-invalid":
             return invalidApplicationKey
         case "apiKey-invalid":
-            return invalidAPIKey
+            return WeatherError.invalidAPIKey
         case "above-user-rate-limit":
             return userRateExceeded
         default:
@@ -66,40 +52,6 @@ extension AmbientWeatherError: LocalizedError {
                 value: "Invalid AmbientWeather application (developer) key.",
                 comment: "When the application key is either obviously invalid (e.g. an empty string) or rejected by the AmbientWeather API.")
 
-        case .invalidAPIKey:
-            return NSLocalizedString(
-                "invalidAPIKey",
-                value: "Invalid AmbientWeather API (user) key.",
-                comment: "When the API key is either obviously invalid (e.g. an empty string) or rejected by the AmbientWeather API.")
-
-        case .conflictingDeviceIDs(let a, let b):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "conflictingDeviceIDs",
-                    value: "AmbientWeather reported two devices with the same ID (%@):\n\n%@\n\n%@",
-                    comment: "Two (or more) devices reported that have the same ID.  The ID in question is provided as the first String parameter, followed by descriptions of the two devices themselves (as Strings)."),
-                a.ID,
-                a.description,
-                b.description)
-
-        case .conflictingSensorIDs(let a, let b):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "conflictingSensorIDs",
-                    value: "AmbientWeather reported two sensors with the same ID (%@) within a single report:\n\n%@\n\n%@",
-                    comment: "Two (or more) sensors reported (within a single weather device) that have the same ID.  The ID in question is provided as the first String parameter, followed by descriptions of the two sensors themselves (as Strings)."),
-                a.ID,
-                String(describing: a),
-                String(describing: b))
-
-        case .invalidLastRainDate(let dateString):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "invalidLastRainDate",
-                    value: "AmbientWeather reported a date of last rain that is not in the expected format (ISO-8601 with fractional seconds): %@",
-                    comment: "The AmbientWeather API reported an incorrectly- (or at least unexpectedly-) formatted date.  The date (as provided by the API) is included as a parameter."),
-                dateString)
-
         case .invalidReportCount(let count):
             return String.localizedStringWithFormat(
                 NSLocalizedString(
@@ -115,12 +67,6 @@ extension AmbientWeatherError: LocalizedError {
                     value: "AmbientWeather only supports returning between 1 and 288 weather reports per API call, not %d.",
                     comment: "When a nominally valid (i.e. >0) report count is requested, but it's simply not supported.  \"invalidReportCount\" is used for outright bogus values (e.g. zero, or negative counts).  The count requested is provided as an integer parameter."),
                 count)
-
-        case .noReportsAvailable:
-            return NSLocalizedString(
-                "noReportsAvailable",
-                value: "No weather reports available.",
-                comment: "When no reports are available matching the specified criteria (if any, e.g. prior to a given date).")
 
         case .userRateExceeded:
             return NSLocalizedString(
@@ -148,34 +94,6 @@ extension AmbientWeatherError: LocalizedError {
                     comment: "In principle should never happens.  This means there's an internal inconsistency - code bug - in which a sensor is somehow constructed that cannot be encoded, even though construction should have been via the same list of known sensor IDs as encoding supports.  The sensor ID is passed as the first parameter (as a String), followed by a description of the sensor overall (also as a String)."),
                 sensor.ID,
                 String(describing: sensor))
-
-        case .unsupportedSensorValueType(value: let value):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "unsupportedSensorValueType",
-                    value: "Unsupported sensor value type %@ (for %@).",
-                    comment: "Essentially an internal inconsistency - the native value of the sensor, as reported in the response from AmbientWeather's API, is specified as having a known unit and therefore should be promoted to a formal Measurement yet is not of a type that has a known way to convert to a Double.  The type & value of the sensor are provided as parameters, as Strings."),
-                String(describing: type(of: value)),
-                String(describing: value))
-
-        case .unexpectedSensorValueType(sensorID: let sensorID, value: let value, expectedType: let expected):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "unexpectedSensorValueType",
-                    value: "AmbientWeather: expected the \"%@\" sensor to have a value of type %@, but it is a %@: %@",
-                    comment: "A kind of internal inconsistency, where a helper function (or property) that utilises a specific sensor finds that the sensor's value is not of the expected type.  The types of all the sensors is determined internally, so this situation should in principle be impossible.  Four parameters are provided: sensor ID (String), expected value type (String), the unexpected type (String), and the unexpected value itself (String)."),
-                sensorID,
-                String(describing: expected),
-                String(describing: type(of: value)),
-                String(describing: value))
-
-        case .missingReportDate(let sensorIDs):
-            return String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "missingReportDate",
-                    value: "Weather report from AmbientWeather did not contain a date specifying when the report was generated.  Included sensors: %@",
-                    comment: "When the AmbientWeather API returns a set of sensors, constituting a weather report, that don't include the date & time at which the report was generated.  The list of sensors that *are* included in the report are included as a parameter - a String from preformatting the list of sensor IDs in localised fashion (as a standard-width \"and\" list)."),
-                sensorIDs.sorted().formatted(.list(type: .and, width: .standard)))
 
         case .noAPIResponse:
             return NSLocalizedString(
@@ -235,7 +153,7 @@ public final class AmbientWeather: WeatherPlatform {
         }
 
         guard !apiKey.isEmpty else {
-            throw AmbientWeatherError.invalidAPIKey
+            throw WeatherError.invalidAPIKey
         }
 
         self.applicationKey = applicationKey
@@ -264,7 +182,7 @@ public final class AmbientWeather: WeatherPlatform {
                 let deviceList = try decoder.decode([AmbientWeatherDevice].self, from: data)
                 return try Dictionary(
                     deviceList.map { ($0.ID, $0) },
-                    uniquingKeysWith: { throw AmbientWeatherError.conflictingDeviceIDs($0, $1) })
+                    uniquingKeysWith: { throw WeatherError.conflictingDeviceIDs($0, $1) })
             } catch {
                 throw AmbientWeatherError.from(apiResponse: data, else: error)
             }

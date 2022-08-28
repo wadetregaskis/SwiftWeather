@@ -63,7 +63,7 @@ open class AmbientWeatherReport: WeatherReport {
             } else if let valueAsBinaryInteger = value as? any BinaryInteger {
                 valueAsDouble = Double(valueAsBinaryInteger)
             } else {
-                throw AmbientWeatherError.unsupportedSensorValueType(value: value)
+                throw WeatherError.unsupportedSensorValueType(ID: self.ID.rawValue, value: value)
             }
 
             return (rawValue, Measurement<UnitType>(value: valueAsDouble, unit: self.unit))
@@ -157,7 +157,7 @@ open class AmbientWeatherReport: WeatherReport {
                              "Date & time at which the measurements were reported",
                              {
                                  guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
-                                     throw AmbientWeatherError.invalidLastRainDate($0)
+                                     throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
                                  }
 
                                  return date
@@ -217,7 +217,7 @@ open class AmbientWeatherReport: WeatherReport {
                              nil,
                              {
                                  guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
-                                     throw AmbientWeatherError.invalidLastRainDate($0)
+                                     throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
                                  }
 
                                  return date
@@ -370,15 +370,15 @@ open class AmbientWeatherReport: WeatherReport {
                                             rawValue: rawValue)
             }.map { ($0.ID, $0) },
             uniquingKeysWith: {
-                throw AmbientWeatherError.conflictingSensorIDs($0, $1)
+                throw WeatherError.conflictingSensorIDs($0, $1)
             })
 
         guard let dateSensor = self._sensors["dateutc"] ?? self._sensors["date"] else {
-            throw AmbientWeatherError.missingReportDate(availableSensors: Array(self._sensors.keys))
+            throw WeatherError.missingReportDate(availableSensors: Array(self._sensors.keys))
         }
 
         guard let date = dateSensor.measurement as? Date else {
-            throw AmbientWeatherError.unexpectedSensorValueType(sensorID: "dateutc", value: dateSensor.measurement, expectedType: Date.self)
+            throw WeatherError.unexpectedSensorValueType(sensorID: dateSensor.ID, value: dateSensor.measurement, expectedType: Date.self)
         }
 
         self.date = date
