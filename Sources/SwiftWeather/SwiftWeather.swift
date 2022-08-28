@@ -9,10 +9,16 @@ public typealias WeatherDeviceID = String
 
 /// A service that provides access to weather devices & their sensor data.
 public protocol WeatherPlatform {
-    /// All ``WeatherDevice``s reported by the platform.
+    /// All ``WeatherDevice``s owned by the user (as specified in platform initialisation, sometimes implicitly via e.g. an API key).
     ///
-    /// Which devices are listed depends on the nature and configuration of the platform - e.g. which API key(s) were used.  This property does _not_ list all devices globally available on the platform.  For platforms which don't have an implied list of devices based on their configuration parameters, this property may be empty - for such platforms, use other methods or properties for finding weather devices.
-    var devices: [WeatherDeviceID: WeatherDevice] { get async throws }
+    /// This property does _not_ list all devices globally available on the platform.
+    ///
+    /// For platforms which don't have a connection between users and devices, this property will be empty.
+    ///
+    /// For platforms which do have a connection between users and devices, but don't provide APIs for obtaining that information, this will throw ``WeatherError.notSupportedByPlatform``.
+    ///
+    /// For such platforms, use other methods or properties for finding weather devices.
+    var usersDevices: [WeatherDeviceID: WeatherDevice] { get async throws }
 }
 
 

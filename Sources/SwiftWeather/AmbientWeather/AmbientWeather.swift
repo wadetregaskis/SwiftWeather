@@ -245,7 +245,7 @@ public final class AmbientWeather: WeatherPlatform {
 
     internal static let platformCodingUserInfoKey = CodingUserInfoKey(rawValue: "Platform")!
 
-    public var devices: [WeatherDeviceID: WeatherDevice] {
+    public var usersDevices: [WeatherDeviceID: WeatherDevice] {
         get async throws {
             let endpoint = try deviceEndPoint()
             let (data, response) = try await session.data(from: endpoint)
