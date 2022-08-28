@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum WeatherError {
+public enum WeatherError: Error {
     /// Indicates that the API (user) key is invalid, either outright (e.g. an empty string) or according to the weather platform's server (e.g. a revoked or banned key).
     case invalidAPIKey
 
