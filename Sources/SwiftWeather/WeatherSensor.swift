@@ -180,6 +180,9 @@ extension WeatherSensor { // Formatting
                     default:
                         result.append("Unknown (\(measurement))")
                     }
+                // TODO: Convert to using Swift native formatters rather than NSMeasurementFormatter (and NSNumberFormatter), so that it's viable to use the context-specific formatting options.
+                // } else if let measurement = value.measurement as? Measurement<UnitTemperature> {
+                //     result.append(measurement.formatted(.measurement(width: .abbreviated, usage: .weather)))
                 } else {
                     result.append(measurementFormatter.string(for: value.measurement)
                                   ?? String(describing: value.measurement))

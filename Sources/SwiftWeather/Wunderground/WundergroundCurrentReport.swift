@@ -172,7 +172,7 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .RainRate,
                                               "Rain Rate",
-                                              .millimetresPerHour),
+                                              UnitSpeed.millimetresPerHour),
              WundergroundCurrentReport.sensor(from: metrics,
                                               .precipTotal,
                                               Double.self,
