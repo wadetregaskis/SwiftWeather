@@ -81,7 +81,7 @@ open class WundergroundDevice: WeatherDevice {
                 }
             }
 
-            print(data.asString(encoding: .utf8) ?? data.asHexString())
+            //print(data.asString(encoding: .utf8) ?? data.asHexString())
 
             guard !data.isEmpty else {
                 throw WeatherError.noReportsAvailable
