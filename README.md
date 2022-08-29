@@ -10,7 +10,8 @@ A Swift weather package to support multiple weather APIs.
 
 | Weather API | Documentation |
 | :----:  | :----: |
-| [Ambient Weather](https://github.com/ambient-weather/api-docs) | * [API Docs](https://ambientweather.docs.apiary.io/)<br>* [API Wiki](https://github.com/ambient-weather/api-docs/wiki)<br>* [Device Specifications](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
+| [Ambient Weather](https://ambientweather.net) | * [API Docs](https://ambientweather.docs.apiary.io/)<br>* [API Wiki](https://github.com/ambient-weather/api-docs/wiki)<br>* [Device Specifications](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
+| [Wunderground](https://www.wunderground.com)<br>(partially; work in progress) | * [API Docs](https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY)
 
 # Installation
 
@@ -24,20 +25,31 @@ Add the following package to your Package.swift file:
 
 # Getting Started
 
-SwiftWeather uses a factory pattern to create instances of specific weather platforms.  All you you need to do is specify a weather service type (and any relevant configuration parameters, such as API keys).  To initialze a platform instance, you call one function:
+SwiftWeather provides a common framework for weather platforms, so you can write mostly generic code that supports any of them.  You do, however, have to explicitly choose which weather platform(s) you want to use, and initialise them first-up.  e.g:
 
 ```swift
-guard let platform = SwiftWeather.create(weatherPlatformType: .AmbientWeather(applicationKey: yourApplicationKey,
-                                                                              apiKey: yourAPIKey)) else { return }
+guard let platform = AmbientWeather(applicationKey: yourApplicationKey, apiKey: yourAPIKey)) else { return }
 ```
 
-Once you have a platform instance, you can retrieve the list of available weather devices (stations):
+Or:
+
+```swift
+guard let platform = Wunderground(apiKey: yourAPIKey)) else { return }
+```
+
+Once you have a platform instance, you can find weather devices (stations) from it.  The API for this varies by platform as they operate very differently.  e.g. for AmbientWeather:
 
 ```swift
 let devices = try await platform.devices
 ```
 
-Note that in real-world code you'll likely need to handle any exceptions that are thrown (e.g. the provided keys weren't valid).
+Or for Wunderground:
+
+```swift
+let devices = try await platform.devices(near: someCLLocation)
+```
+
+Note that in real-world code you'll likely need to handle any exceptions that are thrown (e.g. the provided keys weren't valid, network connectivity problems, etc).
 
 `devices` is a map of device IDs to device instances.  You can persist weather device IDs (e.g. into user preferences) in order to recall the same device later (but be aware that device IDs are only unique per weather platform type - make sure to also record which platform the ID is associated with).
 
@@ -59,6 +71,8 @@ for try await report in device.latestReports(count: N) {
 
 Reports are returned in reverse chronological order (i.e. starting with the most recent).  The date interval between them is weather-platform-dependent and/or device-dependent, and also may be irregular if e.g. the weather device in question had internet connectivity issues.
 
+Note:  not currently supported for Wunderground.
+
 ## Use Case #3: Retrieve the report for a past date
 
 ```swift
@@ -67,6 +81,8 @@ for try await report in device.reports(count: 1, upToAndIncluding: date) {
 }
 ```
 
+Note:  not currently supported for Wunderground.
+
 ## Use Case #4: Retrieve N reports leading up to a given date
 
 ```swift
@@ -74,6 +90,8 @@ for try await report in device.reports(count: N, upToAndIncluding: date) {
     …
 }
 ```
+
+Note:  not currently supported for Wunderground.
 
 # Working with reports
 
@@ -148,7 +166,7 @@ Have a look in the package - and experiment with this library against a real sta
 ## To Do
 
 - Add real-time AmbientWeather API support (blocked by said API being broken - https://github.com/ambient-weather/api-docs/issues/42).
-- Add support for another weather API - suggestions are welcome.
+- Complete the Wunderground support.
 - Extensive testing for multiple reporting devices per service.
 - Complete localization (some parts of the code are localisation-aware and -ready, some are not - in any case, no translations have been performed; English is the only supported language).
 
