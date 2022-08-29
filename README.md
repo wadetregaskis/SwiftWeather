@@ -8,10 +8,8 @@ A Swift weather package to support multiple weather APIs.
 
 # 📡 Supported APIs
 
-| Weather API | Documentation |
-| :----:  | :----: |
-| [Ambient Weather](https://ambientweather.net) | * [API Docs](https://ambientweather.docs.apiary.io/)<br>* [API Wiki](https://github.com/ambient-weather/api-docs/wiki)<br>* [Device Specifications](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
-| [Wunderground](https://www.wunderground.com)<br>(partially; work in progress) | * [API Docs](https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY)
+* [Ambient Weather](https://ambientweather.net)
+* [Wunderground](https://www.wunderground.com) (partially; work in progress)
 
 # 📦 Installation
 
