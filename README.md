@@ -1,4 +1,4 @@
-# SwiftWeather
+# 🌤 SwiftWeather
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wadetregaskis/SwiftWeather.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/wadetregaskis/SwiftWeather.svg)
@@ -6,16 +6,14 @@
 
 A Swift weather package to support multiple weather APIs.
 
-# Supported APIs
+# 📡 Supported APIs
 
 | Weather API | Documentation |
 | :----:  | :----: |
 | [Ambient Weather](https://ambientweather.net) | * [API Docs](https://ambientweather.docs.apiary.io/)<br>* [API Wiki](https://github.com/ambient-weather/api-docs/wiki)<br>* [Device Specifications](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 | [Wunderground](https://www.wunderground.com)<br>(partially; work in progress) | * [API Docs](https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY)
 
-# Installation
-
-## Swift Package Manager
+# 📦 Installation
 
 Add the following package to your Package.swift file:
 
@@ -23,7 +21,7 @@ Add the following package to your Package.swift file:
 .package(url: "https://github.com/wadetregaskis/SwiftWeather", .branch("master")),
 ```
 
-# Getting Started
+# 🏗 Getting Started
 
 SwiftWeather provides a common framework for weather platforms, so you can write mostly generic code that supports any of them.  You do, however, have to explicitly choose which weather platform(s) you want to use, and initialise them first-up.  e.g:
 
@@ -93,7 +91,7 @@ for try await report in device.reports(count: N, upToAndIncluding: date) {
 
 Note:  not currently supported for Wunderground.
 
-# Working with reports
+# 📋 Working with reports
 
 Exactly what each report contains depends both on the weather platform and weather device in use.  An example from AmbientWeather:
 
@@ -163,14 +161,14 @@ Measurements vary in their type - Foundation's Measurement class is used whereve
 
 Have a look in the package - and experiment with this library against a real station of interest - for details on sensors available to use in your application.
 
-## To Do
+## 🗒 To Do
 
 - Add real-time AmbientWeather API support (blocked by said API being broken - https://github.com/ambient-weather/api-docs/issues/42).
 - Complete the Wunderground support.
 - Extensive testing for multiple reporting devices per service.
 - Complete localization (some parts of the code are localisation-aware and -ready, some are not - in any case, no translations have been performed; English is the only supported language).
 
-## Copyright & License Information
+## ⚖️ Copyright & License Information
 
 Released under the [MIT License](https://github.com/wadetregaskis/SwiftWeather/blob/master/LICENSE).
 
