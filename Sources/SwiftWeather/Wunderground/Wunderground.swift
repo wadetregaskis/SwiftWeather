@@ -239,11 +239,13 @@ public final class Wunderground: WeatherPlatform {
         let stationId: [String?]
         let latitude: [Double]
         let longitude: [Double]
-        let distanceKm: [Double?]
-        let distanceMi: [Double?]
-        let partnerId: [String?]
         let qcStatus: [Int?]
-        let updateTimeUtc: [Int?]
+
+        // These are also valid fields in the response, but we're not using them currently so there's no point decoding them.
+        //let distanceKm: [Double?]
+        //let distanceMi: [Double?]
+        //let partnerId: [String?]
+        //let updateTimeUtc: [Int?]
     }
 
     /// Finds weather devices near the given location.
