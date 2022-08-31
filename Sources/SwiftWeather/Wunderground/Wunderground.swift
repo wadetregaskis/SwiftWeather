@@ -57,6 +57,7 @@ public final class Wunderground: WeatherPlatform {
         self.session = URLSession(configuration: sessionConfiguration.copy() as! URLSessionConfiguration)
     }
 
+#if false // Core Location is incredibly buggy - to the point of not working at all, essentially - so I can't expose this API [yet?].
     private class LocationDelegate: NSObject, CLLocationManagerDelegate {
         let onLocation: (CLLocation) -> ()
         let onError: (Error) -> ()
@@ -91,7 +92,6 @@ public final class Wunderground: WeatherPlatform {
         }
     }
 
-#if false // Core Location is incredibly buggy - to the point of not working at all, essentially - so I can't expose this API [yet?].
     /// Some nearby weather devices, based on the user's current location.
     ///
     /// This takes core of working with Core Location for the most part, but requires Location privileges for your application.  See https://developer.apple.com/documentation/corelocation/requesting_authorization_for_location_services for details on what you must configure as the application author in order to enable Location Services.
