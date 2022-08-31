@@ -104,13 +104,6 @@ extension WeatherSensor { // Formatting
 
         private var measurementFormatter = MeasurementFormatter()
 
-        private func recreateMeasurementFormatter() {
-            let formatter = MeasurementFormatter()
-            formatter.unitOptions = units
-            formatter.unitStyle = unitStyle
-            formatter.numberFormatter = numbers
-        }
-
         /// Initialises a new format style with the specified configuration.
         ///
         /// - Parameters:
