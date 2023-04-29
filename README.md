@@ -1,6 +1,8 @@
 # 🌤 SwiftWeather
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wadetregaskis/SwiftWeather.svg)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fwadetregaskis%2FSwiftWeather%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/wadetregaskis/SwiftWeather)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fwadetregaskis%2FSwiftWeather%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/wadetregaskis/SwiftWeather)
 ![GitHub build results](https://github.com/wadetregaskis/SwiftWeather/actions/workflows/swift.yml/badge.svg)
 
 A Swift weather package to support multiple weather APIs.
