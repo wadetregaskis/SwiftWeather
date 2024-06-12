@@ -1,10 +1,10 @@
 //  Created by Wade Tregaskis on 26/8/2022.
 
-import CoreLocation
-import Foundation
+public import CoreLocation
+internal import Foundation
 
 
-open class WundergroundDevice: WeatherDevice {
+final public class WundergroundDevice: WeatherDevice {
     public let platform: Wunderground
 
     public let ID: WeatherDeviceID
@@ -25,7 +25,7 @@ open class WundergroundDevice: WeatherDevice {
         nil
     }
 
-    public enum QualityControlStatus: Int, CustomStringConvertible, Codable {
+    public enum QualityControlStatus: Int, CustomStringConvertible, Codable, Sendable {
         case notChecked = -1
         case bad = 0
         case good = 1
@@ -63,7 +63,7 @@ open class WundergroundDevice: WeatherDevice {
         }
     }
 
-    public var latestReport: WeatherReport {
+    public var latestReport: any WeatherReport {
         get async throws {
             // API docs: https://docs.google.com/document/d/1KGb8bTVYRsNgljnNH67AMhckY8AQT2FVwZ9urj8SWBs
 
@@ -109,13 +109,13 @@ open class WundergroundDevice: WeatherDevice {
         }
     }
 
-    public func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error> {
+    public func latestReports(count: Int) -> AsyncThrowingStream<any WeatherReport, any Error> {
         AsyncThrowingStream {
             throw WeatherError.notSupportedByPlatform
         }
     }
 
-    public func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<WeatherReport, Error> {
+    public func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<any WeatherReport, any Error> {
         AsyncThrowingStream {
             throw WeatherError.notSupportedByPlatform
         }

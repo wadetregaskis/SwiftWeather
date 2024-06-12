@@ -1,7 +1,7 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import CoreLocation
-import Foundation
+public import CoreLocation
+internal import Foundation
 
 
 /// The type for all weather device IDs.
@@ -13,11 +13,11 @@ public typealias WeatherDeviceID = String
 /// A service that provides access to weather devices & their sensor data.
 ///
 /// Currently this exposes no methods or properties.  It might in future.  Even in their absence, it can be convenient as a way to refer abstractly to a weather platform (e.g. if you wish to store a heterogeneous collection of platforms you're using, which can be convenient for providing a user interface that allows your user to select which platform to work with).
-public protocol WeatherPlatform {}
+public protocol WeatherPlatform: Sendable {}
 
 
 /// A weather device (e.g. weather station) that reports weather data for a specific location.
-public protocol WeatherDevice: CustomStringConvertible {
+public protocol WeatherDevice: Sendable, CustomStringConvertible {
     associatedtype Platform
 
     /// The platform the provides access to this device.
@@ -53,7 +53,7 @@ public protocol WeatherDevice: CustomStringConvertible {
     var address: String? { get }
 
     /// The latest report.  This is just a convenience over calling ``latestReports(count:)`` or ``reports(count:upToAndIncluding:)``.
-    var latestReport: WeatherReport { get async throws }
+    var latestReport: any WeatherReport { get async throws }
 
     /// Fetches the latest report(s).
     ///
@@ -61,7 +61,7 @@ public protocol WeatherDevice: CustomStringConvertible {
     ///
     /// - Parameter count: Number of reports to retrieve.  Must be at least one.
     /// - Returns: A stream of reports in reverse chronological order (i.e. starting with the newest).  Note that this may be empty.
-    func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error>
+    func latestReports(count: Int) -> AsyncThrowingStream<any WeatherReport, any Error>
 
     /// Fetches the report(s) leading up to the given date.
     ///
@@ -70,7 +70,7 @@ public protocol WeatherDevice: CustomStringConvertible {
     /// - Parameter count: Number of reports to retrieve.  Must be at least one.
     /// - Parameter upToAndIncluding: The end date for the returned reports.
     /// - Returns: A stream of reports in reverse chronological order (i.e. starting with the newest).  Note that this may be empty, if the device simply has no reports available prior to the given date.
-    func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<WeatherReport, Error>
+    func reports(count: Int, upToAndIncluding: Date) -> AsyncThrowingStream<any WeatherReport, any Error>
 }
 
 

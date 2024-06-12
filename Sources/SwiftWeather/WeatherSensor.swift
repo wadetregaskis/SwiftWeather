@@ -1,9 +1,9 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import Foundation
+public import Foundation
 
 /// Supported Service Types
-public enum WeatherSensorType {
+public enum WeatherSensorType: Sendable {
     case AirQuality
     case Battery
     case Date
@@ -20,8 +20,7 @@ public enum WeatherSensorType {
     case WindSpeed
 }
 
-/// Base class for weather sensors.
-open class WeatherSensor {
+open class WeatherSensor: @unchecked Sendable {
     /// The weather sensor type.
     ///
     /// In addition to direct utility for e.g. categorising / grouping sensors in UI, this can be helpful to infer the units of the ``measurement`` - but only when ``measurement`` isn't a ``Measurement`` instance.  When it is such an instance the exact units are specified within the measurement.
@@ -52,13 +51,13 @@ open class WeatherSensor {
     /// The sensor measurement.
     ///
     /// Most sensors use the Foundation ``Measurement`` data type, but some use other types - e.g. ``Date`` for dates & times, ``Int`` for battery status / levels, etc.
-    public let measurement: Any
+    public nonisolated(unsafe) let measurement: Any // Should be `any Sendable`, but the Measurement crap from Foundation doesn't support sendability, even though logically it should and by all appearances it is thread-safe.
 
-    required public init(type: WeatherSensorType,
-                         sensorID: String,
-                         name: String,
-                         description: String?,
-                         measurement: Any) {
+    public init(type: WeatherSensorType,
+                sensorID: String,
+                name: String,
+                description: String?,
+                measurement: Any) {
         self.type = type
         self.ID = sensorID
         self.name = name
@@ -67,8 +66,13 @@ open class WeatherSensor {
     }
 }
 
+#if compiler(>=6)
+extension MeasurementFormatter.UnitOptions: @retroactive Hashable {}
+extension Formatter.UnitStyle: @retroactive Hashable {}
+#else
 extension MeasurementFormatter.UnitOptions: Hashable {}
 extension Formatter.UnitStyle: Hashable {}
+#endif
 
 extension WeatherSensor { // Formatting
     /// A FormatStyle that creates human-readable representations, as ``String``s, from ``WeatherSensor``s.
@@ -203,16 +207,16 @@ extension WeatherSensor { // Formatting
             case notImplemented
         }
 
-        public init(from: Decoder) throws {
+        public init(from: any Decoder) throws {
             throw Error.notImplemented
         }
 
-        public func encode(to: Encoder) throws {
+        public func encode(to: any Encoder) throws {
             throw Error.notImplemented
         }
     }
 
-    private static let defaultFormatter = FormatStyle()
+    private nonisolated(unsafe) static let defaultFormatter = FormatStyle()
 
     /// Returns a human-readable string representation of the sensor with the given formatting style / configuration.
     public func formatted<S>(_ style: S) -> S.FormatOutput where S : Foundation.FormatStyle, S.FormatInput == WeatherSensor {

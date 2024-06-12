@@ -1,12 +1,12 @@
 //  Created by Mike Manzo on 5/17/20.
 
-import CoreLocation
-import Foundation
+public import CoreLocation
+internal import Foundation
 
 ///
 /// [Ambient Weather Device Specification](https://github.com/ambient-weather/api-docs/wiki/Device-Data-Specs)
 ///
-open class AmbientWeatherDevice: WeatherDevice, Codable {
+final public class AmbientWeatherDevice: WeatherDevice, Codable {
     public let platform: AmbientWeather
     private let info: AmbientWeatherStationInfo?
     private let macAddress: WeatherDeviceID
@@ -36,7 +36,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
         information?.geolocation?.address
     }
 
-    public var latestReport: WeatherReport {
+    public var latestReport: any WeatherReport {
         get async throws {
             for try await report in reports(count: 1) {
                 return report
@@ -46,11 +46,11 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
         }
     }
 
-    public func latestReports(count: Int) -> AsyncThrowingStream<WeatherReport, Error> {
+    public func latestReports(count: Int) -> AsyncThrowingStream<any WeatherReport, any Error> {
         reports(count: count)
     }
 
-    public func reports(count: Int, upToAndIncluding: Date = .distantFuture) -> AsyncThrowingStream<WeatherReport, Error> {
+    public func reports(count: Int, upToAndIncluding: Date = .distantFuture) -> AsyncThrowingStream<any WeatherReport, any Error> {
         AsyncThrowingStream { continuation in
             Task {
                 do {
@@ -119,7 +119,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
         return info
     }
 
-    required public init(from decoder: Decoder) throws {
+    required public init(from decoder: any Decoder) throws {
         guard let platform = decoder.userInfo[AmbientWeather.platformCodingUserInfoKey] as? AmbientWeather else {
             throw AmbientWeatherError.platformMissingFromDecoderUserInfo
         }
@@ -133,7 +133,7 @@ open class AmbientWeatherDevice: WeatherDevice, Codable {
         info = try container.decode(AmbientWeatherStationInfo.self, forKey: .info)
     }
 
-    public func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(macAddress, forKey: .macAddress)

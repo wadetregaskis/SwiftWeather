@@ -1,13 +1,13 @@
 //  Created by Wade Tregaskis on 26/8/2022.
 
-import Foundation
+internal import Foundation
 
 extension Unit {
-    internal static let none = Unit(symbol: "")
+    internal nonisolated(unsafe) static let none = Unit(symbol: "")
 
-    internal static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
-    internal static let percentage = Unit(symbol: "%")
-    internal static let uv = Unit(symbol: "UV Index")
+    internal nonisolated(unsafe) static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
+    internal nonisolated(unsafe) static let percentage = Unit(symbol: "%")
+    internal nonisolated(unsafe) static let uv = Unit(symbol: "UV Index")
 }
 
 extension UnitConcentrationMass {

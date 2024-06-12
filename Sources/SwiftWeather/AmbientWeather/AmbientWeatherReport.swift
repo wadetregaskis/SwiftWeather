@@ -1,10 +1,10 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import Foundation
+public import Foundation
 
 
 // Sigh.  Dealing with generics in Swift is real pain in the fucking arse sometimes.  All this boilerplate is because of Swift's inability to elegantly support collections of a generic type with varied specialisations.  This type-erasing "AnyMD" is the manual workaround to that stupidity.  Sigh.  Not that I'm bitter.
-private protocol AnyMD {
+private protocol AnyMD: Sendable {
     associatedtype InputValue: Codable
 
     var ID: AmbientWeatherReport.CodingKeys { get }
@@ -23,7 +23,7 @@ open class AmbientWeatherReport: WeatherReport {
         _sensors
     }
 
-    private struct MD<InputValue: Codable, UnitType: Unit>: AnyMD {
+    private struct MD<InputValue: Codable, UnitType: Unit>: AnyMD, @unchecked Sendable {
         let ID: CodingKeys
         let sensorType: WeatherSensorType
         let name: String
@@ -70,7 +70,7 @@ open class AmbientWeatherReport: WeatherReport {
         }
     }
 
-    private static let dateFormatter = {
+    private nonisolated(unsafe) static let dateFormatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
@@ -346,7 +346,7 @@ open class AmbientWeatherReport: WeatherReport {
         return metadata
     }()
 
-    public required init(from decoder: Decoder) throws {
+    public required init(from decoder: any Decoder) throws {
         let json = try decoder.container(keyedBy: CodingKeys.self)
 
         self._sensors = try Dictionary(
@@ -377,7 +377,7 @@ open class AmbientWeatherReport: WeatherReport {
         self.date = date
     }
 
-    public func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         var json = encoder.container(keyedBy: CodingKeys.self)
 
         for sensor in self._sensors {

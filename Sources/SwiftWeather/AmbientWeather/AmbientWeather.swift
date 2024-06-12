@@ -1,6 +1,6 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import Foundation
+public import Foundation
 
 
 /// Error messages specific to the Ambient Weather API
@@ -19,7 +19,7 @@ enum AmbientWeatherError: Error {
     case noAPIResponse
     case unrecognisedAPIFailure(String)
 
-    internal static func from(apiResponse: Data?, else otherError: Error? = nil) -> Error {
+    internal static func from(apiResponse: Data?, else otherError: (any Error)? = nil) -> any Error {
         guard let apiResponse else {
             return otherError ?? noAPIResponse
         }
@@ -238,7 +238,7 @@ public final class AmbientWeather: WeatherPlatform {
         return url
     }
 
-    private static let formatter = {
+    private nonisolated(unsafe) static let formatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter

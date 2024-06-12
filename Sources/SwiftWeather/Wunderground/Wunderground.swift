@@ -1,8 +1,8 @@
 //  Created by Wade Tregaskis on 23/8/2022.
 
 //import AsyncLocationKit
-import CoreLocation
-import Foundation
+public import CoreLocation
+internal import Foundation
 
 
 public final class Wunderground: WeatherPlatform {

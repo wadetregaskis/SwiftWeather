@@ -1,13 +1,13 @@
 //  Created by Wade Tregaskis on 26/8/2022.
 
-import Foundation
+internal import Foundation
 
 
 enum WundergroundError: Error {
     case locationManagerDidNotProvideALocation
 
     case invalidURL
-    case invalidAPIResponse(rawResponse: Data, decodingError: Error)
+    case invalidAPIResponse(rawResponse: Data, decodingError: any Error)
     case missingAPIResponse(endpoint: URL, response: HTTPURLResponse)
     case serverRejectedRequest(endpoint: URL, response: HTTPURLResponse, body: Data)
     case serverBroken(endpoint: URL, response: HTTPURLResponse, body: Data)

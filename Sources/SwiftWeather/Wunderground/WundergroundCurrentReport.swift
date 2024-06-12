@@ -1,6 +1,6 @@
 //  Created by Wade Tregaskis on 26/8/2022.
 
-import Foundation
+public import Foundation
 
 
 open class WundergroundCurrentReport: WeatherReport {
@@ -36,7 +36,7 @@ open class WundergroundCurrentReport: WeatherReport {
                 throw WeatherError.unsupportedSensorValueType(ID: ID.rawValue, value: value)
             }
 
-            value = Measurement<UnitType>(value: valueAsDouble, unit: unit)
+            value = Measurement(value: valueAsDouble, unit: unit)
         }
 
         return WeatherSensor(type: type,
@@ -46,7 +46,7 @@ open class WundergroundCurrentReport: WeatherReport {
                              measurement: value)
     }
 
-    private static let dateFormatter = {
+    private nonisolated(unsafe) static let dateFormatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = .withInternetDateTime
         return formatter
@@ -54,7 +54,7 @@ open class WundergroundCurrentReport: WeatherReport {
 
     internal let stationID: String
 
-    public required init(from decoder: Decoder) throws {
+    public required init(from decoder: any Decoder) throws {
         let json = try decoder.container(keyedBy: CodingKeys.self)
 
         self.stationID = try json.decode(type(of: self.stationID), forKey: .stationID)
@@ -230,7 +230,7 @@ open class WundergroundCurrentReport: WeatherReport {
         self.date = date
     }
 
-    public func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         var json = encoder.container(keyedBy: CodingKeys.self)
 
         for sensor in self.sensors {

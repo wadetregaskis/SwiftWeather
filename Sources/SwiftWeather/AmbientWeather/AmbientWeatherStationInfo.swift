@@ -1,8 +1,6 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import Foundation
-
-public class AmbientWeatherStationInfo: Codable {
+public struct AmbientWeatherStationInfo: Codable, Sendable {
     public let name: String?
     public let location: String?
     public let geolocation: AmbientWeatherStationGeolocation?

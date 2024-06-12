@@ -1,13 +1,13 @@
 //  Created by Mike Manzo on 5/10/20.
 
-import CoreLocation
+public import CoreLocation
 
-public class AmbientWeatherStationGeoType: Codable {
+public struct AmbientWeatherStationGeoType: Codable, Sendable {
     private let coordinates: [Double]
-    let type: String
-    
+    public let type: String
+
     /// If the data is present, return a CLLocationCoordinate2D object from the reporting lat/lon
-    var coordinate: CLLocationCoordinate2D? {
+    public var coordinate: CLLocationCoordinate2D? {
         guard 2 <= coordinates.count else {
             return nil
         }

@@ -1,8 +1,8 @@
 //  Created by Wade Tregaskis on 28/8/2022.
 
-import Foundation
+internal import Foundation
 
-public enum WeatherError: Error {
+public enum WeatherError: Error, @unchecked Sendable {
     /// Indicates that the API (user) key is invalid, either outright (e.g. an empty string) or according to the weather platform's server (e.g. a revoked or banned key).
     case invalidAPIKey
 
