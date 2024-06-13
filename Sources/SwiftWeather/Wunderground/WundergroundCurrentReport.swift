@@ -132,7 +132,7 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .Radiation,
                                               "Solar Radiation",
-                                              IncidentEnergy.wattsPerSquareMetre),
+                                              IncidentPower.wattsPerSquareMetre),
              WundergroundCurrentReport.sensor(from: json,
                                               .uv,
                                               Double.self,

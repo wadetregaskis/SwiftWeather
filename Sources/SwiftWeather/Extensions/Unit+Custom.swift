@@ -2,8 +2,8 @@
 
 public import Foundation
 
-public final class IncidentEnergy: Unit, @unchecked Sendable {
-    internal static let wattsPerSquareMetre = IncidentEnergy(symbol: "W/㎡")
+public final class IncidentPower: Unit, @unchecked Sendable {
+    internal static let wattsPerSquareMetre = IncidentPower(symbol: "W/㎡")
 }
 
 public final class Percentage: Unit, @unchecked Sendable {
