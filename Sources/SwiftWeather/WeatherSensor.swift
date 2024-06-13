@@ -51,13 +51,13 @@ open class WeatherSensor: @unchecked Sendable {
     /// The sensor measurement.
     ///
     /// Most sensors use the Foundation ``Measurement`` data type, but some use other types - e.g. ``Date`` for dates & times, ``Int`` for battery status / levels, etc.
-    public nonisolated(unsafe) let measurement: Any // Should be `any Sendable`, but the Measurement crap from Foundation doesn't support sendability, even though logically it should and by all appearances it is thread-safe.
+    public let measurement: any Sendable
 
     public init(type: WeatherSensorType,
                 sensorID: String,
                 name: String,
                 description: String?,
-                measurement: Any) {
+                measurement: any Sendable) {
         self.type = type
         self.ID = sensorID
         self.name = name

@@ -1,13 +1,18 @@
 //  Created by Wade Tregaskis on 26/8/2022.
 
-internal import Foundation
+public import Foundation
+
+public final class IncidentEnergy: Unit, @unchecked Sendable {}
+public final class Percentage: Unit, @unchecked Sendable {}
+public final class UVIndex: Unit, @unchecked Sendable {}
+public final class NoUnit: Unit, @unchecked Sendable {}
 
 extension Unit {
-    internal nonisolated(unsafe) static let none = Unit(symbol: "")
+    internal static let none = NoUnit(symbol: "")
 
-    internal nonisolated(unsafe) static let wattsPerSquareMetre = Unit(symbol: "W/㎡")
-    internal nonisolated(unsafe) static let percentage = Unit(symbol: "%")
-    internal nonisolated(unsafe) static let uv = Unit(symbol: "UV Index")
+    internal static let wattsPerSquareMetre = IncidentEnergy(symbol: "W/㎡")
+    internal static let percentage = Percentage(symbol: "%")
+    internal static let uv = UVIndex(symbol: "UV Index")
 }
 
 extension UnitConcentrationMass {

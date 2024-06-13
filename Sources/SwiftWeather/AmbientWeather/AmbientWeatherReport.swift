@@ -12,7 +12,7 @@ private protocol AnyMD: Sendable {
     var name: String { get }
     var description: String? { get }
 
-    func createMeasurement(from: KeyedDecodingContainer<AmbientWeatherReport.CodingKeys>) throws -> (InputValue, Any)?
+    func createMeasurement(from: KeyedDecodingContainer<AmbientWeatherReport.CodingKeys>) throws -> (InputValue, any Sendable)?
 }
 
 
@@ -23,20 +23,20 @@ open class AmbientWeatherReport: WeatherReport {
         _sensors
     }
 
-    private struct MD<InputValue: Codable, UnitType: Unit>: AnyMD, @unchecked Sendable {
+    private struct MD<InputValue: Codable & Sendable, UnitType: Unit & Sendable>: AnyMD, Sendable {
         let ID: CodingKeys
         let sensorType: WeatherSensorType
         let name: String
         let description: String?
         let unit: UnitType
-        let converter: ((InputValue) throws -> Any)?
+        let converter: (@Sendable (InputValue) throws -> any Sendable)?
 
         init(_ ID: CodingKeys,
              _ sensorType: WeatherSensorType,
              _ name: String,
              _ unit: UnitType = Unit.none,
              _ description: String? = nil,
-             _ converter: ((InputValue) throws -> Any)? = nil) {
+             _ converter: (@Sendable (InputValue) throws -> any Sendable)? = nil) {
             self.ID = ID
             self.sensorType = sensorType
             self.name = name
@@ -45,7 +45,7 @@ open class AmbientWeatherReport: WeatherReport {
             self.converter = converter
         }
 
-        func createMeasurement(from json: KeyedDecodingContainer<CodingKeys>) throws -> (InputValue, Any)? {
+        func createMeasurement(from json: KeyedDecodingContainer<CodingKeys>) throws -> (InputValue, any Sendable)? {
             guard let rawValue = try json.decodeIfPresent(InputValue.self, forKey: self.ID) else {
                 return nil
             }
@@ -103,64 +103,64 @@ open class AmbientWeatherReport: WeatherReport {
                                        .AirQuality,
                                        "CO2 Level",
                                        .partsPerMillion),
-            MD<Double, Unit>(.solarradiation,
+            MD<Double, IncidentEnergy>(.solarradiation,
+                                       .Radiation,
+                                       "Solar Radiation",
+                                       .wattsPerSquareMetre),
+            MD<Int, UVIndex>(.uv,
                              .Radiation,
-                             "Solar Radiation",
-                             .wattsPerSquareMetre),
-            MD<Int, Unit>(.uv,
-                          .Radiation,
-                          "UV Index",
-                          .uv),
-            MD<Int, Unit>(.batt_25,
-                          .Battery,
-                          "Air Quality Sensor Battery Status"),
-            MD<Int, Unit>(.battout,
-                          .Battery,
-                          "Outdoor Sensor Battery Status"),
-            MD<Int, Unit>(.battin,
-                          .Battery,
-                          "Indoor Sensor Battery Status"),
-            MD<Int, Unit>(.batt_lightning,
-                          .Battery,
-                          "Lightning Detector Battery Status",
-                          .none,
-                          nil,
-                          { 1 - $0 }),
-            MD<Int, Unit>(.batt_co2,
-                          .Battery,
-                          "CO2 Sensor Battery Status"),
-            MD<Int, Unit>(.batt_cellgateway,
-                          .Battery,
-                          "Cellular Gateway Battery Status"),
-            MD<Int, Unit>(.humidity,
-                          .Humidity,
-                          "Outdoor Humidity",
-                          .percentage),
-            MD<Int, Unit>(.humidityin,
-                          .Humidity,
-                          "Indoor Humidity",
-                          .percentage),
-            MD<String, Unit>(.tz,
-                             .TimeZone,
-                             "Time Zone"),
-            MD<String, Unit>(.date,
-                             .Date,
-                             "Date",
-                             .none,
-                             "Date & time at which the measurements were reported",
-                             {
-                                 guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
-                                     throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
-                                 }
+                             "UV Index",
+                             .uv),
+            MD<Int, NoUnit>(.batt_25,
+                            .Battery,
+                            "Air Quality Sensor Battery Status"),
+            MD<Int, NoUnit>(.battout,
+                            .Battery,
+                            "Outdoor Sensor Battery Status"),
+            MD<Int, NoUnit>(.battin,
+                            .Battery,
+                            "Indoor Sensor Battery Status"),
+            MD<Int, NoUnit>(.batt_lightning,
+                            .Battery,
+                            "Lightning Detector Battery Status",
+                            .none,
+                            nil,
+                            { 1 - $0 }),
+            MD<Int, NoUnit>(.batt_co2,
+                            .Battery,
+                            "CO2 Sensor Battery Status"),
+            MD<Int, NoUnit>(.batt_cellgateway,
+                            .Battery,
+                            "Cellular Gateway Battery Status"),
+            MD<Int, Percentage>(.humidity,
+                                .Humidity,
+                                "Outdoor Humidity",
+                                .percentage),
+            MD<Int, Percentage>(.humidityin,
+                                .Humidity,
+                                "Indoor Humidity",
+                                .percentage),
+            MD<String, NoUnit>(.tz,
+                               .TimeZone,
+                               "Time Zone"),
+            MD<String, NoUnit>(.date,
+                               .Date,
+                               "Date",
+                               .none,
+                               "Date & time at which the measurements were reported",
+                               {
+                                   guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
+                                       throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
+                                   }
 
-                                 return date
-                             }),
-            MD<Int, Unit>(.dateutc,
-                          .Date,
-                          "Date",
-                          .none,
-                          "Date & time at which the measurements were reported",
-                          { Date(timeIntervalSince1970: Double($0) / 1000) }),
+                                   return date
+                               }),
+            MD<Int, NoUnit>(.dateutc,
+                            .Date,
+                            "Date",
+                            .none,
+                            "Date & time at which the measurements were reported",
+                            { Date(timeIntervalSince1970: Double($0) / 1000) }),
             MD<Double, UnitPressure>(.baromrelin,
                                      .Pressure,
                                      "Relative Pressure",
@@ -203,18 +203,18 @@ open class AmbientWeatherReport: WeatherReport {
                                    "Total Rain",
                                    .inches,
                                    "Total precipitation in the station's lifetime (or since it was last factory reset)"),
-            MD<String, Unit>(.lastRain,
-                             .Date,
-                             "Last Rain",
-                             .none,
-                             nil,
-                             {
-                                 guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
-                                     throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
-                                 }
+            MD<String, NoUnit>(.lastRain,
+                               .Date,
+                               "Last Rain",
+                               .none,
+                               nil,
+                               {
+                                   guard let date = AmbientWeatherReport.dateFormatter.date(from: $0) else {
+                                       throw WeatherError.invalidDate(string: $0, expectedFormat: "ISO-8601 w/ fractional seconds")
+                                   }
 
-                                 return date
-                             }),
+                                   return date
+                               }),
             MD<Int, UnitAngle>(.winddir,
                                .WindDirection,
                                "Wind Direction",
@@ -277,51 +277,51 @@ open class AmbientWeatherReport: WeatherReport {
                                         .Temperature,
                                         "Indoor Temperature Feels Like",
                                         .fahrenheit),
-            MD<Int, Unit>(.lightning_day,
-                          .Lightning,
-                          "Lightning Strikes Today"),
-            MD<Int, Unit>(.lightning_hour,
-                          .Lightning,
-                          "Lightning Strikes in the Last Hour"),
-            MD<Int, Unit>(.lightning_time,
-                          .Date,
-                          "Latest Lightning Strike Date",
-                          .none,
-                          nil,
-                          { Date(timeIntervalSince1970: Double($0) / 1000) }),
+            MD<Int, NoUnit>(.lightning_day,
+                            .Lightning,
+                            "Lightning Strikes Today"),
+            MD<Int, NoUnit>(.lightning_hour,
+                            .Lightning,
+                            "Lightning Strikes in the Last Hour"),
+            MD<Int, NoUnit>(.lightning_time,
+                            .Date,
+                            "Latest Lightning Strike Date",
+                            .none,
+                            nil,
+                            { Date(timeIntervalSince1970: Double($0) / 1000) }),
             MD<Double, UnitLength>(.lightning_distance,
                                    .Lightning,
                                    "Latest Lightning Strike Distance",
                                    .miles)]
         metadata.append(contentsOf: [.batleak1, .batleak2, .batleak3, .batleak4].enumerated().map {
-            MD<Int, Unit>($1,
-                          .Battery,
-                          "Leak Detector #\($0 + 1) Battery Status",
-                          .none,
-                          nil,
-                          { 1 - $0 }) })
+            MD<Int, NoUnit>($1,
+                            .Battery,
+                            "Leak Detector #\($0 + 1) Battery Status",
+                            .none,
+                            nil,
+                            { 1 - $0 }) })
         metadata.append(contentsOf: [.battsm1, .battsm2, .battsm3, .battsm4].enumerated().map {
-            MD<Int, Unit>($1,
-                          .Battery,
-                          "Soil Moisture Sensor #\($0 + 1) Battery Status") })
+            MD<Int, NoUnit>($1,
+                            .Battery,
+                            "Soil Moisture Sensor #\($0 + 1) Battery Status") })
         metadata.append(contentsOf: [.batt1, .batt2, .batt3, .batt4, .batt5, .batt6, .batt7, .batt8, .batt9, .batt10].enumerated().map {
-            MD<Int, Unit>($1,
-                          .Battery,
-                          "Sensor #\($0 + 1) Battery Status") })
+            MD<Int, NoUnit>($1,
+                            .Battery,
+                            "Sensor #\($0 + 1) Battery Status") })
         metadata.append(contentsOf: [.humidity1, .humidity2, .humidity3, .humidity4, .humidity5, .humidity6, .humidity7, .humidity8, .humidity9, .humidity10].enumerated().map {
-            MD<Int, Unit>($1,
-                          .Humidity,
-                          "Sensor #\($0 + 1) Humidity",
-                          .percentage) })
+            MD<Int, Percentage>($1,
+                                .Humidity,
+                                "Sensor #\($0 + 1) Humidity",
+                                .percentage) })
         metadata.append(contentsOf: [.soilhum1, .soilhum2, .soilhum3, .soilhum4, .soilhum5, .soilhum6, .soilhum7, .soilhum8, .soilhum9, .soilhum10].enumerated().map {
-            MD<Int, Unit>($1,
-                          .Humidity,
-                          "Soil Sensor #\($0 + 1) Humidity",
-                          .percentage) })
+            MD<Int, Percentage>($1,
+                                .Humidity,
+                                "Soil Sensor #\($0 + 1) Humidity",
+                                .percentage) })
         metadata.append(contentsOf: [.relay1, .relay2, .relay3, .relay4, .relay5, .relay6, .relay7, .relay8, .relay9, .relay10].enumerated().map {
-            MD<Int, Unit>($1,
-                          .General,
-                          "Relay Sensor #\($0 + 1)") })
+            MD<Int, NoUnit>($1,
+                            .General,
+                            "Relay Sensor #\($0 + 1)") })
         metadata.append(contentsOf: [.temp1f, .temp2f, .temp3f, .temp4f, .temp5f, .temp6f, .temp7f, .temp8f, .temp9f, .temp10f].enumerated().map {
             MD<Double, UnitTemperature>($1,
                                         .Temperature,

@@ -8,16 +8,16 @@ open class WundergroundCurrentReport: WeatherReport {
 
     public let sensors: [WeatherSensorID: WeatherSensor]
 
-    private static func sensor<Input: Codable,
+    private static func sensor<Input: Codable & Sendable,
                                Keys: CodingKey & RawRepresentable,
-                               UnitType: Unit>(from json: KeyedDecodingContainer<Keys>,
-                                               _ ID: Keys,
-                                               _ valueType: Input.Type,
-                                               _ type: WeatherSensorType,
-                                               _ name: String,
-                                               _ unit: UnitType = Unit.none,
-                                               description: String? = nil,
-                                               converter: ((Input) throws -> Any)? = nil) throws -> WeatherSensor?
+                               UnitType: Unit & Sendable>(from json: KeyedDecodingContainer<Keys>,
+                                                          _ ID: Keys,
+                                                          _ valueType: Input.Type,
+                                                          _ type: WeatherSensorType,
+                                                          _ name: String,
+                                                          _ unit: UnitType = Unit.none,
+                                                          description: String? = nil,
+                                                          converter: ((Input) throws -> any Sendable)? = nil) throws -> WeatherSensor?
                                where Keys.RawValue == String {
         guard let rawValue = try json.decodeIfPresent(Input.self, forKey: ID) else {
             return nil
@@ -80,7 +80,7 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .Humidity,
                                               "Humidity",
-                                              .percentage),
+                                              Unit.percentage),
              WundergroundCurrentReport.sensor(from: json,
                                               .lat,
                                               Double.self,
@@ -132,13 +132,13 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .Radiation,
                                               "Solar Radiation",
-                                              .wattsPerSquareMetre),
+                                              Unit.wattsPerSquareMetre),
              WundergroundCurrentReport.sensor(from: json,
                                               .uv,
                                               Double.self,
                                               .Radiation,
                                               "UV Index",
-                                              .uv),
+                                              Unit.uv),
              WundergroundCurrentReport.sensor(from: json,
                                               .winddir,
                                               Double.self,

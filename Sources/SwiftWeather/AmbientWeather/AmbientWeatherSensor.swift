@@ -7,7 +7,7 @@ public class AmbientWeatherSensor: WeatherSensor, @unchecked Sendable {
                            sensorID: String,
                            name: String,
                            description: String?,
-                           measurement: Any,
+                           measurement: any Sendable,
                            rawValue: any Codable) {
         self.rawValue = rawValue
         
@@ -22,7 +22,7 @@ public class AmbientWeatherSensor: WeatherSensor, @unchecked Sendable {
                                               sensorID: String,
                                               name: String,
                                               description: String?,
-                                              measurement: Any) {
+                                              measurement: any Sendable) {
         self.init(type: type,
                   sensorID: sensorID,
                   name: name,
