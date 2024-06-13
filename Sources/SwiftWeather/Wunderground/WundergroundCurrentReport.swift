@@ -15,7 +15,7 @@ open class WundergroundCurrentReport: WeatherReport {
                                                           _ valueType: Input.Type,
                                                           _ type: WeatherSensorType,
                                                           _ name: String,
-                                                          _ unit: UnitType = Unit.none,
+                                                          _ unit: UnitType = NoUnit.none,
                                                           description: String? = nil,
                                                           converter: ((Input) throws -> any Sendable)? = nil) throws -> WeatherSensor?
                                where Keys.RawValue == String {
@@ -25,7 +25,7 @@ open class WundergroundCurrentReport: WeatherReport {
 
         var value = try converter?(rawValue) ?? rawValue
 
-        if .none != unit {
+        if NoUnit.none != unit {
             let valueAsDouble: Double
 
             if let valueAlreadyIsDouble = value as? Double {
@@ -80,7 +80,7 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .Humidity,
                                               "Humidity",
-                                              Unit.percentage),
+                                              Percentage.percentage),
              WundergroundCurrentReport.sensor(from: json,
                                               .lat,
                                               Double.self,
@@ -132,13 +132,13 @@ open class WundergroundCurrentReport: WeatherReport {
                                               Double.self,
                                               .Radiation,
                                               "Solar Radiation",
-                                              Unit.wattsPerSquareMetre),
+                                              IncidentEnergy.wattsPerSquareMetre),
              WundergroundCurrentReport.sensor(from: json,
                                               .uv,
                                               Double.self,
                                               .Radiation,
                                               "UV Index",
-                                              Unit.uv),
+                                              UVIndex.uv),
              WundergroundCurrentReport.sensor(from: json,
                                               .winddir,
                                               Double.self,

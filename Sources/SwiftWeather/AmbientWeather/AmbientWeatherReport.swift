@@ -34,7 +34,7 @@ open class AmbientWeatherReport: WeatherReport {
         init(_ ID: CodingKeys,
              _ sensorType: WeatherSensorType,
              _ name: String,
-             _ unit: UnitType = Unit.none,
+             _ unit: UnitType = NoUnit.none,
              _ description: String? = nil,
              _ converter: (@Sendable (InputValue) throws -> any Sendable)? = nil) {
             self.ID = ID
@@ -52,7 +52,7 @@ open class AmbientWeatherReport: WeatherReport {
 
             let value = try self.converter?(rawValue) ?? rawValue
 
-            guard self.unit != .none else {
+            guard self.unit != NoUnit.none else {
                 return (rawValue, value)
             }
 
