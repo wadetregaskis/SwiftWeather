@@ -2,16 +2,16 @@
 
 public import Foundation
 
-public final class IncidentPower: Unit, @unchecked Sendable {
-    internal static let wattsPerSquareMetre = IncidentPower(symbol: "W/㎡")
+public final class UnitIncidentPower: Unit, @unchecked Sendable {
+    internal static let wattsPerSquareMetre = UnitIncidentPower(symbol: "W/㎡")
 }
 
-public final class Percentage: Unit, @unchecked Sendable {
-    internal static let percentage = Percentage(symbol: "%")
+public final class UnitPercentage: Unit, @unchecked Sendable {
+    internal static let percentage = UnitPercentage(symbol: "%")
 }
 
-public final class UVIndex: Unit, @unchecked Sendable {
-    internal static let uv = UVIndex(symbol: "UV Index")
+public final class UnitUVIndex: Unit, @unchecked Sendable {
+    internal static let uv = UnitUVIndex(symbol: "UV Index")
 }
 
 public final class NoUnit: Unit, @unchecked Sendable {
